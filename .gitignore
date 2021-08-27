@@ -4,7 +4,6 @@
 *.iws
 .idea/
 
-gradle-wrapper.jar
 .gradle
 /local.properties
 .DS_Store
