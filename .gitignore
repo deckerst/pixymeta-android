@@ -1,0 +1,17 @@
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+gradle-wrapper.jar
+.gradle
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+/pixymeta/images-test/
