@@ -1,2 +1,5 @@
 jdk:
   - openjdk11
+install:
+  - ./gradlew :pixymeta:build :pixymeta:publishToMavenLocal
+  - find . -name "*.aar"
