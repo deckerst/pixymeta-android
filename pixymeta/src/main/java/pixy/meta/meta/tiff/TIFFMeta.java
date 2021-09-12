@@ -377,11 +377,7 @@ public class TIFFMeta {
 				ifd.addField(new LongField(TiffTag.TILE_OFFSETS.getValue(), temp));		
 		}
 		
-		// Add software field.
-		String softWare = "ICAFE - https://github.com/dragon66/icafe\0";
-		ifd.addField(new ASCIIField(TiffTag.SOFTWARE.getValue(), softWare));
-		
-		/* The following are added to work with old-style JPEG compression (type 6) */		
+		/* The following are added to work with old-style JPEG compression (type 6) */
 		/* One of the flavors (found in JPEG EXIF thumbnail IFD - IFD1) of the old JPEG compression contains this field */
 		TiffField<?> jpegIFOffset = ifd.removeField(TiffTag.JPEG_INTERCHANGE_FORMAT);
 		if(jpegIFOffset != null) {
