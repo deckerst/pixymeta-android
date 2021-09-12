@@ -1478,7 +1478,18 @@ public class TIFFMeta {
 					break;
 				case IPTC:
 					TiffField<?> iptcField = workingPage.removeField(TiffTag.IPTC);
-					if(iptcField != null) metadataMap.put(MetadataType.IPTC, new IPTC((byte[])iptcField.getData()));
+					if(iptcField != null) {
+						Object data = iptcField.getData();
+						byte[] bytes;
+						// TLAD: supposed to be `byte[]`, but some files have this field as `int[]`
+						if (data instanceof int[]) {
+							bytes = new byte[0];
+							LOGGER.warn("IPTC field type is int[] instead of byte[], data={}", Arrays.toString((int[]) data));
+						} else {
+							bytes = (byte[]) data;
+						}
+						metadataMap.put(MetadataType.IPTC, new IPTC(bytes));
+					}
 					metadata = workingPage.removeField(TiffTag.PHOTOSHOP);
 					if(metadata != null) {
 						byte[] data = (byte[])metadata.getData();
