@@ -1462,7 +1462,7 @@ public class TIFFMeta {
 		IFD workingPage = ifds.get(pageNumber);
 		
 		TiffField<?> metadata = null;
-		
+
 		for(MetadataType metaType : metadataTypes) {
 			switch(metaType) {
 				case XMP:
