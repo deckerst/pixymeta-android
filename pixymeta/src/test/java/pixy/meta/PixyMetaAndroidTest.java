@@ -4,9 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -26,6 +25,8 @@ import java.util.Map;
 
 import pixy.meta.image.tiff.FieldType;
 import pixy.meta.image.tiff.TiffTag;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
@@ -49,6 +50,11 @@ public class PixyMetaAndroidTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(PixyMetaAndroidTest.class);
 
     private static final String outDir = "images-test";
+
+    @Before
+    public void init() {
+        LoggerFactory.test = true;
+    }
 
     @Test
     public void test() throws Exception {

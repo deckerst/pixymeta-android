@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
 
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;

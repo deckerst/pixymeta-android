@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
 
 public class FileUtils {
 	// Obtain a logger instance

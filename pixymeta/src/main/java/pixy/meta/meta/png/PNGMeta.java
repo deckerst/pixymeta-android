@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.InflaterInputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
 import org.w3c.dom.Document;
 
 import pixy.meta.image.png.ICCPBuilder;
