@@ -54,7 +54,7 @@ public class JpegXMP extends XMP {
 			int length = descriptions.getLength();
 			if(length > 0) {
 				Element node = (Element)descriptions.item(length - 1);
-				node.setAttribute("xmlns:xmpNote", "http://ns.adobe.com/xmp/extension/");
+				node.setAttribute("xmlns:xmpNote", "http://ns.adobe.com/xmp/note/");
 				node.setAttribute("xmpNote:HasExtendedXMP", guid);
 			}
 		}
