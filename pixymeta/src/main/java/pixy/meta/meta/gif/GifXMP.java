@@ -25,7 +25,7 @@ public class GifXMP extends XMP {
 	public void write(OutputStream os) throws IOException {
 		byte[] buf = new byte[14];
  		buf[0] = EXTENSION_INTRODUCER; // Extension introducer
- 		buf[1] = APPLICATION_EXTENSION_LABEL; // Application extension label
+ 		buf[1] = (byte)APPLICATION_EXTENSION_LABEL; // Application extension label
  		buf[2] = 0x0b; // Block size
  		buf[3] = 'X'; // Application Identifier (8 bytes)
  		buf[4] = 'M';

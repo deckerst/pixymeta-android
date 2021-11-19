@@ -2,6 +2,7 @@ package pixy.meta.image.gif;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * GIF Application Extension wrapper
@@ -22,8 +23,10 @@ public class ApplicationExtension {
 	// Number of bytes in this extension block, following the Block Size field,
 	// up to but not including the beginning of the Application Data.
 	// This field contains the fixed value 11.
-	public static final byte BLOCK_SIZE = 11; //
-	
+	public static final byte BLOCK_SIZE = 11;
+
+	public static final byte[] XMP_APP_ID = {'X', 'M', 'P', ' ', 'D', 'a', 't', 'a'};
+
 	public ApplicationExtension(byte[] applicationId, byte[] authenticationCode, byte[] data) {
 		this.applicationId = applicationId;
 		this.authenticationCode = authenticationCode;
@@ -40,6 +43,10 @@ public class ApplicationExtension {
 	
 	public byte[] getData() {
 		return data;
+	}
+
+	public boolean isXmp() {
+		return Arrays.equals(XMP_APP_ID, applicationId);
 	}
 	
 	public void write(OutputStream os) throws IOException {

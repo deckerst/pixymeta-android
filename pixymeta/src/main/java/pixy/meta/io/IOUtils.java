@@ -91,7 +91,7 @@ public class IOUtils {
 		return bout.toByteArray();
 	}
 	
-	public static void readFully(InputStream is, byte b[]) throws IOException {
+	public static void readFully(InputStream is, byte[] b) throws IOException {
 		readFully(is, b, 0, b.length);
 	}
 	 

@@ -26,8 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -62,8 +64,10 @@ public class PNGMeta {
 	
 	/** PNG signature constant */
     private static final long SIGNATURE = 0x89504E470D0A1A0AL;
-    
-    // Obtain a logger instance
+
+	private static String ITXT_XMP_KEYWORD = "XML:com.adobe.xmp";
+
+	// Obtain a logger instance
  	private static final Logger LOGGER = LoggerFactory.getLogger(PNGMeta.class);
 	
    	public static void insertChunk(Chunk customChunk, InputStream is, OutputStream os) throws IOException {
@@ -124,6 +128,11 @@ public class PNGMeta {
   	
   	// Add leading and trailing PI
   	public static void insertXMP(InputStream is, OutputStream os, String xmp) throws IOException {
+   		if (xmp == null) {
+			insert(is, os, null);
+			return;
+		}
+
   		Document doc = XMLUtils.createXML(xmp);
 		XMLUtils.insertLeadingPI(doc, "xpacket", "begin='' id='W5M0MpCehiHzreSzNTczkc9d'");
 		XMLUtils.insertTrailingPI(doc, "xpacket", "end='r'");
@@ -134,23 +143,17 @@ public class PNGMeta {
   	private static void insert(InputStream is, OutputStream os, String xmp) throws IOException {
   		// Read all the chunks first
   		List<Chunk> chunks = readChunks(is);
-	    ListIterator<Chunk> itr = chunks.listIterator();
-	    
-	    // Remove old XMP chunk
-	    while(itr.hasNext()) {
-	    	Chunk chunk = itr.next();
-	    	if(chunk.getChunkType() == ChunkType.ITXT) {
-	    		TextReader reader = new TextReader(chunk);
-				if(reader.getKeyword().equals("XML:com.adobe.xmp")); // We found XMP data
-					itr.remove();
-	    	}
-	    }
-	    
-	    // Create XMP textual chunk
-		Chunk xmpChunk = new TextBuilder(ChunkType.ITXT).keyword("XML:com.adobe.xmp").text(xmp).build();
-		// Insert XMP textual chunk into image
-	    chunks.add(xmpChunk);
-	    
+
+		// Remove old XMP chunk
+		removeXmpChunk(chunks);
+
+		if (xmp != null) {
+			// Create XMP textual chunk
+			Chunk xmpChunk = new TextBuilder(ChunkType.ITXT).keyword(ITXT_XMP_KEYWORD).text(xmp).build();
+			// Insert XMP textual chunk into image
+			chunks.add(xmpChunk);
+		}
+
 	    IOUtils.writeLongMM(os, SIGNATURE);
 	    
         serializeChunks(chunks, os);
@@ -244,7 +247,7 @@ public class PNGMeta {
 			Map<String, String> keyValMap = textualChunk.getKeyValMap();
 			
 			for (Map.Entry<String, String> entry : keyValMap.entrySet()) {
-				if(entry.getKey().equals("XML:com.adobe.xmp"))
+				if(entry.getKey().equals(ITXT_XMP_KEYWORD))
 					metadataMap.put(MetadataType.XMP, new PngXMP(entry.getValue()));
 			}
 		}
@@ -253,23 +256,7 @@ public class PNGMeta {
 		
 		return metadataMap;
 	}
-  	
-	public static List<Chunk> removeChunks(List<Chunk> chunks, ChunkType chunkType) {
-  		
-  		Iterator<Chunk> iter = chunks.listIterator();
-   	
-   		while(iter.hasNext()) {
-   			
-   			Chunk chunk = iter.next();
-   		
-   			if (chunk.getChunkType() == chunkType) {   				
-   				iter.remove();
-   			}   			
-   		}
-   		
-   		return chunks;  		
-  	}
-   	
+
    	/**
    	 * Removes chunks which have the same ChunkType values from the chunkEnumSet.
    	 * 
@@ -293,7 +280,21 @@ public class PNGMeta {
    		
    		return chunks;  		
   	}
-  	
+
+	private static void removeXmpChunk(List<Chunk> chunks) {
+		ListIterator<Chunk> itr = chunks.listIterator();
+
+		while(itr.hasNext()) {
+			Chunk chunk = itr.next();
+			if(chunk.getChunkType() == ChunkType.ITXT) {
+				TextReader reader = new TextReader(chunk);
+				if(reader.getKeyword().equals(ITXT_XMP_KEYWORD)) {
+					itr.remove();
+				}
+			}
+		}
+	}
+
    	public static void serializeChunks(List<Chunk> chunks, OutputStream os) throws IOException {
   		
   		Collections.sort(chunks);
