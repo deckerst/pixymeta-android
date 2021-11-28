@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import pixy.meta.image.tiff.FieldType;
@@ -230,7 +231,7 @@ public class PixyMetaAndroidTest {
         Exif exif = exifClass == (TiffExif.class) ? new TiffExif() : new JpegExif();
         exif.addImageField(TiffTag.WINDOWS_XP_AUTHOR, FieldType.WINDOWSXP, "Author");
         exif.addImageField(TiffTag.WINDOWS_XP_KEYWORDS, FieldType.WINDOWSXP, "Copyright;Author");
-        DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+        DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ROOT);
         exif.addExifField(ExifTag.EXPOSURE_TIME, FieldType.RATIONAL, new int[]{10, 600});
         exif.addExifField(ExifTag.FNUMBER, FieldType.RATIONAL, new int[]{49, 10});
         exif.addExifField(ExifTag.ISO_SPEED_RATINGS, FieldType.SHORT, new short[]{273});

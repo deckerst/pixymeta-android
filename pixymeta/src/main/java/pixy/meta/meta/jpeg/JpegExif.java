@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import pixy.meta.image.jpeg.Marker;
 import pixy.meta.image.tiff.ASCIIField;
@@ -59,9 +60,9 @@ public class JpegExif extends Exif {
 		String softWare = "JPEGTweaker 1.0";
 		tiffField = new ASCIIField(TiffTag.SOFTWARE.getValue(), softWare);
 		imageIFD.addField(tiffField);
-		DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+		DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ROOT);
 		tiffField = new ASCIIField(TiffTag.DATETIME.getValue(), formatter.format(new Date()));
-		imageIFD.addField(tiffField);		
+		imageIFD.addField(tiffField);
 	}
 	
 	/** 

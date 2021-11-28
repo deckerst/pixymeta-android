@@ -39,6 +39,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.regex.*;
 
@@ -113,14 +114,14 @@ public class StringUtils {
 		
         while (m.find()) {
 			if(!Character.isUpperCase(m.group().charAt(0)))
-               m.appendReplacement(myStringBuffer, m.group(1).toUpperCase()+"$2");
+               m.appendReplacement(myStringBuffer, m.group(1).toUpperCase(Locale.ROOT)+"$2");
         }
         
         return m.appendTail(myStringBuffer).toString();
 	}
 	
 	public static String capitalizeFully(String s) {   
-		return capitalize(s.toLowerCase());
+		return capitalize(s.toLowerCase(Locale.ROOT));
 	}
 	
 	public static String concat(Iterable<? extends CharSequence> strings, String delimiter) {

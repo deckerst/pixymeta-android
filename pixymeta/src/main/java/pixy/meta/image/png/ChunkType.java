@@ -16,6 +16,7 @@
 package pixy.meta.image.png;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -130,12 +131,12 @@ public enum ChunkType {
      */
     public static boolean containsIgnoreCase(String name) 
     {
-    	return stringMap.containsKey(name.toUpperCase());
+    	return stringMap.containsKey(name.toUpperCase(Locale.ROOT));
     }
    
     public static ChunkType fromString(String name)
     {
-        return stringMap.get(name.toUpperCase());
+        return stringMap.get(name.toUpperCase(Locale.ROOT));
     }
     
     public static ChunkType fromInt(int value) {
@@ -151,7 +152,7 @@ public enum ChunkType {
     static
     {
       for(ChunkType chunk : values()) {
-          stringMap.put(chunk.toString().toUpperCase(), chunk);
+          stringMap.put(chunk.toString().toUpperCase(Locale.ROOT), chunk);
           intMap.put(chunk.getValue(), chunk);
       }
     }   

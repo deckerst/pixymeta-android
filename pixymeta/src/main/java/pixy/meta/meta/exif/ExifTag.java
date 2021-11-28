@@ -15,6 +15,9 @@
 
 package pixy.meta.meta.exif;
 
+import android.os.Build;
+
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -101,7 +104,7 @@ public enum ExifTag implements Tag {
 	WINDOWS_XP_TITLE("WindowsXP Title", (short) 0x9c9b) {
 		public String getFieldAsString(Object value) {
 			byte[] byteValue = (byte[]) value;
-			return new String(byteValue, StandardCharsets.UTF_16LE).trim();
+			return new String(byteValue, utf16leCharset()).trim();
 		}
 		public boolean isCritical() {
 			return false;
@@ -111,7 +114,7 @@ public enum ExifTag implements Tag {
 	WINDOWS_XP_COMMENT("WindowsXP Comment", (short)0x9c9c) {
 		public String getFieldAsString(Object value) {
 			byte[] byteValue = (byte[]) value;
-			return new String(byteValue, StandardCharsets.UTF_16LE).trim();
+			return new String(byteValue, utf16leCharset()).trim();
 		}
 		public boolean isCritical() {
 			return false;
@@ -120,7 +123,7 @@ public enum ExifTag implements Tag {
 	WINDOWS_XP_AUTHOR("WindowsXP Author", (short)0x9c9d) {
 		public String getFieldAsString(Object value) {
 			byte[] byteValue = (byte[]) value;
-			return new String(byteValue, StandardCharsets.UTF_16LE).trim();
+			return new String(byteValue, utf16leCharset()).trim();
 		}
 		public boolean isCritical() {
 			return false;
@@ -130,7 +133,7 @@ public enum ExifTag implements Tag {
 	WINDOWS_XP_KEYWORDS("WindowsXP Keywords", (short)0x9c9e){
 		public String getFieldAsString(Object value) {
 			byte[] byteValue = (byte[]) value;
-			return new String(byteValue, StandardCharsets.UTF_16LE).trim();
+			return new String(byteValue, utf16leCharset()).trim();
 		}
 		public boolean isCritical() {
 			return false;
@@ -140,7 +143,7 @@ public enum ExifTag implements Tag {
 	WINDOWS_XP_SUBJECT("WindowsXP Subject", (short) 0x9c9f) {
 		public String getFieldAsString(Object value) {
 			byte[] byteValue = (byte[]) value;
-			return new String(byteValue, StandardCharsets.UTF_16LE).trim();
+			return new String(byteValue, utf16leCharset()).trim();
 		}
 		public boolean isCritical() {
 			return false;
@@ -228,6 +231,13 @@ public enum ExifTag implements Tag {
 	{
 		this.name = name;
 		this.value = value;
+	}
+
+	private static Charset utf16leCharset() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			return StandardCharsets.UTF_16LE;
+		}
+		return Charset.forName("UTF-16LE");
 	}
 
 	public String getName()
