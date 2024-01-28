@@ -30,17 +30,14 @@
 
 package pixy.meta.string;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.regex.*;
 
 /**
@@ -64,18 +61,23 @@ public class StringUtils {
 	}
 	
 	public static String byteArrayToHexString(byte[] bytes, int offset, int length) {		
-		if ( bytes == null )
+		if ( bytes == null ) {
 			return null;
+		}
 		
-		if(bytes.length == 0) return "[]";
+		if(bytes.length == 0) {
+			return "[]";
+		}
 	    
-	    if(offset < 0 || offset >= bytes.length)
-	    	throw new IllegalArgumentException("Offset out of array bound!");
+	    if(offset < 0 || offset >= bytes.length) {
+			throw new IllegalArgumentException("Offset out of array bound!");
+		}
 	    
 	    int endOffset = offset + Math.min(length, bytes.length);
 		 
-	    if(endOffset > bytes.length)
-	    	length = bytes.length - offset;
+	    if(endOffset > bytes.length) {
+			length = bytes.length - offset;
+		}
 	    
 	    StringBuilder hex = new StringBuilder(5*length + 2);	    
 	    hex.append("[");
@@ -86,19 +88,17 @@ public class StringUtils {
 	    }
 	    
 	    // Remove the last ","
-	    if(hex.length() > 1)
-	    	hex.deleteCharAt(hex.length()-1);
+	    if(hex.length() > 1) {
+			hex.deleteCharAt(hex.length() - 1);
+		}
 	    
-	    if(endOffset < bytes.length)
-	    	hex.append(" ..."); // Partial output
-	    
+	    if(endOffset < bytes.length) {
+			hex.append(" ..."); // Partial output
+		}
+
 	    hex.append("]");
 	    
 	    return hex.toString();
-	}
-	
-	public static String byteToHexString(byte b) {
-	    return String.format("0x%02X ", b);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class StringUtils {
 		
         while (m.find()) {
 			if(!Character.isUpperCase(m.group().charAt(0)))
-               m.appendReplacement(myStringBuffer, m.group(1).toUpperCase(Locale.ROOT)+"$2");
+               m.appendReplacement(myStringBuffer, Objects.requireNonNull(m.group(1)).toUpperCase(Locale.ROOT)+"$2");
         }
         
         return m.appendTail(myStringBuffer).toString();
@@ -123,87 +123,7 @@ public class StringUtils {
 	public static String capitalizeFully(String s) {   
 		return capitalize(s.toLowerCase(Locale.ROOT));
 	}
-	
-	public static String concat(Iterable<? extends CharSequence> strings, String delimiter) {
-        int capacity = 0;
-        int delimLength = delimiter.length();
 
-        Iterator<? extends CharSequence> iter = strings.iterator();
-        
-        while (iter.hasNext()) {
-        	CharSequence next = iter.next();
-        	
-        	if(!isNullOrEmpty(next))
-        		capacity += next.length() + delimLength;
-        }
-
-        StringBuilder buffer = new StringBuilder(capacity);
-        iter = strings.iterator();
-        
-        while (iter.hasNext()) {
-            CharSequence next = iter.next();
-            
-            if(!isNullOrEmpty(next)) {
-            	buffer.append(next);
-            	buffer.append(delimiter);
-            }
-        }
-        
-        int lastIndexOfDelimiter = buffer.lastIndexOf(delimiter);
-        buffer.delete(lastIndexOfDelimiter, buffer.length());
-        
-        return buffer.toString();
-    }
-	
-	public static String concat(String first, String second) {
-		if(first == null) return second;
-		if(second == null) return first;
-		
-		StringBuilder sb = new StringBuilder(first.length() + second.length());
-		sb.append(first);
-		sb.append(second);
-		
-		return sb.toString();
-	}
-	
-	public static String concat(String first, String... strings) {
-		StringBuilder sb;
-		
-		if(first != null) sb = new StringBuilder(first);
-		else sb = new StringBuilder();
-		
-		for (String s: strings) {		
-			if(!isNullOrEmpty(s))
-				sb.append(s);
-	 	}
-		
-		return sb.toString();
-	}
-		
-	public static <T extends CharSequence> String concat(T[] strings, String delimiter) {
-        int capacity = 0;
-        int delimLength = delimiter.length();
-        
-        for (T value : strings) {
-        	if(!isNullOrEmpty(value))
-        		capacity += value.length() + delimLength;
-        }
-        
-        StringBuilder buffer = new StringBuilder(capacity);
-              
-        for (T value : strings) {
-        	if(!isNullOrEmpty(value)) {
-        		buffer.append(value);
-            	buffer.append(delimiter);
-        	}
-        }
-        
-        int lastIndexOfDelimiter = buffer.lastIndexOf(delimiter);
-        buffer.delete(lastIndexOfDelimiter, buffer.length());
-        
-        return buffer.toString();
-    }
-	
 	/**
 	 * Regular expression version of the String contains method.
 	 * If used with a match from start or match from end regular expression,
@@ -218,294 +138,9 @@ public class StringUtils {
 	public static boolean contains(String input, String regex) {
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(input);
-        
-		if (m.find()) {
-			return true;
-        }
-		
-		return false;
-	}
-	
-	// From http://stackoverflow.com/questions/15547329/how-to-prettily-format-gps-data-in-java-android
-	// Input a double latitude or longitude in the decimal format
-	public static String decimalToDMS(double coord) {
-		String output;
-		int degrees, minutes, seconds;
-	    // gets the modulus the coordinate divided by one (MOD1).
-	    // in other words gets all the numbers after the decimal point.
-	    // e.g. mod = 87.728056 % 1 == 0.728056
-	    //
-	    // next get the integer part of the coord. In other words the, whole number part.
-	    // e.g. intPart = 87
-	    double mod = coord % 1;
-	    degrees = (int)coord;
-	    // next times the MOD1 of degrees by 60 so we can find the integer part for minutes.
-	    // get the MOD1 of the new coord to find the numbers after the decimal point.
-	    // e.g. coord = 0.728056 * 60 == 43.68336
-	    //      mod = 43.68336 % 1 == 0.68336
-	    //
-	    // next get the value of the integer part of the coord.
-	    // e.g. intPart = 43
-	    coord = mod * 60;
-	    mod = coord % 1;
-	    minutes = (int)coord;
-	    //do the same again for minutes
-	    //e.g. coord = 0.68336 * 60 == 41.0016
-	    //e.g. intPart = 41
-	    coord = mod * 60;
-	    seconds = (int)coord;
-	    //Standard output of D°M'S"
-	    output = degrees + '\u00B0' + minutes + "'" + seconds + "\"";
-
-	    return output;
-	}
-
-	/**
-	 * Converts DMS to decimal 
-	 *
-	 * Input: latitude or longitude in the DMS format ( example: N 43° 36' 15.894")
-	 * @param hemisphereOUmeridien => {W,E,S,N}
-	 * @return latitude or longitude in decimal format
-	 */
-	public double DMSToDecimal(String hemisphereOUmeridien, double degrees, double minutes, double seconds) {
-		double LatOrLon = 0;
-		double sign = 1.0;
-
-		if((hemisphereOUmeridien == "W")||(hemisphereOUmeridien == "S")) {
-			sign = -1.0;
-		}              
-		
-		LatOrLon = sign*(Math.floor(degrees) + Math.floor(minutes)/60.0 + seconds/3600.0);
-
-		return LatOrLon;               
+        return m.find();
     }
-	
-	/**
-	 * From www.javapractices.com EscapeChars.java
-	 * 
-	 * @param url URL string to be encoded
-	 * @return a encoded URL string
-	 */	
-	public static String encodeURL(String url) {
-		String result = null;
-	    
-		try {
-	       result = URLEncoder.encode(url, "UTF-8");
-	    }
-	    catch (UnsupportedEncodingException ex){
-	       throw new RuntimeException("UTF-8 not supported", ex);
-	    }
-	    
-		return result;
-	}
-		
-	/**
-	 * Escapes HTML reserved characters and other characters which might cause Cross Site Scripting
-	 * (XSS) hacks
-	 *
-	 * The following table comes from www.javapractice.com EscapeChars.java
-	 * 
-	 * <P>The following characters are replaced with corresponding HTML character entities:
-	 * 
-     * <table border='1' cellpadding='3' cellspacing='0'>
-     *  <tr><th> Character </th><th>Replacement</th></tr>
-     *  <tr><td> < </td><td> &lt; </td></tr>
-     *  <tr><td> > </td><td> &gt; </td></tr>
-     *  <tr><td> & </td><td> &amp; </td></tr>
-     *  <tr><td> " </td><td> &quot;</td></tr>
-     *  <tr><td> \t </td><td> &#009;</td></tr>
-     *  <tr><td> ! </td><td> &#033;</td></tr>
-     *  <tr><td> # </td><td> &#035;</td></tr>
-     *  <tr><td> $ </td><td> &#036;</td></tr>
-     *  <tr><td> % </td><td> &#037;</td></tr>
-     *  <tr><td> ' </td><td> &#039;</td></tr>
-     *  <tr><td> ( </td><td> &#040;</td></tr> 
-     *  <tr><td> ) </td><td> &#041;</td></tr>
-     *  <tr><td> * </td><td> &#042;</td></tr>
-     *  <tr><td> + </td><td> &#043; </td></tr>
-     *  <tr><td> , </td><td> &#044; </td></tr>
-     *  <tr><td> - </td><td> &#045; </td></tr>
-     *  <tr><td> . </td><td> &#046; </td></tr>
-     *  <tr><td> / </td><td> &#047; </td></tr>
-     *  <tr><td> : </td><td> &#058;</td></tr>
-     *  <tr><td> ; </td><td> &#059;</td></tr>
-     *  <tr><td> = </td><td> &#061;</td></tr>
-     *  <tr><td> ? </td><td> &#063;</td></tr>
-     *  <tr><td> @ </td><td> &#064;</td></tr>
-     *  <tr><td> [ </td><td> &#091;</td></tr>
-     *  <tr><td> \ </td><td> &#092;</td></tr>
-     *  <tr><td> ] </td><td> &#093;</td></tr>
-     *  <tr><td> ^ </td><td> &#094;</td></tr>
-     *  <tr><td> _ </td><td> &#095;</td></tr>
-     *  <tr><td> ` </td><td> &#096;</td></tr>
-     *  <tr><td> { </td><td> &#123;</td></tr>
-     *  <tr><td> | </td><td> &#124;</td></tr>
-     *  <tr><td> } </td><td> &#125;</td></tr>
-     *  <tr><td> ~ </td><td> &#126;</td></tr>
-     * </table>
-     *
-	 * @return a string with the specified characters replaced by HTML entities
-	 */
-	public static String escapeHTML(String input) {
-		Iterator<Character> itr = stringIterator(input);
-		StringBuilder result = new StringBuilder();		
-		
-		while (itr.hasNext())
-		{
-			Character c = itr.next();
-			
-			switch (c)
-			{				
-				case '<':
-					result.append("&lt;");
-					break;
-				case '>':
-					result.append("&gt;");
-					break;
-				case '&':
-					result.append("&amp;");
-					break;
-				case '"':
-					result.append("&quot;");
-					break;
-				case '\t':
-					result.append("&#009;");
-					break;
-				case '!':
-					result.append("&#033;");
-					break;
-				case '#':
-					result.append("&#035;");
-					break;
-				case '$':
-					result.append("&#036;");
-					break;
-				case '%':
-					result.append("&#037;");
-					break;
-				case '\'':
-					result.append("&#039;");
-					break;
-				case '(':
-					result.append("&#040;");
-					break;
-				case ')':
-					result.append("&#041;");
-					break;
-				case '*':
-					result.append("&#042;");
-					break;
-				case '+':
-					result.append("&#043;");
-					break;
-				case ',':
-					result.append("&#044;");
-					break;
-				case '-':
-					result.append("&#045;");
-					break;
-				case '.':
-					result.append("&#046;");
-					break;
-				case '/':
-					result.append("&#047;");
-					break;
-				case ':':
-					result.append("&#058;");
-					break;
-				case ';':
-					result.append("&#059;");
-					break;
-				case '=':
-					result.append("&#061;");
-					break;
-				case '?':
-					result.append("&#063;");
-					break;
-				case '@':
-					result.append("&#064;");
-					break;
-				case '[':
-					result.append("&#091;");
-					break;
-				case '\\':
-					result.append("&#092;");
-					break;
-				case ']':
-					result.append("&#093;");
-					break;
-				case '^':
-					result.append("&#094;");
-					break;
-				case '_':
-					result.append("&#095;");
-					break;
-				case '`':
-					result.append("&#096;");
-					break;
-				case '{':
-					result.append("&#123;");
-					break;
-				case '|':
-					result.append("&#124;");
-					break;
-				case '}':
-					result.append("&#125;");
-					break;
-				case '~':
-					result.append("&#126;");
-					break;
-				default:
-					result.append(c);
-			}
-		}
-		
-		return result.toString();
-	}
-	
-	/**
-	 * Replaces "&" with its entity "&amp;" to make it a valid HTML link
-	 * 
-	 * @param queryString a URL string with a query string attached
-	 * @return a valid URL string to be used as a link
-	 */
-	public static String escapeQueryStringAmp(String queryString) {
-		return queryString.replace("&", "&amp;");
-	}
-	
-	public static String escapeRegex(String input) {
-		Iterator<Character> itr = stringIterator(input);
-		StringBuilder result = new StringBuilder();		
-		
-		while (itr.hasNext())
-		{
-			Character c = itr.next();
-			
-			switch (c)
-			{
-				case '.':
-				case '^':
-				case '$':
-				case '*':
-				case '+':
-				case '?':
-				case '(':
-				case ')':
-				case '[':
-				case '{':
-					result.append("\\").append(c);
-					break;
-				case '\\':
-					result.append("\\\\");
-				    break;
-				default:
-					result.append(c);
-			}
-		}
-		
-		return result.toString();
-	}
-	
+
 	/**
 	 * Generate MD5 digest from a byte array
 	 * 
@@ -513,7 +148,7 @@ public class StringUtils {
 	 * @return MD5 string
 	 */
 	public static String generateMD5(byte[] message) {
-		MessageDigest md = null;
+		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
@@ -522,58 +157,19 @@ public class StringUtils {
 		
 		return toHexString(md.digest(message));
     }
-   
-	public static String intToHexString(int value) {
-		StringBuilder buffer = new StringBuilder(10);
-		
-		buffer.append("0x");		
-		
-		buffer.append(HEXES[(value & 0x0000000F)]);
-		buffer.append(HEXES[(value & 0x000000F0) >>> 4]);
-		buffer.append(HEXES[(value & 0x00000F00) >>> 8]);
-		buffer.append(HEXES[(value & 0x0000F000) >>> 12]);
-		buffer.append(HEXES[(value & 0x000F0000) >>> 16]);
-		buffer.append(HEXES[(value & 0x00F00000) >>> 20]);
-		buffer.append(HEXES[(value & 0x0F000000) >>> 24]);
-		buffer.append(HEXES[(value & 0xF0000000) >>> 28]);
-		
-		return buffer.toString();
-	}
 
 	public static String intToHexStringMM(int value) {
-		
-		StringBuilder buffer = new StringBuilder(10);
-		
-		buffer.append("0x");
-		
-		buffer.append(HEXES[(value & 0xF0000000) >>> 28]);
-		buffer.append(HEXES[(value & 0x0F000000) >>> 24]);
-		buffer.append(HEXES[(value & 0x00F00000) >>> 20]);
-		buffer.append(HEXES[(value & 0x000F0000) >>> 16]);
-		buffer.append(HEXES[(value & 0x0000F000) >>> 12]);
-		buffer.append(HEXES[(value & 0x00000F00) >>> 8]);
-		buffer.append(HEXES[(value & 0x000000F0) >>> 4]);
-		buffer.append(HEXES[(value & 0x0000000F)]);
-		
-		return buffer.toString();
+        return "0x" +
+				HEXES[(value & 0xF0000000) >>> 28] +
+				HEXES[(value & 0x0F000000) >>> 24] +
+				HEXES[(value & 0x00F00000) >>> 20] +
+				HEXES[(value & 0x000F0000) >>> 16] +
+				HEXES[(value & 0x0000F000) >>> 12] +
+				HEXES[(value & 0x00000F00) >>> 8] +
+				HEXES[(value & 0x000000F0) >>> 4] +
+				HEXES[(value & 0x0000000F)];
 	}
-	
-	public static boolean isInCharset(String input, String encoding) {
-		Charset charset = null;
-		try {
-			// May throw different unchecked exceptions
-			charset = Charset.forName(encoding);
-		} catch(Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
-	    // Convert input into byte array and encode it again using the
-	    // same character set and see if we get the same string
-	    String output = new String(input.getBytes(charset), charset);
-	    
-	    return output.equals(input);
-	}
-	
+
 	/**
 	 * Checks if a string is null, empty, or consists only of white spaces
 	 * 
@@ -584,34 +180,25 @@ public class StringUtils {
 	public static boolean isNullOrEmpty(CharSequence str) {
 		return ((str == null) || (str.length() == 0));
 	}
-	
-	/**
-	 * Formats TIFF long data field.
-	 * 
-	 * @param data an array of int.
-	 * @param unsigned true if the int value should be treated as unsigned,
-	 * 		  otherwise false 
-	 * @return a string representation of the int array.
-	 */
-	public static String longArrayToString(int[] data, boolean unsigned) {
-		
-		return longArrayToString(data, 0, data.length, unsigned);
-	}
-	
+
 	public static String longArrayToString(int[] data, int offset, int length, boolean unsigned) {
 		if ( data == null ) {
 		      return null;
 		}
 			
-		if(data.length == 0) return "[]";
+		if(data.length == 0) {
+			return "[]";
+		}
 	    
-	    if(offset < 0 || offset >= data.length)
-	    	throw new IllegalArgumentException("Offset out of array bound!");
+	    if(offset < 0 || offset >= data.length) {
+			throw new IllegalArgumentException("Offset out of array bound!");
+		}
 	    
 	    int endOffset = offset + Math.min(length, data.length);
 		 
-	    if(endOffset > data.length)
-	    	length = data.length - offset;
+	    if(endOffset > data.length) {
+			length = data.length - offset;
+		}
 	    
 	    StringBuilder longs = new StringBuilder();	    
 	    longs.append("[");
@@ -628,64 +215,17 @@ public class StringUtils {
 		}
 	    
 	    // Remove the last ","
-	    if(longs.length() > 1)
-	    	longs.deleteCharAt(longs.length()-1);
-	    
-	    if(endOffset < data.length)
-	    	longs.append(" ..."); // Partial output
-	    
+	    if(longs.length() > 1) {
+			longs.deleteCharAt(longs.length() - 1);
+		}
+
+	    if(endOffset < data.length) {
+			longs.append(" ..."); // Partial output
+		}
+
 	    longs.append("]");
 	    
 	    return longs.toString();	    
-	}
-	
-	public static boolean parseBoolean(String s) {
-		return Boolean.parseBoolean(s);
-	}
-	
-	public static byte parseByte(String s) {
-		return Byte.parseByte(s);
-	}
-	
-	public static byte parseByte(String s, int radix) {
-		return Byte.parseByte(s, radix);
-	}
-	
-	public static double parseDouble(String s) {
-		return Double.parseDouble(s);
-	}
-	
-	public static float parseFloat(String s) {
-		return Float.parseFloat(s);
-	}
-	
-	public static int parseInt(String s) {
-		return Integer.parseInt(s);
-	}
-	
-	public static int parseInt(String s, int radix) {
-		return Integer.parseInt(s, radix);
-	}		
-	
-	public static long parseLong(String s) {
-		return Long.parseLong(s);
-	}
-	
-	public static long parseLong(String s, int radix) {
-		return Long.parseLong(s, radix);
-	}
-	
-	public static short parseShort(String s) {
-		return Short.parseShort(s);
-	}
-	
-	public static short parseShort(String s, int radix) {
-		return Short.parseShort(s, radix);
-	}	
-	
-	public static String quoteRegexReplacement(String replacement)
-	{
-		return Matcher.quoteReplacement(replacement);
 	}
 	
 	/**
@@ -756,89 +296,6 @@ public class StringUtils {
 		return input.replaceAll(regex+"(?!.*"+regex+")", replacement); // Using negative look ahead
 	}
 	
-	public static String reverse(String s) {
-		if(s == null) return null;
-		
-		return new StringBuilder(s).reverse().toString();
-	}
-	
-	// This method will not work for surrogate pairs
-	public static String reverse2(String s) {
-		if(s == null) return null;
-		
-		int i, len = s.length();
-	    StringBuilder dest = new StringBuilder(len);
-
-	    for (i = (len - 1); i >= 0; i--)
-	       dest.append(s.charAt(i));
-	    
-	    return dest.toString();
-	}
-	
-	public static String reverse(String str, String delimiter) {	
-		if(isNullOrEmpty(delimiter)) {
-			return str;
-		}
-		
-		StringBuilder sb = new StringBuilder(str.length());
-		reverseIt(str, delimiter, sb);
-		
-		return sb.toString();
-	}
-	
-	public static String reverse2(String str, String delimiter) {
-		if(isNullOrEmpty(delimiter) || isNullOrEmpty(str) || (str.trim().length() == 0) || (str.indexOf(delimiter) < 0)) {
-			return str;
-		} 			
-	
-		String escaptedDelimiter = escapeRegex(delimiter);
-		// Keep the trailing white spaces by setting limit to -1	
-		String[] stringArray = str.split(escaptedDelimiter, -1);
-		StringBuilder sb = new StringBuilder(str.length() + delimiter.length());
-			
-		for (int i = stringArray.length-1; i >= 0; i--)
-		{
-			sb.append(stringArray[i]).append(delimiter);
-		}
-
-		return sb.substring(0, sb.lastIndexOf(delimiter));
-	}
-	
-	private static void reverseIt(String str, String delimiter, StringBuilder sb) {
-		if(isNullOrEmpty(str) || (str.trim().length() == 0) || str.indexOf(delimiter) < 0) {
-			sb.append(str);
-			return;
-		}	
-		// Recursion
-		reverseIt(str.substring(str.indexOf(delimiter)+delimiter.length()), delimiter, sb);
-		sb.append(delimiter);
-		sb.append(str.substring(0, str.indexOf(delimiter)));
-	}
-		
-	public static String reverseWords(String s) {
-		String[] stringArray = s.split("\\b");
-		StringBuilder sb = new StringBuilder(s.length());
-		
-		for (int i = stringArray.length-1; i >= 0; i--)
-		{
-			sb.append(stringArray[i]);
-		}
-		
-		return sb.toString();
-	}
-	
-	/**
-	 * Formats TIFF short data field.
-	 * 
-	 * @param data an array of short.
-	 * @param unsigned true if the short value should be treated as unsigned,
-	 * 		  otherwise false 
-	 * @return a string representation of the short array.
-	 */
-	public static String shortArrayToString(short[] data, boolean unsigned) {
-		return shortArrayToString(data, 0, data.length, unsigned);
-	}
-	
 	public static String shortArrayToString(short[] data, int offset, int length, boolean unsigned) {
 		if ( data == null ) {
 		      return null;
@@ -880,42 +337,14 @@ public class StringUtils {
 		return shorts.toString();
 	}
 	
-	public static String shortToHexString(short value) {
-		StringBuilder buffer = new StringBuilder(6);
-		
-		buffer.append("0x");		
-		
-		buffer.append(HEXES[(value & 0x000F)]);
-		buffer.append(HEXES[(value & 0x00F0) >>> 4]);
-		buffer.append(HEXES[(value & 0x0F00) >>> 8]);
-		buffer.append(HEXES[(value & 0xF000) >>> 12]);
-		
-		return buffer.toString();
-	}
-	
 	public static String shortToHexStringMM(short value) {
-		
-		StringBuilder buffer = new StringBuilder(6);
-		
-		buffer.append("0x");
-		
-		buffer.append(HEXES[(value & 0xF000) >>> 12]);
-		buffer.append(HEXES[(value & 0x0F00) >>> 8]);
-		buffer.append(HEXES[(value & 0x00F0) >>> 4]);
-		buffer.append(HEXES[(value & 0x000F)]);
-		
-		return buffer.toString();
+
+        return "0x" +
+				HEXES[(value & 0xF000) >>> 12] +
+				HEXES[(value & 0x0F00) >>> 8] +
+				HEXES[(value & 0x00F0) >>> 4] +
+				HEXES[(value & 0x000F)];
 	}
-	
-	/**
-	 *  Converts stack trace to string
-	 */
-    public static String stackTraceToString(Throwable e) {  
-        StringWriter sw = new StringWriter();  
-        e.printStackTrace(new PrintWriter(sw));
-        
-        return sw.toString();   
-    }
 	
 	/**
 	 * A read-only String iterator from stackoverflow.com
@@ -989,15 +418,7 @@ public class StringUtils {
 	}
 	
 	public static String toUTF16BE(byte[] data, int start, int length) {
-		String retVal = "";
-		
-		 try {
-			 retVal = new String(data, start, length, "UTF-16BE");
-		 } catch (UnsupportedEncodingException e) {
-			 e.printStackTrace();
-		 }
-		
-		 return retVal;		 
+        return new String(data, start, length, StandardCharsets.UTF_16BE);
 	}
 	
 	private StringUtils(){} // Prevents instantiation	

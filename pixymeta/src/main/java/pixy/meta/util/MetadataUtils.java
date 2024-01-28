@@ -23,7 +23,6 @@
 
 package pixy.meta.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -35,10 +34,7 @@ import pixy.meta.io.PeekHeadInputStream;
 import pixy.meta.io.RandomAccessInputStream;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import pixy.meta.meta.adobe.ImageResourceID;
-import pixy.meta.meta.adobe._8BIM;
 import pixy.meta.image.ImageType;
-import pixy.meta.io.IOUtils;
 
 /** 
  * This utility class contains static methods 
@@ -50,14 +46,14 @@ import pixy.meta.io.IOUtils;
  */
 public class MetadataUtils {
 	// Image magic number constants
-	private static byte[] BM = {0x42, 0x4d}; // BM
-	private static byte[] GIF = {0x47, 0x49, 0x46, 0x38}; // GIF8
-	private static byte[] PNG = {(byte)0x89, 0x50, 0x4e, 0x47}; //.PNG
-	private static byte[] TIFF_II = {0x49, 0x49, 0x2a, 0x00}; // II*.
-	private static byte[] TIFF_MM = {0x4d, 0x4d, 0x00, 0x2a}; //MM.*
-	private static byte[] JPG = {(byte)0xff, (byte)0xd8, (byte)0xff};
-	private static byte[] PCX = {0x0a};
-	private static byte[] JPG2000 = {0x00, 0x00, 0x00, 0x0C};
+	private static final byte[] BM = {0x42, 0x4d}; // BM
+	private static final byte[] GIF = {0x47, 0x49, 0x46, 0x38}; // GIF8
+	private static final byte[] PNG = {(byte)0x89, 0x50, 0x4e, 0x47}; //.PNG
+	private static final byte[] TIFF_II = {0x49, 0x49, 0x2a, 0x00}; // II*.
+	private static final byte[] TIFF_MM = {0x4d, 0x4d, 0x00, 0x2a}; //MM.*
+	private static final byte[] JPG = {(byte)0xff, (byte)0xd8, (byte)0xff};
+	private static final byte[] PCX = {0x0a};
+	private static final byte[] JPG2000 = {0x00, 0x00, 0x00, 0x0C};
 	
 	public static final int IMAGE_MAGIC_NUMBER_LEN = 4; 
 	
@@ -67,9 +63,7 @@ public class MetadataUtils {
 	public static ImageType guessImageType(PeekHeadInputStream is) throws IOException {
 		// Read the first ImageIO.IMAGE_MAGIC_NUMBER_LEN bytes
 		byte[] magicNumber = is.peek(IMAGE_MAGIC_NUMBER_LEN);
-		ImageType imageType = guessImageType(magicNumber);
-		
-		return imageType;
+        return guessImageType(magicNumber);
 	}
 	
 	public static ImageType guessImageType(byte[] magicNumber) {
@@ -110,7 +104,7 @@ public class MetadataUtils {
 	}
 	
 	public static Bitmap createThumbnail(InputStream is) throws IOException {
-		Bitmap original = null;
+		Bitmap original;
 		if(is instanceof RandomAccessInputStream) {
 			RandomAccessInputStream rin = (RandomAccessInputStream)is;
 			long streamPointer = rin.getStreamPointer();
@@ -128,57 +122,18 @@ public class MetadataUtils {
 		if(imageWidth < imageHeight) { 
 			// Swap thumbnail width and height to keep a relative aspect ratio
 			int temp = thumbnailWidth;
+			//noinspection SuspiciousNameCombination
 			thumbnailWidth = thumbnailHeight;
 			thumbnailHeight = temp;
 		}			
-		if(imageWidth < thumbnailWidth) thumbnailWidth = imageWidth;			
-		if(imageHeight < thumbnailHeight) thumbnailHeight = imageHeight;
-		
-		Bitmap thumbnail = Bitmap.createScaledBitmap(original, thumbnailWidth, thumbnailHeight, false);
-				
-		return thumbnail;
-	}
-	
-	/**
-	 * Wraps a BufferedImage inside a Photoshop _8BIM
-	 * @param thumbnail input thumbnail image
-	 * @return a Photoshop _8BMI
-	 * @throws IOException
-	 */
-	public static _8BIM createThumbnail8BIM(Bitmap thumbnail) throws IOException {
-		// Create memory buffer to write data
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		// Compress the thumbnail
-		try {
-			thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bout);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(imageWidth < thumbnailWidth) {
+			thumbnailWidth = imageWidth;
 		}
-		byte[] data = bout.toByteArray();
-		bout.reset();
-		// Write thumbnail format
-		IOUtils.writeIntMM(bout, 1); // 1 = kJpegRGB. We are going to write JPEG format thumbnail
-		// Write thumbnail dimension
-		int width = thumbnail.getWidth();
-		int height = thumbnail.getHeight();
-		IOUtils.writeIntMM(bout, width);
-		IOUtils.writeIntMM(bout, height);
-		// Padded row bytes = (width * bits per pixel + 31) / 32 * 4.
-		int bitsPerPixel = 24;
-		int planes = 1;
-		int widthBytes = (width*bitsPerPixel + 31)/32*4;
-		IOUtils.writeIntMM(bout, widthBytes);
-		// Total size = widthbytes * height * planes
-		IOUtils.writeIntMM(bout, widthBytes*height*planes);
-		// Size after compression. Used for consistency check.
-		IOUtils.writeIntMM(bout, data.length);
-		IOUtils.writeShortMM(bout, bitsPerPixel);
-		IOUtils.writeShortMM(bout, planes);
-		bout.write(data);
-		// Create 8BIM
-		_8BIM bim = new _8BIM(ImageResourceID.THUMBNAIL_RESOURCE_PS5, "thumbnail", bout.toByteArray());
-	
-		return bim;
+		if(imageHeight < thumbnailHeight) {
+			thumbnailHeight = imageHeight;
+		}
+
+        return Bitmap.createScaledBitmap(original, thumbnailWidth, thumbnailHeight, false);
 	}
 	
 	public static int[] toARGB(byte[] rgb) {

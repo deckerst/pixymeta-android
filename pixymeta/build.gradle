@@ -4,11 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'pixy.meta'
+    compileSdk 34
 
     defaultConfig {
-        minSdk 16
-        targetSdk 31
+        minSdk 19
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -22,22 +23,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
-}
-
-project.afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-            }
-        }
-    }
 }

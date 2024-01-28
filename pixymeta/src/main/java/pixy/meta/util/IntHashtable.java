@@ -15,18 +15,20 @@
 
 package pixy.meta.util;// Temporarily put in this package
 
+import java.util.Arrays;
+
 /**
- * A hash table using primitive integer keys. 
+ * A hash table using primitive integer keys.
  *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2008
- * 
+ *
  * Based on
  * QuadraticProbingHashTable.java
  * <p>
  * Probing table implementation of hash tables.
  * Note that all "matching" is based on the equals method.
- * 
+ *
  * @author Mark Allen Weiss
  */
  public class IntHashtable<E>
@@ -37,7 +39,7 @@ package pixy.meta.util;// Temporarily put in this package
         /** The array of HashEntry. */
         private HashEntry<E> [ ] array;   // The array of HashEntry
         private int currentSize;       // The number of occupied cells
-      
+
 		/**
          * Construct the hash table.
          */
@@ -89,11 +91,11 @@ package pixy.meta.util;// Temporarily put in this package
             currentSize = 0;
 
             // Copy table over
-            for( int i = 0; i < oldArray.length; i++ )
-                if( oldArray[i] != null && oldArray[i].isActive )
-                    put( oldArray[i].key, oldArray[i].value );
-
-            return;
+            for (HashEntry<E> entry : oldArray) {
+                if (entry != null && entry.isActive) {
+                    put(entry.key, entry.value);
+                }
+            }
         }
 
         /**
@@ -107,7 +109,7 @@ package pixy.meta.util;// Temporarily put in this package
 
 			// And with the largest positive integer
 			int currentPos = (key & 0x7FFFFFFF) % array.length;
-	
+
             while( array[ currentPos ] != null &&
                     array[ currentPos ].key != key )
             {
@@ -122,16 +124,15 @@ package pixy.meta.util;// Temporarily put in this package
          * Remove from the hash table.
          * @param key the item to remove.
          */
-        public void remove( int key )
+        public void remove(int key)
         {
-            int currentPos = locate( key );
-            if( isActive( currentPos ) )
-			{
-                array[ currentPos ].isActive = false;
+            int currentPos = locate(key);
+            if(isActive(currentPos)) {
+                array[currentPos].isActive = false;
 				currentSize--;
 			}
         }
-        
+
 		/**
          * Search for an item in the hash table.
          * @param key the item to search for.
@@ -169,8 +170,7 @@ package pixy.meta.util;// Temporarily put in this package
         public void makeEmpty( )
         {
             currentSize = 0;
-            for( int i = 0; i < array.length; i++ )
-                array[ i ] = null;
+            Arrays.fill(array, null);
         }
         /**
          * Internal method to find a prime number at least as large as n.
@@ -214,7 +214,7 @@ package pixy.meta.util;// Temporarily put in this package
            int key;         // the key
 	       V value;       // the value
            boolean  isActive;  // false if deleted
-  
+
   	       @SuppressWarnings("unused")
   	       HashEntry( int k, V val )
            {

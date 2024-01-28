@@ -49,7 +49,7 @@ public class LogFormatter {
                             sb.append(Arrays.toString((Object[]) arg));
                         }
                     } else {
-                        sb.append(arg.toString());
+                        sb.append(arg);
                     }
                 } catch (Throwable t) {
                     sb.append("[`toString()` failed]");

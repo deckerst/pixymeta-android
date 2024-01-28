@@ -20,11 +20,11 @@ package pixy.meta.util.zip;
  */
 public interface Checksum
 {  
-  public long getValue();
+  long getValue();
   
-  public void update(int b);
+  void update(int b);
  
-  public void update(byte[] b, int offset, int length);
+  void update(byte[] b, int offset, int length);
  
-  public void reset();
+  void reset();
 }

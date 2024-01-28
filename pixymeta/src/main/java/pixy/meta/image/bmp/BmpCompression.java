@@ -53,8 +53,9 @@ public enum BmpCompression {
 	
 	public static BmpCompression fromInt(int value) {
        	BmpCompression compression = typeMap.get(value);
-    	if (compression == null)
-    	   return UNKNOWN;
+    	if (compression == null) {
+			return UNKNOWN;
+		}
       	return compression;
     }
     
@@ -66,6 +67,6 @@ public enum BmpCompression {
     	  typeMap.put(compression.getValue(), compression);
     } 
 
-	private String description;
-	private int value;
+	private final String description;
+	private final int value;
 }

@@ -17,9 +17,6 @@ package pixy.meta.util;
 
 import java.io.PrintStream;
 
-import pixy.meta.log.Logger;
-import pixy.meta.log.LoggerFactory;
-
 /**
  * A common language utility class
  *
@@ -27,9 +24,6 @@ import pixy.meta.log.LoggerFactory;
  * @version 1.0 09/19/2012
  */
 public class LangUtils {
-	// Obtain a logger instance
-	private static final Logger LOGGER = LoggerFactory.getLogger(LangUtils.class);
-
 	private LangUtils(){} // Prevents instantiation
 
 	public static void log(String message, PrintStream out) {

@@ -15,7 +15,7 @@
 
 package pixy.meta.image.tiff;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -814,14 +814,8 @@ public enum TiffTag implements Tag {
 		public String getFieldAsString(Object value) {
 			//
 			byte[] byteValue = (byte[]) value;
-			String description = "";
-			try {
-				description = new String(byteValue, "UTF-16LE");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			return description.trim();
+			String description = new String(byteValue, StandardCharsets.UTF_16LE);
+            return description.trim();
 		}
 		
 		public boolean isCritical() {
@@ -833,14 +827,8 @@ public enum TiffTag implements Tag {
 		public String getFieldAsString(Object value) {
 			//
 			byte[] byteValue = (byte[])value;
-			String description = "";
-			try {
-				description = new String(byteValue, "UTF-16LE");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			
-			return description.trim();
+			String description = new String(byteValue, StandardCharsets.UTF_16LE);
+            return description.trim();
 		}
 		
 		public boolean isCritical() {
@@ -852,14 +840,8 @@ public enum TiffTag implements Tag {
 		public String getFieldAsString(Object value) {
 			//
 			byte[] byteValue = (byte[])value;
-			String description = "";
-			try {
-				description = new String(byteValue, "UTF-16LE");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			
-			return description.trim();
+			String description = new String(byteValue, StandardCharsets.UTF_16LE);
+            return description.trim();
 		}
 		
 		public boolean isCritical() {
@@ -871,14 +853,8 @@ public enum TiffTag implements Tag {
 		public String getFieldAsString(Object value) {
 			//
 			byte[] byteValue = (byte[])value;
-			String description = "";
-			try {
-				description = new String(byteValue, "UTF-16LE");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			
-			return description.trim();
+			String description = new String(byteValue, StandardCharsets.UTF_16LE);
+            return description.trim();
 		}
 		
 		public boolean isCritical() {
@@ -890,14 +866,8 @@ public enum TiffTag implements Tag {
 		public String getFieldAsString(Object value) {
 			//
 			byte[] byteValue = (byte[]) value;
-			String description = "";
-			try {
-				description = new String(byteValue, "UTF-16LE");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			return description.trim();
+			String description = new String(byteValue, StandardCharsets.UTF_16LE);
+            return description.trim();
 		}
 		
 		public boolean isCritical() {
@@ -927,8 +897,9 @@ public enum TiffTag implements Tag {
 	
 	public static Tag fromShort(short value) {
        	TiffTag tiffTag = tagMap.get(value);
-    	if (tiffTag == null)
-    	   return UNKNOWN;
+    	if (tiffTag == null) {
+			return UNKNOWN;
+		}
        	return tiffTag;
     }
 	

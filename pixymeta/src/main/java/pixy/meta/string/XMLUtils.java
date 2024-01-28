@@ -61,22 +61,11 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 public class XMLUtils {
 	// Obtain a logger instance
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtils.class);
 		
-	public static void addChild(Node parent, Node child) {
-		parent.appendChild(child);
-	}
-	
-	public static void addText(Document doc, Node parent, String data) {
-		parent.appendChild(doc.createTextNode(data));
-	}
-	
 	// Create an empty Document node
 	public static Document createDocumentNode() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -87,14 +76,11 @@ public class XMLUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
-		
-		return builder.newDocument();
+        assert builder != null;
+
+        return builder.newDocument();
 	}
-	
-	public static Node createElement(Document doc, String tagName) {
-		return doc.createElement(tagName);
-	}
-	
+
 	public static Document createXML(byte[] xml) {
 		//Get the DOM Builder Factory
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -105,18 +91,18 @@ public class XMLUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		assert builder != null;
+
 		//Load and Parse the XML document
 		//document contains the complete XML as a Tree.
 		Document document = null;
 		try {
-			document = builder.parse(new ByteArrayInputStream(xml));			
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+            document = builder.parse(new ByteArrayInputStream(xml));
+		} catch (SAXException | IOException e) {
 			e.printStackTrace();
 		}
-		
-		return document;
+
+        return document;
 	}
 	
 	public static Document createXML(String xml) {
@@ -129,19 +115,19 @@ public class XMLUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		assert builder != null;
+
 		//Load and Parse the XML document
 		//document contains the complete XML as a Tree.
 		Document document = null;
 		InputSource source = new InputSource(new StringReader(xml));
 		try {
 			document = builder.parse(source);			
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (SAXException | IOException e) {
 			e.printStackTrace();
 		}
-		
-		return document;		 
+
+        return document;
 	}
 	
 	public static String escapeXML(String input) 
@@ -229,17 +215,16 @@ public class XMLUtils {
 		        } 
 		        case Node.DOCUMENT_TYPE_NODE: {
 		            DocumentType doctype = (DocumentType) node;
-		            stringBuilder.append("<!DOCTYPE " + doctype.getName() + ">\n");
+		            stringBuilder.append("<!DOCTYPE ").append(doctype.getName()).append(">\n");
 		            break;
 		        }
 		        case Node.ELEMENT_NODE: { // Element node
 		            Element ele = (Element) node;
-		            stringBuilder.append(indent + "<" + ele.getTagName());
+		            stringBuilder.append(indent).append("<").append(ele.getTagName());
 		            NamedNodeMap attrs = ele.getAttributes(); 
 		            for(int i = 0; i < attrs.getLength(); i++) {
 		                Node a = attrs.item(i);
-		                stringBuilder.append(" " + a.getNodeName() + "='" + 
-		                          escapeXML(a.getNodeValue()) + "'");
+		                stringBuilder.append(" ").append(a.getNodeName()).append("='").append(escapeXML(a.getNodeValue())).append("'");
 		            }
 		            stringBuilder.append(">\n");
 	
@@ -249,35 +234,33 @@ public class XMLUtils {
 		            	child = child.getNextSibling();
 		            }
 	
-		            stringBuilder.append(indent + "</" + ele.getTagName() + ">\n");
+		            stringBuilder.append(indent).append("</").append(ele.getTagName()).append(">\n");
 		            break;
 		        }
 		        case Node.TEXT_NODE: {
 		            Text textNode = (Text)node;
 		            String text = textNode.getData().trim();
-		            if ((text != null) && text.length() > 0)
-		                stringBuilder.append(indent + escapeXML(text) + "\n");
+		            if (!text.isEmpty())
+		                stringBuilder.append(indent).append(escapeXML(text)).append("\n");
 		            break;
 		        }
 		        case Node.PROCESSING_INSTRUCTION_NODE: {
 		            ProcessingInstruction pi = (ProcessingInstruction)node;
-		            stringBuilder.append(indent + "<?" + pi.getTarget() +
-		                               " " + pi.getData() + "?>\n");
+		            stringBuilder.append(indent).append("<?").append(pi.getTarget()).append(" ").append(pi.getData()).append("?>\n");
 		            break;
 		        }
 		        case Node.ENTITY_REFERENCE_NODE: {
-		            stringBuilder.append(indent + "&" + node.getNodeName() + ";\n");
+		            stringBuilder.append(indent).append("&").append(node.getNodeName()).append(";\n");
 		            break;
 		        }
 		        case Node.CDATA_SECTION_NODE: { // Output CDATA sections
 		            CDATASection cdata = (CDATASection)node;
-		            stringBuilder.append(indent + "<" + "![CDATA[" + cdata.getData() +
-		                        "]]" + ">\n");
+		            stringBuilder.append(indent).append("<").append("![CDATA[").append(cdata.getData()).append("]]").append(">\n");
 		            break;
 		        }
 		        case Node.COMMENT_NODE: {
 		        	Comment c = (Comment)node;
-		            stringBuilder.append(indent + "<!--" + c.getData() + "-->\n");
+		            stringBuilder.append(indent).append("<!--").append(c.getData()).append("-->\n");
 		            break;
 		        }
 		        default:
@@ -288,22 +271,18 @@ public class XMLUtils {
 	}
 	
 	// Retrieve and remove the first non-empty, non-null attribute value for the attribute name
-	public static String removeAttribute(Document doc, String tagName, String attribute) {
+	public static void removeAttribute(Document doc, String tagName, String attribute) {
 		NodeList nodes = doc.getElementsByTagName(tagName);
-		String retVal = "";
-		
+
 		for(int i = 0; i < nodes.getLength(); i++) {
 			Element ele = (Element)nodes.item(i);
 			String attr = ele.getAttribute(attribute);
 			
 			if(!StringUtils.isNullOrEmpty(attr)) {
-				retVal = attr;
 				ele.removeAttribute(attribute);
 				break;
 			}
 		}
-		
-		return retVal;		
 	}
 	
 	public static byte[] serializeToByteArray(Document doc) throws IOException {
@@ -330,58 +309,7 @@ public class XMLUtils {
 		
 		return out.toByteArray();
 	}
-	
-	/**
-	 * Serialize XML Document to string using DOM Level 3 Load/Save
-	 * 
-	 * @param doc XML Document
-	 * @return String representation of the Document
-	 * @throws IOException
-	 */
-	public static String serializeToStringLS(Document doc) throws IOException {
-		return serializeToStringLS(doc, doc);
-	}
-	
-	/**
-	 * Serialize XML Document to string using DOM Level 3 Load/Save
-	 * 
-	 * @param doc XML Document
-	 * @param node the Node to serialize
-	 * @return String representation of the Document
-	 * @throws IOException
-	 */
-	public static String serializeToStringLS(Document doc, Node node) throws IOException {
-		String encoding = doc.getInputEncoding();
-        if(encoding == null) encoding = "UTF-8";
-        
-        return serializeToStringLS(doc, node, encoding);
-	}
-	
-	/**
-	 * Serialize XML Node to string
-	 * <p>
-	 * Note: this method is supposed to be faster than the Transform version but the output control
-	 * is limited. If node is Document node, it will output XML PI which sometimes we want to avoid.
-	 * 
-	 * @param doc XML document
-	 * @param node Node to be serialized
-	 * @param encoding encoding for the output
-	 * @return String representation of the Document
-	 * @throws IOException
-	 */
-	public static String serializeToStringLS(Document doc, Node node, String encoding) throws IOException {
-		DOMImplementationLS domImpl = (DOMImplementationLS) doc.getImplementation();
-        LSSerializer lsSerializer = domImpl.createLSSerializer();
-        LSOutput output = domImpl.createLSOutput();
-        output.setEncoding(encoding);
-        StringWriter writer = new StringWriter();
-        output.setCharacterStream(writer);
-        lsSerializer.write(node, output);
-        writer.flush();
-        
-        return writer.toString();
-	}
-	
+
 	public static String serializeToString(Document doc) throws IOException {
 		String encoding = doc.getInputEncoding();
 		if(encoding == null) encoding = "UTF-8";
@@ -395,11 +323,10 @@ public class XMLUtils {
 	 * @param node the XML node (and the subtree rooted at this node) to be serialized
 	 * @param encoding encoding for the XML document
 	 * @return String representation of the Document
-	 * @throws IOException
-	 */
+     */
 	public static String serializeToString(Node node, String encoding) throws IOException {
 		TransformerFactory tFactory = TransformerFactory.newInstance();
-		Transformer transformer = null;
+		Transformer transformer;
 		try {
 			transformer = tFactory.newTransformer();
 		} catch (TransformerConfigurationException e) {

@@ -13,10 +13,10 @@ import java.util.Arrays;
 public class ApplicationExtension {
 	// Sequence of eight printable ASCII characters used to identify
 	// the application owning the Application Extension.
-	private byte[] applicationId; // 8 byte
+	private final byte[] applicationId; // 8 byte
 	// Sequence of three bytes used to authenticate the Application Identifier
-	private byte[] authenticationCode; // 3 byte
-	private byte[] data;
+	private final byte[] authenticationCode; // 3 byte
+	private final byte[] data;
 	
 	public static final byte EXTENSION_INTRODUCER = 0x21;
 	public static final byte EXTENSION_LABEL = (byte)0xFF; 
@@ -32,15 +32,7 @@ public class ApplicationExtension {
 		this.authenticationCode = authenticationCode;
 		this.data = data;
 	}
-	
-	public byte[] getApplicationId() {
-		return applicationId;
-	}
-	
-	public byte[] getAuthenticationCode() {
-		return authenticationCode;
-	}
-	
+
 	public byte[] getData() {
 		return data;
 	}
