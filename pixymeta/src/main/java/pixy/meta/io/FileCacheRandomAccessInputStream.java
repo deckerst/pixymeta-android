@@ -66,10 +66,10 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
     }
     
     public FileCacheRandomAccessInputStream(InputStream src, int bufLen) throws IOException {
-    	super(src);
+        super(src);
         this.bufLen = bufLen;
         buf = new byte[bufLen];
-    	this.cacheFile = File.createTempFile("cafe-FCRAIS-", ".tmp");
+        this.cacheFile = File.createTempFile("cafe-FCRAIS-", ".tmp");
         cacheFile.deleteOnExit();
         this.cache = new RandomAccessFile(cacheFile, "rw");
     }

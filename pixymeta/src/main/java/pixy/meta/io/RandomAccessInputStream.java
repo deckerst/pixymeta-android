@@ -133,8 +133,8 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
 
 	public final long readLong() throws IOException {
 		byte[] buf = new byte[8];
-        readFully(buf);
-    	return strategy.readLong(buf, 0);
+		readFully(buf);
+		return strategy.readLong(buf, 0);
 	}
 
 	public final short readShort() throws IOException {

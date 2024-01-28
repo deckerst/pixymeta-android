@@ -38,7 +38,7 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
 	// The largest position ever written to the cache.
 	private long length = 0L;
 	private List<byte[]> cache;
-	private long cacheStart = 0L;
+	private final long cacheStart = 0L;
 	private long flushPos = 0L;
 	
 	public MemoryCacheRandomAccessOutputStream(OutputStream dist) {
@@ -141,8 +141,9 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
 	@Override
 	public void write(int value) throws IOException {
 		ensureOpen();
-	    if (pointer < 0)
-	    	throw new ArrayIndexOutOfBoundsException("pointer < 0");
+	    if (pointer < 0) {
+            throw new ArrayIndexOutOfBoundsException("pointer < 0");
+        }
 		// Ensure there is space for the incoming data
         if (pointer >= length) {
             expandCache(pointer);
@@ -170,10 +171,6 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
 
         long bufIndex = pointer >> BUFFER_SHIFT;
 
-        if (bufIndex < cacheStart) {
-            throw new IndexOutOfBoundsException("pointer already disposed");
-        }
-        
         int offset = (int)(pointer & BUFFER_MASK);
         byte[] buf = getCacheBlock(bufIndex++);
         	

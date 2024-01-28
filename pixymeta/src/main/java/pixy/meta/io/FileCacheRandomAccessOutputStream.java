@@ -36,11 +36,8 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
 
     /** The cache as a RandomAcessFile. */
     private final RandomAccessFile cache;
-    
-    /** The length of the read buffer. */
-    private int bufLen = 4096;
 
-    /** Number of bytes in the cache. */
+	/** Number of bytes in the cache. */
     private long length = 0L;
 
     /** Next byte to be read. */
@@ -154,17 +151,19 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         cache.seek(pointer);
 
         while (len > 0) {
-    	   byte[] buf = new byte[bufLen];
-           int nbytes = cache.read(buf);
-           dist.write(buf, 0, nbytes);
-           len -= nbytes;
-           flushPos += nbytes;
+			byte[] buf = new byte[4096];
+			int nbytes = cache.read(buf);
+			dist.write(buf, 0, nbytes);
+			len -= nbytes;
+			flushPos += nbytes;
         }
     }
 
 	@Override
 	public void shallowClose() throws IOException {
-	   	if(closed) return;
+	   	if(closed) {
+			return;
+		}
         super.close();
         cache.close();
         cacheFile.delete();

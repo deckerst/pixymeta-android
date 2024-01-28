@@ -107,8 +107,9 @@ public class EndianAwareInputStream extends InputStream implements DataInput {
 
 	public int readUnsignedByte() throws IOException {
 		int ch = this.read();
-		if (ch < 0)
-		   throw new EOFException();
+		if (ch < 0) {
+			throw new EOFException();
+		}
 	    return ch;
 	}
 
