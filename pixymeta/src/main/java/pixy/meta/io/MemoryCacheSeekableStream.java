@@ -24,7 +24,7 @@ import java.util.List;
 public final class MemoryCacheSeekableStream extends SeekableStream {
 
     /** The source input stream. */
-    private InputStream src;
+    private final InputStream src;
 
     /** Position of first unread byte. */
     private long pointer = 0;
@@ -39,10 +39,7 @@ public final class MemoryCacheSeekableStream extends SeekableStream {
     private static final int SECTOR_MASK = SECTOR_SIZE - 1;
 
     /** A Vector of source sectors. */
-    private List<byte[]> data = new ArrayList<byte[]>();
-
-    /** Number of sectors stored. */
-    int sectors = 0;
+    private final List<byte[]> data = new ArrayList<>();
 
     /** Number of bytes read. */
     int length = 0;

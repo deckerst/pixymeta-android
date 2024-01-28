@@ -26,67 +26,31 @@ import java.util.HashMap;
  */
 public enum ImageType {
 	
-	GIF("Gif") { 
-		@Override
-		public String getExtension() {
-			return "gif";
-		}		
+	GIF("Gif") {
 	},
 	
-    PNG("Png") { 
-		@Override
-		public String getExtension() {
-			return "png";
-		}
+    PNG("Png") {
 	},
 	
-    JPG("Jpeg") { 
-		@Override
-		public String getExtension() {
-			return "jpg";
-		}
+    JPG("Jpeg") {
 	},
 	
 	JPG2000("Jpeg2000") {
-		@Override
-		public String getExtension() {
-			return "jp2";
-		}
 	},
 	
-    BMP("Bitmap") { 
-		@Override
-		public String getExtension() {
-			return "bmp";
-		}
+    BMP("Bitmap") {
 	},
 	
-    TGA("Targa") { 
-		@Override
-		public String getExtension() {
-			return "tga";
-		}
+    TGA("Targa") {
 	},
 	
-	TIFF("Tiff") { 
-		@Override
-		public String getExtension() {
-			return "tif";
-		}
+	TIFF("Tiff") {
 	},
 	
-    PCX("Pcx") { 
-		@Override
-		public String getExtension() {
-			return "pcx";
-		}
+    PCX("Pcx") {
 	},
 	
 	UNKNOWN("Unknown") {
-		@Override
-		public String getExtension() {
-			return null;
-		}
 	};
     
     private static final Map<String, ImageType> stringMap = new HashMap<String, ImageType>();
@@ -108,10 +72,8 @@ public enum ImageType {
     {
       this.name = name;
     }
-    
-    public abstract String getExtension();
 
-    @Override
+	@Override
     public String toString()
     {
       return name;

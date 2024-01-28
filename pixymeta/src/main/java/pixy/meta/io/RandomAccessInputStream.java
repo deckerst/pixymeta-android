@@ -52,7 +52,6 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
     
     /**
      * Closes the RandomAccessInputStream and it's underlying stream
-     * @throws IOException
      */
     public abstract void shallowClose() throws IOException;
    
@@ -126,7 +125,7 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
 	}
 
 	@Deprecated
-	public final String readLine() throws IOException {
+	public final String readLine() {
 		throw new UnsupportedOperationException(
 			"readLine is not supported by RandomAccessInputStream."
 		);
@@ -138,39 +137,18 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
     	return strategy.readLong(buf, 0);
 	}
 
-	public final float readS15Fixed16Number() throws IOException {
-		byte[] buf = new byte[4];
-        readFully(buf);
-		return strategy.readS15Fixed16Number(buf, 0);
-	}
-
 	public final short readShort() throws IOException {
 		byte[] buf = new byte[2];
         readFully(buf);
     	return strategy.readShort(buf, 0);
 	}
 
-	public final float readU16Fixed16Number() throws IOException {
-		byte[] buf = new byte[4];
-        readFully(buf);
-		return strategy.readU16Fixed16Number(buf, 0);
-	}
-
-	public final float readU8Fixed8Number() throws IOException {
-		byte[] buf = new byte[2];
-        readFully(buf);
-		return strategy.readU8Fixed8Number(buf, 0);
-	}
-	
 	public final int readUnsignedByte() throws IOException {
 		int ch = this.read();
-		if (ch < 0)
-		   throw new EOFException();
+		if (ch < 0) {
+			throw new EOFException();
+		}
 	    return ch;
-	}
-	
-	public final long readUnsignedInt() throws IOException {
-		return readInt()&0xffffffffL;
 	}
 
 	public final int readUnsignedShort() throws IOException {
@@ -181,10 +159,10 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
 	 *  Due to the current implementation, writeUTF and readUTF are the
 	 *  only methods which are machine or byte sequence independent as
 	 *  they are actually both Motorola byte sequence under the hood.
-	 *  
+	 * <p>
 	 *  Whereas the following static method is byte sequence dependent
 	 *  as it calls readUnsignedShort of RandomAccessInputStream.
-	 *  
+	 * <p>
 	 *  <code>DataInputStream.readUTF(this)</code>;
 	 */
 	public final String readUTF() throws IOException {

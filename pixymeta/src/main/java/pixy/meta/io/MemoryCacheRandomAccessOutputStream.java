@@ -43,7 +43,7 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
 	
 	public MemoryCacheRandomAccessOutputStream(OutputStream dist) {
 		super(dist);
-		cache = new ArrayList<byte[]>(10);
+		cache = new ArrayList<>(10);
 	}
 	
 	public void close() throws IOException {
@@ -54,26 +54,9 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
  		dist.close();
  		dist = null;
  		closed = true;
-    }	
-
-	public void disposeBefore(long pos) throws IOException {
-		ensureOpen();
-	    long index = pos >> BUFFER_SHIFT;
-	    
-	    if (index < cacheStart) {
-	         throw new IndexOutOfBoundsException("pos already disposed");
-	    }
-	    
-	    long numBlocks = Math.min(index - cacheStart, cache.size());
-	    
-	    for (long i = 0; i < numBlocks; i++) {
-	         cache.remove(0);
-	    }
-	    
-	    this.cacheStart = index;
     }
-	
-	private void expandCache(long pos) throws IOException {
+
+    private void expandCache(long pos) throws IOException {
         long currIndex = cacheStart + cache.size() - 1;
         long toIndex = pos >> BUFFER_SHIFT;
         long numNewBuffers = toIndex - currIndex;

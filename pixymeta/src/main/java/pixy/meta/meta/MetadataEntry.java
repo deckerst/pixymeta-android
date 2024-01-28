@@ -21,11 +21,11 @@ import java.util.Collections;
 
 public class MetadataEntry {
 	
-	private String key;
-	private String value;
-	private boolean isMetadataEntryGroup;
+	private final String key;
+	private final String value;
+	private final boolean isMetadataEntryGroup;
 	
-	private Collection<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+	private final Collection<MetadataEntry> entries = new ArrayList<>();
 
 	public MetadataEntry(String key, String value) {
 		this(key, value, false);

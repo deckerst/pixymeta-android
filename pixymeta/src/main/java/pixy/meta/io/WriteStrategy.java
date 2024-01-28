@@ -23,17 +23,13 @@ import java.io.OutputStream;
  * @version 1.0 01/29/2013
  */
 public interface WriteStrategy {
-	//
-	public void writeInt(byte[] buf, int start_idx, int value) throws IOException;
-	public void writeInt(OutputStream os, int value) throws IOException;
-	public void writeLong(byte[] buf, int start_idx, long value) throws IOException;
-	public void writeLong(OutputStream os, long value) throws IOException;
-	public void writeS15Fixed16Number(byte[] buf, int start_idx, float value) throws IOException;
-	public void writeS15Fixed16Number(OutputStream os, float value) throws IOException;
-	public void writeShort(byte[] buf, int start_idx, int value) throws IOException;
-	public void writeShort(OutputStream os, int value) throws IOException;
-	public void writeU16Fixed16Number(byte[] buf, int start_idx, float value) throws IOException;
-	public void writeU16Fixed16Number(OutputStream os, float value) throws IOException;
-	public void writeU8Fixed8Number(byte[] buf, int start_idx, float value) throws IOException;
-    public void writeU8Fixed8Number(OutputStream is, float value) throws IOException;
+	void writeInt(byte[] buf, int start_idx, int value) throws IOException;
+
+	void writeInt(OutputStream os, int value) throws IOException;
+
+	void writeLong(byte[] buf, int start_idx, long value) throws IOException;
+
+	void writeShort(byte[] buf, int start_idx, int value) throws IOException;
+
+	void writeShort(OutputStream os, int value) throws IOException;
 }

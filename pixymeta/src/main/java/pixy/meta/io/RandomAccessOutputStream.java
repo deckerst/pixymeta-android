@@ -63,7 +63,6 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
 	
 	/**
      * Closes the RandomAccessInputStream and it's underlying stream
-     * @throws IOException
      */
     public abstract void shallowClose() throws IOException;
     
@@ -74,9 +73,7 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
     	if (closed)
     		throw new IOException("Stream closed");
     }
-	
-	public abstract void disposeBefore(long pos) throws IOException;
-	
+
 	protected void finalize() throws Throwable {
 		super.finalize();
 		close();
@@ -92,14 +89,12 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
 	 * Returns the total length of data that has been cached,
 	 * regardless of whether any early blocks have been disposed.
 	 * This value will only ever increase. 
-	 * @throws IOException 
-	 */
+     */
 	public abstract long getLength();
 	
 	/**
 	 * @return the current stream position
-	 * @throws IOException 
-	 */
+     */
 	public abstract long getStreamPointer();	
 	
 	/** Reset this stream to be used again */
@@ -162,12 +157,6 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
 		this.write(buf, 0, 8);
 	}
 
-	public final void writeS15Fixed16Number(float value) throws IOException {
-		byte[] buf = new byte[4];
-		strategy.writeS15Fixed16Number(buf, 0, value);
-		this.write(buf, 0, 4);
-	}
-	
 	public final void writeShort(int value) throws IOException {
 		byte[] buf = new byte[2];
 		strategy.writeShort(buf, 0, value);
@@ -176,18 +165,6 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
 		
 	public abstract void writeToStream(long len) throws IOException;
 
-	public final void writeU16Fixed16Number(float value) throws IOException {
-		byte[] buf = new byte[4];
-		strategy.writeU16Fixed16Number(buf, 0, value);
-		this.write(buf, 0, 4);
-	}
-	
-	public final void writeU8Fixed8Number(float value) throws IOException {
-		byte[] buf = new byte[2];
-		strategy.writeU8Fixed8Number(buf, 0, value);
-		this.write(buf, 0, 2);
-	}
-	
 	public final void writeUTF(String value) throws IOException {
 		new DataOutputStream(this).writeUTF(value);
 	}

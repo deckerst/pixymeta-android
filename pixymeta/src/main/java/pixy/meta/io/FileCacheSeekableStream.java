@@ -28,16 +28,16 @@ import java.io.RandomAccessFile;
 public final class FileCacheSeekableStream extends SeekableStream {
 
     /** The source stream. */
-    private InputStream stream;
+    private final InputStream stream;
 
     /** The cache File. */
-    private File cacheFile;
+    private final File cacheFile;
 
     /** The cache as a RandomAcessFile. */
-    private RandomAccessFile cache;
+    private final RandomAccessFile cache;
 
     /** The length of the read buffer. */
-    private int bufLen = 1024;
+    private final int bufLen = 1024;
 
     /** The read buffer. */
     private byte[] buf = new byte[bufLen];

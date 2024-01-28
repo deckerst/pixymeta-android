@@ -33,16 +33,16 @@ import java.io.RandomAccessFile;
 public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
 
 	/** The cache File. */
-    private File cacheFile;
+    private final File cacheFile;
 
     /** The cache as a RandomAcessFile. */
-    private RandomAccessFile cache;
+    private final RandomAccessFile cache;
 
     /** The length of the read buffer. */
-    private int bufLen;
+    private final int bufLen;
 
     /** The read buffer. */
-    private byte[] buf;
+    private final byte[] buf;
 
     /** Number of bytes in the cache. */
     private long length = 0;
@@ -181,7 +181,9 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
      * @throws IOException if an I/O error occurs.
      */
     public void close() throws IOException {
-		if(closed) return;
+		if(closed) {
+            return;
+        }
         cache.close();
         cacheFile.delete();
         src.close();
@@ -190,7 +192,9 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
     }
     
     public void shallowClose() throws IOException {
-    	if(closed) return;
+    	if(closed) {
+            return;
+        }
         cache.close();
         cacheFile.delete();
         src = null;

@@ -32,10 +32,10 @@ import java.io.RandomAccessFile;
 public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream {
 
 	/** The cache File. */
-    private File cacheFile;
+    private final File cacheFile;
 
     /** The cache as a RandomAcessFile. */
-    private RandomAccessFile cache;
+    private final RandomAccessFile cache;
     
     /** The length of the read buffer. */
     private int bufLen = 4096;
@@ -54,23 +54,17 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         cacheFile.deleteOnExit();
         this.cache = new RandomAccessFile(cacheFile, "rw");
     }
-    
-    public FileCacheRandomAccessOutputStream(OutputStream dist, int bufLen) throws IOException {
-    	super(dist);
-    	this.bufLen = bufLen;
-        this.cacheFile = File.createTempFile("cafe-FCRAOS-", ".tmp");
-        cacheFile.deleteOnExit();
-        this.cache = new RandomAccessFile(cacheFile, "rw");
-    }
-    
-    /**
+
+	/**
      * Closes this stream and releases any system resources
      * associated with the stream.
      *
      * @throws IOException if an I/O error occurs.
      */
     public void close() throws IOException {
-    	if(closed) return;
+    	if(closed) {
+			return;
+		}
         super.close();
         cache.close();
         cacheFile.delete();
@@ -78,12 +72,7 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         dist = null;
         closed = true;
      }
-    
-	@Override
-	public void disposeBefore(long pos) { 
-		throw new UnsupportedOperationException("This method is not implemented");
-	}
-	
+
 	@Override
 	public long getFlushPos() {
 		return flushPos;

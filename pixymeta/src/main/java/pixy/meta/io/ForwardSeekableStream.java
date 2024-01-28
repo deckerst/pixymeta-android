@@ -29,7 +29,7 @@ import java.io.IOException;
 public class ForwardSeekableStream extends SeekableStream {
 
     /** The source <code>InputStream</code>. */
-    private InputStream src;
+    private final InputStream src;
 
     /** The current position. */
     long pointer = 0L;

@@ -44,7 +44,7 @@ public class IOUtils {
 		 
 		ByteArrayOutputStream bout = new ByteArrayOutputStream(4096);
 		byte[] buf = new byte[4096];
-		int len = 0;
+		int len;
 		
 		while((len = is.read(buf)) != -1) {
 			bout.write(buf, 0, len);
@@ -67,22 +67,6 @@ public class IOUtils {
 		return is.read(bytes, off, len);
 	}
      
-	public static double readDouble(InputStream is) throws IOException {
-		return Double.longBitsToDouble(readLong(is));
-	}
-	 
-	public static double readDoubleMM(InputStream is) throws IOException {
-		return Double.longBitsToDouble(readLongMM(is));
-	}	
-	 
-	public static float readFloat(InputStream is) throws IOException {
-		return Float.intBitsToFloat(readInt(is));
-	}
-
-	public static float readFloatMM(InputStream is) throws IOException {
-		return Float.intBitsToFloat(readIntMM(is));
-	}
-	 
 	public static byte[] readFully(InputStream is, int bufLen) throws IOException {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream(bufLen);
 		byte[] buf = new byte[bufLen];
@@ -137,27 +121,6 @@ public class IOUtils {
 				((buf[2]&0xff)<<8)|(buf[3]&0xff));
 	}
 
-	public static long readLong(byte[] buf, int start_idx) {    	 
-		return ((buf[start_idx++]&0xffL)|(((buf[start_idx++]&0xffL)<<8)|((buf[start_idx++]&0xffL)<<16)|
-				((buf[start_idx++]&0xffL)<<24)|((buf[start_idx++]&0xffL)<<32)|((buf[start_idx++]&0xffL)<<40)|
-				((buf[start_idx++]&0xffL)<<48)|(buf[start_idx]&0xffL)<<56));
-	}
-
-	public static long readLong(InputStream is) throws IOException {
-		byte[] buf = new byte[8];
-		readFully(is, buf);
-		 
-		return (((buf[7]&0xffL)<<56)|((buf[6]&0xffL)<<48)|
-				((buf[5]&0xffL)<<40)|((buf[4]&0xffL)<<32)|((buf[3]&0xffL)<<24)|
-				((buf[2]&0xffL)<<16)|((buf[1]&0xffL)<<8)|(buf[0]&0xffL));
-	}
-
-	public static long readLongMM(byte[] buf, int start_idx) {		 
-		return (((buf[start_idx++]&0xffL)<<56)|((buf[start_idx++]&0xffL)<<48)|
-				((buf[start_idx++]&0xffL)<<40)|((buf[start_idx++]&0xffL)<<32)|((buf[start_idx++]&0xffL)<<24)|
-				((buf[start_idx++]&0xffL)<<16)|((buf[start_idx++]&0xffL)<<8)|(buf[start_idx]&0xffL));
-	}
-
 	public static long readLongMM(InputStream is) throws IOException {
 		byte[] buf = new byte[8];
 		readFully(is, buf);
@@ -174,34 +137,7 @@ public class IOUtils {
 		return s15 + fixed16/65536.0f;
 	}
 	 
-	public static float readS15Fixed16MMNumber(InputStream is) throws IOException { 		
-		byte[] buf = new byte[4];
-		IOUtils.readFully(is, buf);
-		 
-		short s15 = (short)((buf[1]&0xff)|((buf[0]&0xff)<<8));
-		int fixed16 = ((buf[3]&0xff)|((buf[2]&0xff)<<8));
-		 
-		return s15 + fixed16/65536.0f;	
-	}
-	
-	public static float readS15Fixed16Number(byte[] buf, int start_idx) {
-		short s15 = (short)((buf[start_idx++]&0xff)|((buf[start_idx++]&0xff)<<8));
-		int fixed16 = ((buf[start_idx++]&0xff)|((buf[start_idx]&0xff)<<8));
-		 
-		return s15 + fixed16/65536.0f;
-	}
-	 
-	public static float readS15Fixed16Number(InputStream is) throws IOException { 		
-		byte[] buf = new byte[4];
-		IOUtils.readFully(is, buf);
-		 
-		short s15 = (short)((buf[0]&0xff)|((buf[1]&0xff)<<8));
-		int fixed16 = ((buf[2]&0xff)|((buf[3]&0xff)<<8));
-		 
-		return s15 + fixed16/65536.0f;	
-	}
-	
-	public static short readShort(byte[] buf, int start_idx) { 
+	public static short readShort(byte[] buf, int start_idx) {
 		return (short)((buf[start_idx++]&0xff)|((buf[start_idx]&0xff)<<8));
 	}
 
@@ -223,20 +159,7 @@ public class IOUtils {
 		return (short)(((buf[0]&0xff)<<8)|(buf[1]&0xff));
 	}
 	 
-	public static long readUnsignedInt(byte[] buf, int start_idx) { 
-		return ((buf[start_idx++]&0xff)|((buf[start_idx++]&0xff)<<8)|
-				((buf[start_idx++]&0xff)<<16)|((buf[start_idx++]&0xff)<<24))& 0xffffffffL;
-	}
-	
-	public static long readUnsignedInt(InputStream is) throws IOException {
-		byte[] buf = new byte[4];
-		readFully(is, buf);
-		
-		return (((buf[3]&0xff)<<24)|((buf[2]&0xff)<<16)|
-				((buf[1]&0xff)<<8)|(buf[0]&0xff))& 0xffffffffL;
-	}
-	
-	public static long readUnsignedIntMM(byte[] buf, int start_idx)	{ 
+	public static long readUnsignedIntMM(byte[] buf, int start_idx)	{
 		return readIntMM(buf, start_idx) & 0xffffffffL;
 	}
 	
@@ -244,18 +167,7 @@ public class IOUtils {
 		return readIntMM(is) & 0xffffffffL;
 	}
 	
-	public static int readUnsignedShort(byte[] buf, int start_idx) { 
-		return (buf[start_idx++]&0xff)|((buf[start_idx]&0xff)<<8);
-	}
-	
-	public static int readUnsignedShort(InputStream is) throws IOException {
-		byte[] buf = new byte[2];
-		readFully(is, buf);
-		
-		return ((buf[1]&0xff)<<8)|(buf[0]&0xff);
-	}
-	
-	public static int readUnsignedShortMM(byte[] buf, int start_idx) { 
+	public static int readUnsignedShortMM(byte[] buf, int start_idx) {
 		return ((buf[start_idx++]&0xff)<<8)|(buf[start_idx]&0xff);
 	}
 	
@@ -304,14 +216,6 @@ public class IOUtils {
 			(byte)value});
 	}
 	
-	public static void writeLong(OutputStream os, long value) throws IOException {
-		os.write(new byte[] {
-	        (byte)value, (byte)(value>>>8),
-	        (byte)(value>>>16), (byte)(value>>>24),
-	        (byte)(value>>>32), (byte)(value>>>40),
-		    (byte)(value>>>48), (byte)(value>>>56)});
-	}
-	 
 	public static void writeLongMM(OutputStream os, long value) throws IOException {
 		os.write(new byte[] {
 			(byte)(value>>>56),

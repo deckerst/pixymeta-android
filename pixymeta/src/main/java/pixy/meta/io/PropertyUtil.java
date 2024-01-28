@@ -14,28 +14,27 @@ public class PropertyUtil
 	  if (b == null) {
 		  b = getBundle();
 	  }
-	  return b.getString(key);
+      assert b != null;
+      return b.getString(key);
   }
   
   /** Get bundle from .properties files in the current dir. */
   private static ResourceBundle getBundle()
   {   
-     ResourceBundle bundle = null;
+     ResourceBundle bundle;
      
      InputStream in = null;
      
      try {
     	 try {
     		 in = PropertyUtil.class.getResourceAsStream("properties");
-    	 } catch(Exception e1) {}
+    	 } catch(Exception ignored) {}
      
     	 if(in == null) {
     		 in = new FileInputStream("properties");
     	 }
-    	 if (in != null) {
-    		 bundle = new PropertyResourceBundle(in);
-    		 return bundle;
-    	 }
+		 bundle = new PropertyResourceBundle(in);
+		 return bundle;
      } catch (Exception e) {
     	 e.printStackTrace();
      }
