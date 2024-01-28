@@ -46,7 +46,7 @@ public class TiffFieldEnum {
 		
 		UNKNOWN("Unknown", 9999);
 		 
-		private PhotoMetric(String description, int value) {
+		PhotoMetric(String description, int value) {
 			this.description = description;
 			this.value = value;
 		}
@@ -66,12 +66,13 @@ public class TiffFieldEnum {
 		
 		public static PhotoMetric fromValue(int value) {
 	       	PhotoMetric photoMetric = typeMap.get(value);
-	    	if (photoMetric == null)
-	    	   return UNKNOWN;
+	    	if (photoMetric == null) {
+				return UNKNOWN;
+			}
 	      	return photoMetric;
 	    }
 	    
-	    private static final Map<Integer, PhotoMetric> typeMap = new HashMap<Integer, PhotoMetric>();
+	    private static final Map<Integer, PhotoMetric> typeMap = new HashMap<>();
 	       
 	    static
 	    {
@@ -79,8 +80,8 @@ public class TiffFieldEnum {
 	    	  typeMap.put(photoMetric.getValue(), photoMetric);
 	    } 
 
-		private String description;
-		private int value;
+		private final String description;
+		private final int value;
 	}
 	
 	public enum Compression {
@@ -120,8 +121,9 @@ public class TiffFieldEnum {
 		
 		public static Compression fromValue(int value) {
 	       	Compression compression = typeMap.get(value);
-	    	if (compression == null)
-	    	   return UNKNOWN;
+	    	if (compression == null) {
+				return UNKNOWN;
+			}
 	      	return compression;
 	    }
 	    
@@ -133,8 +135,8 @@ public class TiffFieldEnum {
 	    	  typeMap.put(compression.getValue(), compression);
 	    } 
 
-		private String description;
-		private int value;
+		private final String description;
+		private final int value;
 	}
 	
 	public enum PlanarConfiguration {
@@ -162,12 +164,13 @@ public class TiffFieldEnum {
 		
 		public static PlanarConfiguration fromValue(int value) {
 	       	PlanarConfiguration planarConfiguration = typeMap.get(value);
-	    	if (planarConfiguration == null)
-	    	   return UNKNOWN;
+	    	if (planarConfiguration == null) {
+				return UNKNOWN;
+			}
 	      	return planarConfiguration;
 	    }
 	    
-	    private static final Map<Integer, PlanarConfiguration> typeMap = new HashMap<Integer, PlanarConfiguration>();
+	    private static final Map<Integer, PlanarConfiguration> typeMap = new HashMap<>();
 	       
 	    static
 	    {

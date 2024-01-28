@@ -27,7 +27,7 @@ package pixy.meta.meta.iptc;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import pixy.meta.io.IOUtils;
@@ -41,23 +41,19 @@ import pixy.meta.util.ArrayUtils;
  */
 public class IPTCDataSet implements Comparable<IPTCDataSet> {
 	// Fields
-	private int recordNumber; // Corresponds to IPTCRecord enumeration recordNumber 
-	private int tag; // Corresponds to IPTC tag enumeration tag field
-	private int size;
-	private byte[] data;
-	private int offset;
+	private final int recordNumber; // Corresponds to IPTCRecord enumeration recordNumber
+	private final int tag; // Corresponds to IPTC tag enumeration tag field
+	private final int size;
+	private final byte[] data;
+	private final int offset;
 	private IPTCTag tagEnum;
 	
 	// A unique name used as HashMap key
-	private String name;
+	private final String name;
 	
-	private static final byte[] getBytes(String str) {
-		try {
-			return str.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("Unsupported encoding UTF-8");
-		}
-	}
+	private static byte[] getBytes(String str) {
+        return str.getBytes(StandardCharsets.UTF_8);
+    }
 	
 	public IPTCDataSet(int tag, byte[] data) {
 		this(IPTCRecord.APPLICATION, tag, data);
@@ -107,10 +103,8 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
 	    if (this.getRecordNumber() < other.getRecordNumber()) return BEFORE;
 	    if (this.getRecordNumber() > other.getRecordNumber()) return AFTER;
 	    if(this.getRecordNumber() == other.getRecordNumber()) {
-	    	if (this.getTag() < other.getTag()) return BEFORE;
-		    if (this.getTag() > other.getTag()) return AFTER;
-		    return EQUAL;
-	    }
+			return Integer.compare(this.getTag(), other.getTag());
+		}
 	
 		return EQUAL;
 	}
@@ -128,12 +122,11 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
 		byte[] thatData = ArrayUtils.subArray(other.data, other.offset, other.size);
 		if (!Arrays.equals(thisData, thatData))
 			return false;
-		if (recordNumber != other.recordNumber)
+		if (recordNumber != other.recordNumber) {
 			return false;
-		if (tag != other.tag)
-			return false;
-		return true;
-	}
+		}
+        return tag == other.tag;
+    }
 	
 	public byte[] getData() {
 		return ArrayUtils.subArray(data, offset, size);
@@ -253,8 +246,7 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
 	 * Write the current IPTCDataSet to the OutputStream
 	 * 
 	 * @param out OutputStream to write the IPTCDataSet
-	 * @throws IOException
-	 */
+     */
 	public void write(OutputStream out) throws IOException {
 		out.write(0x1c); // tag marker
 		out.write(recordNumber);

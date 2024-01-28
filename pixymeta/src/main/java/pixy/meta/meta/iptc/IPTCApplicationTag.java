@@ -15,7 +15,7 @@
 
 package pixy.meta.meta.iptc;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -196,13 +196,9 @@ public enum IPTCApplicationTag implements IPTCTag {
 	 
 	 // Default implementation. Could be replaced by individual ENUM
 	 public String getDataAsString(byte[] data) {
-		 try {
-			 String strVal = new String(data, "UTF-8").trim();
-			 if(strVal.length() > 0) return strVal;
-		 } catch (UnsupportedEncodingException e) {
-			 e.printStackTrace();
-		 }
-		 // Hex representation of the data
+         String strVal = new String(data, StandardCharsets.UTF_8).trim();
+         if(!strVal.isEmpty()) return strVal;
+         // Hex representation of the data
 		 return StringUtils.byteArrayToHexString(data, 0, MAX_STRING_REPR_LEN);
 	 }
 	 

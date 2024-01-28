@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -58,18 +59,16 @@ public class IPTC extends Metadata {
 			IPTC iptc = new IPTC(data);
 			try {
 				iptc.read();
-				Iterator<MetadataEntry> iterator = iptc.iterator();
-				while(iterator.hasNext()) {
-					MetadataEntry item = iterator.next();
-					LOGGER.info(item.getKey() + ": " + item.getValue());
-					if(item.isMetadataEntryGroup()) {
-						String indent = "    ";
-						Collection<MetadataEntry> entries = item.getMetadataEntries();
-						for(MetadataEntry e : entries) {
-							LOGGER.info(indent + e.getKey() + ": " + e.getValue());
-						}
-					}
-				}
+                for (MetadataEntry item : iptc) {
+                    LOGGER.info(item.getKey() + ": " + item.getValue());
+                    if (item.isMetadataEntryGroup()) {
+                        String indent = "    ";
+                        Collection<MetadataEntry> entries = item.getMetadataEntries();
+                        for (MetadataEntry e : entries) {
+                            LOGGER.info(indent + e.getKey() + ": " + e.getValue());
+                        }
+                    }
+                }
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -87,7 +86,7 @@ public class IPTC extends Metadata {
 
 	public IPTC() {
 		super(MetadataType.IPTC);
-		datasetMap =  new TreeMap<IPTCTag, List<IPTCDataSet>>(new IPTCTagComparator());
+		datasetMap = new TreeMap<>(new IPTCTagComparator());
 		isDataRead = true;
 	}
 
@@ -104,7 +103,7 @@ public class IPTC extends Metadata {
 				list.add(dataSet);
 				datasetMap.put(tag, list);
 			} else if(dataSet.allowMultiple()) {
-				datasetMap.get(tag).add(dataSet);
+				Objects.requireNonNull(datasetMap.get(tag)).add(dataSet);
 			}
 		} else throw new IllegalStateException("DataSet Map is empty");
 	}
@@ -118,7 +117,7 @@ public class IPTC extends Metadata {
 					list.add(dataSet);
 					datasetMap.put(tag, list);
 				} else if(dataSet.allowMultiple()) {
-					datasetMap.get(tag).add(dataSet);
+					Objects.requireNonNull(datasetMap.get(tag)).add(dataSet);
 				}
 			}
 		} else throw new IllegalStateException("DataSet Map is empty");
@@ -198,12 +197,8 @@ public class IPTC extends Metadata {
 			    }
 			};
 		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			return Collections.emptyIterator();
-		} else {
-			return Collections.<MetadataEntry>emptyList().iterator();
-		}
-	}
+        return Collections.emptyIterator();
+    }
 
 	public void read() throws IOException {
 		if(!isDataRead) {
@@ -226,7 +221,7 @@ public class IPTC extends Metadata {
 						list.add(dataSet);
 						datasetMap.put(tagEnum, list);
 					} else
-						datasetMap.get(tagEnum).add(dataSet);
+						Objects.requireNonNull(datasetMap.get(tagEnum)).add(dataSet);
 				}
 
 				i += recordSize;

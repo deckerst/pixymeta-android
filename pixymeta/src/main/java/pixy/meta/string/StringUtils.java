@@ -301,10 +301,13 @@ public class StringUtils {
 		      return null;
 		}
 			
-		if(data.length == 0) return "[]";
+		if(data.length == 0) {
+			return "[]";
+		}
 	    
-	    if(offset < 0 || offset >= data.length)
-	    	throw new IllegalArgumentException("Offset out of array bound!");
+	    if(offset < 0 || offset >= data.length) {
+			throw new IllegalArgumentException("Offset out of array bound!");
+		}
 	    
 	    int endOffset = offset + Math.min(length, data.length);
 		 
@@ -326,12 +329,14 @@ public class StringUtils {
 		}
 	    
 	    // Remove the last ","
-	    if(shorts.length() > 1)
-	    	shorts.deleteCharAt(shorts.length()-1);
+	    if(shorts.length() > 1) {
+			shorts.deleteCharAt(shorts.length() - 1);
+		}
 	    
-	    if(endOffset < data.length)
-	    	shorts.append(" ..."); // Partial output
-	    
+	    if(endOffset < data.length) {
+			shorts.append(" ..."); // Partial output
+		}
+
 	    shorts.append("]");
 		
 		return shorts.toString();
@@ -394,18 +399,23 @@ public class StringUtils {
 	 * @return a hex string representation for the byte array without 0x prefix
 	 */
 	public static String toHexString(byte[] bytes, int offset, int length) {		
-		if ( bytes == null )
+		if ( bytes == null ) {
 			return null;
+		}
 	    
-		if(bytes.length == 0) return "";
+		if(bytes.length == 0) {
+			return "";
+		}
 	    
-	    if(offset < 0 || offset >= bytes.length)
-	    	throw new IllegalArgumentException("Offset out of array bound!");
+	    if(offset < 0 || offset >= bytes.length) {
+			throw new IllegalArgumentException("Offset out of array bound!");
+		}
 	    
 	    int endOffset = offset + Math.min(length, bytes.length);
 		 
-	    if(endOffset > bytes.length)
-	    	length = bytes.length - offset;
+	    if(endOffset > bytes.length) {
+			length = bytes.length - offset;
+		}
 	    
 	    StringBuilder hex = new StringBuilder(5*length + 2);	    
 		    

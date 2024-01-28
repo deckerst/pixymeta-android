@@ -43,7 +43,6 @@ package pixy.meta.meta.jpeg;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,6 +82,7 @@ import pixy.meta.util.ArrayUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,7 +135,7 @@ public class JPGMeta {
 	@SuppressWarnings("unused")
 	private static short copySOS(InputStream is, OutputStream os) throws IOException {
 		// Need special treatment.
-		int nextByte = 0;
+		int nextByte;
 		short marker = 0;	
 		
 		while((nextByte = IOUtils.read(is)) != -1) {
@@ -180,7 +180,7 @@ public class JPGMeta {
 	
 	private static void copyToEnd(InputStream is, OutputStream os) throws IOException {
 		byte[] buffer = new byte[10240]; // 10k buffer
-		int bytesRead = -1;
+		int bytesRead;
 		
 		while((bytesRead = is.read(buffer)) != -1) {
 			os.write(buffer, 0, bytesRead);
@@ -191,13 +191,14 @@ public class JPGMeta {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
 		// Flag when we are done
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 				
 		// The very first marker should be the start_of_image marker!	
-		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
+		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
 			throw new IOException("Invalid JPEG image, expected SOI marker not found!");
+		}
 		
 		marker = IOUtils.readShortMM(is);
 		
@@ -215,8 +216,8 @@ public class JPGMeta {
 						marker = IOUtils.readShortMM(is);
 						break;
 				    case PADDING:	
-				    	int nextByte = 0;
-				    	while((nextByte = IOUtils.read(is)) == 0xff) {;}
+				    	int nextByte;
+				    	while((nextByte = IOUtils.read(is)) == 0xff) {}
 				    	marker = (short)((0xff<<8)|nextByte);
 				    	break;				
 				    case SOS:	
@@ -242,12 +243,14 @@ public class JPGMeta {
 	public static void extractICCProfile(InputStream is, String pathToICCProfile) throws IOException {
 		byte[] icc_profile = extractICCProfile(is);
 		
-		if(icc_profile != null && icc_profile.length > 0) {
-			String outpath = "";
-			if(pathToICCProfile.endsWith("\\") || pathToICCProfile.endsWith("/"))
+		if(icc_profile.length > 0) {
+			String outpath;
+			if(pathToICCProfile.endsWith("\\") || pathToICCProfile.endsWith("/")) {
 				outpath = pathToICCProfile + "icc_profile";
-			else
+			}
+			else {
 				outpath = pathToICCProfile.replaceFirst("[.][^.]+$", "");
+			}
 			OutputStream os = new FileOutputStream(outpath + ".icc");
 			os.write(icc_profile);
 			os.close();
@@ -270,11 +273,13 @@ public class JPGMeta {
 			if(!StringUtils.isNullOrEmpty(depthMapMime)) {
 				String data = XMLUtils.getAttribute(xmpDocument, "rdf:Description", depthData);
 				if(!StringUtils.isNullOrEmpty(data)) {
-					String outpath = "";
-					if(pathToDepthMap.endsWith("\\") || pathToDepthMap.endsWith("/"))
+					String outpath;
+					if(pathToDepthMap.endsWith("\\") || pathToDepthMap.endsWith("/")) {
 						outpath = pathToDepthMap + "google_depthmap";
-					else
+					}
+					else {
 						outpath = pathToDepthMap.replaceFirst("[.][^.]+$", "") + "_depthmap";
+					}
 					if(depthMapMime.equalsIgnoreCase("image/png")) {
 						outpath += ".png";
 					} else if(depthMapMime.equalsIgnoreCase("image/jpeg")) {
@@ -282,7 +287,7 @@ public class JPGMeta {
 					}
 					try {
 						byte[] image = Base64.decodeToByteArray(data);							
-						FileOutputStream fout = new FileOutputStream(new File(outpath));
+						FileOutputStream fout = new FileOutputStream(outpath);
 						fout.write(image);
 						fout.close();
 					} catch (Exception e) {							
@@ -293,17 +298,19 @@ public class JPGMeta {
 			if(!StringUtils.isNullOrEmpty(audioMime)) { // Cardboard Camera Audio
 				String data = XMLUtils.getAttribute(xmpDocument, "rdf:Description", "GAudio:Data");
 				if(!StringUtils.isNullOrEmpty(data)) {
-					String outpath = "";
-					if(pathToDepthMap.endsWith("\\") || pathToDepthMap.endsWith("/"))
+					String outpath;
+					if(pathToDepthMap.endsWith("\\") || pathToDepthMap.endsWith("/")) {
 						outpath = pathToDepthMap + "google_cardboard_audio";
-					else
+					}
+					else {
 						outpath = pathToDepthMap.replaceFirst("[.][^.]+$", "") + "_cardboard_audio";
+					}
 					if(audioMime.equalsIgnoreCase("audio/mp4a-latm")) {
 						outpath += ".mp4";
 					}
 					try {
 						byte[] image = Base64.decodeToByteArray(data);							
-						FileOutputStream fout = new FileOutputStream(new File(outpath));
+						FileOutputStream fout = new FileOutputStream(outpath);
 						fout.write(image);
 						fout.close();
 					} catch (Exception e) {							
@@ -325,7 +332,7 @@ public class JPGMeta {
 		byte[] extendedXMP = null;
 		String xmpGUID = ""; // 32 byte ASCII hex string
 		
-		Map<String, Thumbnail> thumbnails = new HashMap<String, Thumbnail>();
+		Map<String, Thumbnail> thumbnails = new HashMap<>();
 		
 		for(Segment segment : appnSegments) {
 			byte[] data = segment.getData();
@@ -356,8 +363,9 @@ public class JPGMeta {
 						i += 32;
 						long extendedXMPLength = IOUtils.readUnsignedIntMM(data, i);
 						i += 4;
-						if(extendedXMP == null)
-							extendedXMP = new byte[(int)extendedXMPLength];
+						if(extendedXMP == null) {
+							extendedXMP = new byte[(int) extendedXMPLength];
+						}
 						// Offset for the current segment
 						long offset = IOUtils.readUnsignedIntMM(data, i);
 						i += 4;
@@ -368,8 +376,9 @@ public class JPGMeta {
 			} else if(segment.getMarker() == Marker.APP2) {
 				// We're only interested in ICC_Profile
 				if (data.length >= ICC_PROFILE_ID.length() && new String(data, 0, ICC_PROFILE_ID.length()).equals(ICC_PROFILE_ID)) {
-					if(iccProfileStream == null)
+					if(iccProfileStream == null) {
 						iccProfileStream = new ByteArrayOutputStream();
+					}
 					iccProfileStream.write(ArrayUtils.subArray(data, ICC_PROFILE_ID.length() + 2, length - ICC_PROFILE_ID.length() - 4));
 				}
 			} else if(segment.getMarker() == Marker.APP12) {
@@ -378,8 +387,9 @@ public class JPGMeta {
 				}
 			} else if(segment.getMarker() == Marker.APP13) {
 				if (data.length >= PHOTOSHOP_IRB_ID.length() && new String(data, 0, PHOTOSHOP_IRB_ID.length()).equals(PHOTOSHOP_IRB_ID)) {
-					if(eightBIMStream == null)
+					if(eightBIMStream == null) {
 						eightBIMStream = new ByteArrayOutputStream();
+					}
 					eightBIMStream.write(ArrayUtils.subArray(data, PHOTOSHOP_IRB_ID.length(), length - PHOTOSHOP_IRB_ID.length() - 2));
 				}
 			} else if(segment.getMarker() == Marker.APP14) {
@@ -407,16 +417,18 @@ public class JPGMeta {
 		
 		if(extendedXMP != null) {
 			XMP xmp = ((XMP)metadataMap.get(MetadataType.XMP));
-			if(xmp != null)
+			if(xmp != null) {
 				xmp.setExtendedXMPData(extendedXMP);
+			}
 		}
 		
 		// Extract thumbnails to ImageMetadata
 		Metadata meta = metadataMap.get(MetadataType.EXIF);
 		if(meta != null) {
 			Exif exif = (Exif)meta;
-			if(!exif.isDataRead())
+			if(!exif.isDataRead()) {
 				exif.read();
+			}
 			if(exif.containsThumbnail()) {
 				thumbnails.put("EXIF", exif.getThumbnail());
 			}
@@ -425,8 +437,9 @@ public class JPGMeta {
 		meta = metadataMap.get(MetadataType.PHOTOSHOP_IRB);
 		if(meta != null) {
 			IRB irb = (IRB)meta;
-			if(!irb.isDataRead())
+			if(!irb.isDataRead()) {
 				irb.read();
+			}
 			if(irb.containsThumbnail()) {
 				thumbnails.put("PHOTOSHOP_IRB", irb.getThumbnail());
 			}
@@ -440,18 +453,18 @@ public class JPGMeta {
 	 * 
 	 * @param is InputStream for the JPEG image.
 	 * @param pathToThumbnail a path or a path and name prefix combination for the extracted thumbnails.
-	 * @throws IOException
-	 */
+     */
 	public static void extractThumbnails(InputStream is, String pathToThumbnail) throws IOException {
 		// Flag when we are done
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 				
 		// The very first marker should be the start_of_image marker!
-		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
+		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
 			throw new IOException("Invalid JPEG image, expected SOI marker not found!");
+		}
 		
 		marker = IOUtils.readShortMM(is);
 		
@@ -469,8 +482,8 @@ public class JPGMeta {
 				    	marker = IOUtils.readShortMM(is);
 						break;
 				    case PADDING:	
-				    	int nextByte = 0;
-				    	while((nextByte = IOUtils.read(is)) == 0xff) {;}
+				    	int nextByte;
+				    	while((nextByte = IOUtils.read(is)) == 0xff) {}
 				    	marker = (short)((0xff<<8)|nextByte);
 				    	break;				
 				    case SOS:	
@@ -484,11 +497,13 @@ public class JPGMeta {
 					    if(new String(jfif_buf, 0, JFIF_ID.length()).equals(JFIF_ID) || new String(jfif_buf, 0, JFXX_ID.length()).equals(JFXX_ID)) {
 					      	int thumbnailWidth = jfif_buf[12]&0xff;
 					    	int thumbnailHeight = jfif_buf[13]&0xff;
-					    	String outpath = "";
-							if(pathToThumbnail.endsWith("\\") || pathToThumbnail.endsWith("/"))
+					    	String outpath;
+							if(pathToThumbnail.endsWith("\\") || pathToThumbnail.endsWith("/")) {
 								outpath = pathToThumbnail + "jfif_thumbnail";
-							else
+							}
+							else {
 								outpath = pathToThumbnail.replaceFirst("[.][^.]+$", "") + "_jfif_t";
+							}
 					    	
 					    	if(thumbnailWidth != 0 && thumbnailHeight != 0) { // There is a thumbnail
 					    		// Extract the thumbnail
@@ -518,13 +533,15 @@ public class JPGMeta {
 						    IOUtils.readFully(is, exif_buf);
 						    Exif exif = new JpegExif(exif_buf);
 						    if(exif.containsThumbnail()) {
-						    	String outpath = "";
-								if(pathToThumbnail.endsWith("\\") || pathToThumbnail.endsWith("/"))
+						    	String outpath;
+								if(pathToThumbnail.endsWith("\\") || pathToThumbnail.endsWith("/")) {
 									outpath = pathToThumbnail + "exif_thumbnail";
-								else
+								}
+								else {
 									outpath = pathToThumbnail.replaceFirst("[.][^.]+$", "") + "_exif_t";
+								}
 						    	Thumbnail thumbnail = exif.getThumbnail();
-						    	OutputStream fout = null;
+						    	OutputStream fout;
 						    	if(thumbnail.getDataType() == ExifThumbnail.DATA_TYPE_KJpegRGB) {// JPEG format, save as JPEG
 						    		 fout = new FileOutputStream(outpath + ".jpg");						    	
 						    	} else { // Uncompressed, save as TIFF
@@ -544,14 +561,16 @@ public class JPGMeta {
 						IOUtils.readFully(is, data, 0, length - 2);						
 						int i = 0;
 						
-						while(data[i] != 0) i++;
+						while(data[i] != 0) {
+							i++;
+						}
 						
 						if(new String(data, 0, i++).equals("Photoshop 3.0")) {
 							IRB irb = new IRB(ArrayUtils.subArray(data, i, data.length - i));
 							if(irb.containsThumbnail()) {
 								Thumbnail thumbnail = irb.getThumbnail();
 								// Create output path
-								String outpath = "";
+								String outpath;
 								if(pathToThumbnail.endsWith("\\") || pathToThumbnail.endsWith("/"))
 									outpath = pathToThumbnail + "photoshop_thumbnail.jpg";
 								else
@@ -562,7 +581,7 @@ public class JPGMeta {
 								} else {
 									Bitmap bmp = thumbnail.getRawImage();
 									try {
-										 bmp.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+										bmp.compress(Bitmap.CompressFormat.JPEG, 100, fout);
 									} catch (Exception e) {
 										throw new IOException("Writing thumbnail failed!");
 									}
@@ -585,8 +604,9 @@ public class JPGMeta {
 	public static ICCProfile getICCProfile(InputStream is) throws IOException {
 		ICCProfile profile = null;
 		byte[] buf = extractICCProfile(is);
-		if(buf.length > 0)
+		if(buf.length > 0) {
 			profile = new ICCProfile(buf);
+		}
 		return profile;
 	}
 	
@@ -596,8 +616,9 @@ public class JPGMeta {
 		Marker emarker;
 				
 		// The very first marker should be the start_of_image marker!	
-		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
+		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
 			throw new IOException("Invalid JPEG image, expected SOI marker not found!");
+		}
 	
 		IOUtils.writeShortMM(os, Marker.SOI.getValue());
 		
@@ -606,8 +627,9 @@ public class JPGMeta {
 		while (!finished) {	        
 			if (Marker.fromShort(marker) == Marker.SOS) {
 				// Write comment
-				for(String comment : comments)
+				for(String comment : comments) {
 					writeComment(comment, os);
+				}
 				// Copy the rest of the data
 				IOUtils.writeShortMM(os, marker);
 				copyToEnd(is, os);
@@ -626,7 +648,7 @@ public class JPGMeta {
 						break;
 					case PADDING:
 						IOUtils.writeShortMM(os, marker);
-						int nextByte = 0;
+						int nextByte;
 						while ((nextByte = IOUtils.read(is)) == 0xff) {
 							IOUtils.write(os, nextByte);
 						}
@@ -644,7 +666,6 @@ public class JPGMeta {
 	 * @param os output image stream
 	 * @param exif Exif instance
 	 * @param update True to keep the original data, otherwise false
-	 * @throws Exception 
 	 */
 	public static void insertExif(InputStream is, OutputStream os, Exif exif, boolean update) throws IOException {
 		// We need thumbnail image but don't have one, create one from the current image input stream
@@ -657,7 +678,7 @@ public class JPGMeta {
 		int app0Index = -1;
 		// Copy the original image and insert EXIF data
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 				
@@ -671,7 +692,7 @@ public class JPGMeta {
 		marker = IOUtils.readShortMM(is);
 		
 		// Create a list to hold the temporary Segments 
-		List<Segment> segments = new ArrayList<Segment>();
+		List<Segment> segments = new ArrayList<>();
 		
 		while (!finished) { // Read through and add the segments to a list until SOS 
 			if (Marker.fromShort(marker) == Marker.SOS) {
@@ -800,13 +821,12 @@ public class JPGMeta {
 	 * @param is input stream for the original image
 	 * @param os output stream to write the ICC_Profile
 	 * @param data ICC_Profile data array to be inserted
-	 * @throws IOException
-	 */	
+     */
 	public static void insertICCProfile(InputStream is, OutputStream os, byte[] data) throws IOException {
 		// Copy the original image and insert ICC_Profile data
 		byte[] icc_profile_id = {0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46, 0x49, 0x4c, 0x45, 0x00};
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 		int app0Index = -1;
@@ -821,14 +841,15 @@ public class JPGMeta {
 		marker = IOUtils.readShortMM(is);
 		
 		// Create a list to hold the temporary Segments 
-		List<Segment> segments = new ArrayList<Segment>();
+		List<Segment> segments = new ArrayList<>();
 		
 		while (!finished) {	        
 			if (Marker.fromShort(marker) == Marker.SOS) {
 				int index = Math.max(app0Index, app1Index);
 				// Write the items in segments list excluding the APP13
-				for(int i = 0; i <= index; i++)
-					segments.get(i).write(os);	
+				for(int i = 0; i <= index; i++) {
+					segments.get(i).write(os);
+				}
 				writeICCProfile(os, data);
 		    	// Copy the remaining segments
 				for(int i = (index < 0 ? 0 : index + 1); i < segments.size(); i++) {
@@ -901,13 +922,12 @@ public class JPGMeta {
 	 * @param is InputStream for the original image
 	 * @param os OutputStream for the image with IPTC inserted
 	 * @param iptcs a collection of IPTCDataSet to be inserted
-	 * @param update boolean if true, keep the original IPTC data; otherwise, replace it completely with the new IPTC data 
-	 * @throws IOException
-	 */
+	 * @param update boolean if true, keep the original IPTC data; otherwise, replace it completely with the new IPTC data
+     */
 	public static void insertIPTC(InputStream is, OutputStream os, Collection<IPTCDataSet> iptcs, boolean update) throws IOException {
 		// Copy the original image and insert Photoshop IRB data
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 		int app0Index = -1;
@@ -929,24 +949,27 @@ public class JPGMeta {
 		marker = IOUtils.readShortMM(is);
 		
 		// Create a list to hold the temporary Segments 
-		List<Segment> segments = new ArrayList<Segment>();
+		List<Segment> segments = new ArrayList<>();
 		
 		while (!finished) {	        
 			if (Marker.fromShort(marker) == Marker.SOS) {
 				if(eightBIMStream != null) {
 					IRB irb = new IRB(eightBIMStream.toByteArray());
 		    		// Shallow copy the map.
-		    		bimMap = new HashMap<Short, _8BIM>(irb.get8BIM());
+		    		bimMap = new HashMap<>(irb.get8BIM());
 					_8BIM iptcBIM = bimMap.remove(ImageResourceID.IPTC_NAA.getValue());
 					if(iptcBIM != null && update) { // Keep the original values
 						IPTC iptc = new IPTC(iptcBIM.getData());
 						// Shallow copy the map
-						Map<IPTCTag, List<IPTCDataSet>> dataSetMap = new HashMap<IPTCTag, List<IPTCDataSet>>(iptc.getDataSets());
-						for(IPTCDataSet set : iptcs)
-							if(!set.allowMultiple())
+						Map<IPTCTag, List<IPTCDataSet>> dataSetMap = new HashMap<>(iptc.getDataSets());
+						for(IPTCDataSet set : iptcs) {
+							if (!set.allowMultiple()) {
 								dataSetMap.remove(set.getName());
-						for(List<IPTCDataSet> iptcList : dataSetMap.values())
+							}
+						}
+						for(List<IPTCDataSet> iptcList : dataSetMap.values()) {
 							iptcs.addAll(iptcList);
+						}
 					}
 			  	}				
 				int index = Math.max(app0Index, app1Index);
@@ -1015,13 +1038,12 @@ public class JPGMeta {
 	 * @param is InputStream for the original image
 	 * @param os OutputStream for the image with _8BIMs inserted
 	 * @param bims a collection of _8BIM to be inserted
-	 * @param update boolean if true, keep the other _8BIMs; otherwise, replace the whole IRB with the inserted _8BIMs 
-	 * @throws IOException
-	 */
+	 * @param update boolean if true, keep the other _8BIMs; otherwise, replace the whole IRB with the inserted _8BIMs
+     */
 	public static void insertIRB(InputStream is, OutputStream os, Collection<_8BIM> bims, boolean update) throws IOException {
 		// Copy the original image and insert Photoshop IRB data
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 		int app0Index = -1;
@@ -1041,14 +1063,14 @@ public class JPGMeta {
 		marker = IOUtils.readShortMM(is);
 		
 		// Create a list to hold the temporary Segments 
-		List<Segment> segments = new ArrayList<Segment>();
+		List<Segment> segments = new ArrayList<>();
 		
 		while (!finished) {	        
 			if (Marker.fromShort(marker) == Marker.SOS) {
 				if(eightBIMStream != null) {
 					IRB irb = new IRB(eightBIMStream.toByteArray());
 			    	// Shallow copy the map.
-		    		Map<Short, _8BIM> bimMap = new HashMap<Short, _8BIM>(irb.get8BIM());
+		    		Map<Short, _8BIM> bimMap = new HashMap<>(irb.get8BIM());
 					for(_8BIM bim : bims) // Replace the original data
 						bimMap.put(bim.getID(), bim);
 					// In case we have two ThumbnailResource IRB, remove the Photoshop4.0 one
@@ -1115,7 +1137,7 @@ public class JPGMeta {
 		// Sanity check
 		if(thumbnail == null) throw new IllegalArgumentException("Input thumbnail is null");
 		_8BIM bim = new ThumbnailResource(thumbnail);
-		insertIRB(is, os, Arrays.asList(bim), true); // Set true to keep other IRB blocks
+		insertIRB(is, os, Collections.singletonList(bim), true); // Set true to keep other IRB blocks
 	}
 	
 	/**
@@ -1125,11 +1147,10 @@ public class JPGMeta {
 	 * @param is InputStream for the image.
 	 * @param os OutputStream for the image.
 	 * @param xmp XMP instance
-	 * @throws IOException
-	 */
+     */
 	public static void insertXMP(InputStream is, OutputStream os, XMP xmp) throws IOException {
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 		int app0Index = -1;
@@ -1145,7 +1166,7 @@ public class JPGMeta {
 		marker = IOUtils.readShortMM(is);
 		
 		// Create a list to hold the temporary Segments 
-		List<Segment> segments = new ArrayList<Segment>();
+		List<Segment> segments = new ArrayList<>();
 		
 		while (!finished) {	        
 			if (Marker.fromShort(marker) == Marker.SOS)	{
@@ -1181,15 +1202,15 @@ public class JPGMeta {
 				        IOUtils.readFully(is, temp);
 				        // Remove XMP and ExtendedXMP segments.
 				        if(temp.length >= XMP_EXT_ID.length() && new String(temp, 0, XMP_EXT_ID.length()).equals(XMP_EXT_ID)) {
-				                ;
+							// ignore
 				        } else if (temp.length >= XMP_ID.length() && new String(temp, 0, XMP_ID.length()).equals(XMP_ID)) {
-				                ;
+							// ignore
 				        } else {                                               
-				                segments.add(new Segment(emarker, length, temp));
-				                // If it's EXIF, we keep the index
-				                if(temp.length >= EXIF_ID.length() && new String(temp, 0, EXIF_ID.length()).equals(EXIF_ID)) {
-				                        exifIndex = segments.size() - 1;
-				                }
+							segments.add(new Segment(emarker, length, temp));
+							// If it's EXIF, we keep the index
+							if(temp.length >= EXIF_ID.length() && new String(temp, 0, EXIF_ID.length()).equals(EXIF_ID)) {
+								exifIndex = segments.size() - 1;
+							}
 				        }
 				        marker = IOUtils.readShortMM(is);
 				        break;
@@ -1220,9 +1241,8 @@ public class JPGMeta {
 	 * @param os OutputStream for the image.
 	 * @param xmp XML string for the XMP - Assuming in UTF-8 format.
 	 * @param extendedXmp XML string for the extended XMP - Assuming in UTF-8 format
-	 * 
-	 * @throws IOException
-	 */
+	 *
+     */
 	public static void insertXMP(InputStream is, OutputStream os, String xmp, String extendedXmp) throws IOException {
 		insertXMP(is, os, new JpegXMP(xmp, extendedXmp));
 	}
@@ -1236,32 +1256,31 @@ public class JPGMeta {
 		
 		for(HTable table : hTables )
 		{
-			hufTable.append("Class: " + table.getClazz() + " (" + HT_class_table[table.getClazz()] + ")\n");
-			hufTable.append("Huffman table #: " + table.getID() + "\n");
+			hufTable.append("Class: ").append(table.getClazz()).append(" (").append(HT_class_table[table.getClazz()]).append(")\n");
+			hufTable.append("Huffman table #: ").append(table.getID()).append("\n");
 			
 			byte[] bits = table.getBits();
 			byte[] values = table.getValues();
 			
 		    int count = 0;
+
+            for (byte bit : bits) {
+                count += (bit & 0xff);
+            }
 			
-			for (int i = 0; i < bits.length; i++)
-			{
-				count += (bits[i]&0xff);
+            hufTable.append("Number of codes: ").append(count).append("\n");
+			
+            if (count > 256) {
+				throw new RuntimeException("Invalid huffman code count: " + count);
 			}
-			
-            hufTable.append("Number of codes: " + count + "\n");
-			
-            if (count > 256)
-            	throw new RuntimeException("Invalid huffman code count: " + count);			
 	        
             int j = 0;
             
 			for (int i = 0; i < 16; i++) {
-			
-				hufTable.append("Codes of length " + (i+1) + " (" + (bits[i]&0xff) +  " total): [ ");
+				hufTable.append("Codes of length ").append(i + 1).append(" (").append(bits[i] & 0xff).append(" total): [ ");
 				
 				for (int k = 0; k < (bits[i]&0xff); k++) {
-					hufTable.append((values[j++]&0xff) + " ");
+					hufTable.append((values[j++] & 0xff)).append(" ");
 				}
 				
 				hufTable.append("]\n");
@@ -1283,24 +1302,22 @@ public class JPGMeta {
 		for(QTable table : qTables) {
 			int QT_precision = table.getPrecision();
 			int[] qTable = table.getData();
-			qtTables.append("precision of QT is " + QT_precision + "\n");
-			qtTables.append("Quantization table #" + table.getID() + ":\n");
+			qtTables.append("precision of QT is ").append(QT_precision).append("\n");
+			qtTables.append("Quantization table #").append(table.getID()).append(":\n");
 			
 		   	if(QT_precision == 0) {
-				for (int j = 0; j < 64; j++)
-			    {
-					if (j != 0 && j%8 == 0) {
-						qtTables.append("\n");
-					}
-					qtTables.append(qTable[j] + " ");			
-			    }
-			} else { // 16 bit big-endian
-								
 				for (int j = 0; j < 64; j++) {
 					if (j != 0 && j%8 == 0) {
 						qtTables.append("\n");
 					}
-					qtTables.append(qTable[j] + " ");	
+					qtTables.append(qTable[j]).append(" ");
+			    }
+			} else { // 16 bit big-endian
+				for (int j = 0; j < 64; j++) {
+					if (j != 0 && j%8 == 0) {
+						qtTables.append("\n");
+					}
+					qtTables.append(qTable[j]).append(" ");
 				}				
 			}
 		   	
@@ -1310,7 +1327,7 @@ public class JPGMeta {
 			qtTables.append("***************************\n");
 		}
 		
-		qtTables.append("Total number of Quantation tables: " + count + "\n");
+		qtTables.append("Total number of Quantation tables: ").append(count).append("\n");
 		qtTables.append("End of quantization table information\n");
 		
 		return qtTables.toString();		
@@ -1319,20 +1336,20 @@ public class JPGMeta {
 	private static String sofToString(SOFReader reader) {
 		StringBuilder sof = new StringBuilder();		
 		sof.append("SOF information =>\n");
-		sof.append("Precision: " + reader.getPrecision() + "\n");
-		sof.append("Image height: " + reader.getFrameHeight() +"\n");
-		sof.append("Image width: " + reader.getFrameWidth() + "\n");
-		sof.append("# of Components: " + reader.getNumOfComponents() + "\n");
-		sof.append("(1 = grey scaled, 3 = color YCbCr or YIQ, 4 = color CMYK)\n");		
-		    
+		sof.append("Precision: ").append(reader.getPrecision()).append("\n");
+		sof.append("Image height: ").append(reader.getFrameHeight()).append("\n");
+		sof.append("Image width: ").append(reader.getFrameWidth()).append("\n");
+		sof.append("# of Components: ").append(reader.getNumOfComponents()).append("\n");
+		sof.append("(1 = grey scaled, 3 = color YCbCr or YIQ, 4 = color CMYK)\n");
+
 		for(Component component : reader.getComponents()) {
 			sof.append("\n");
-			sof.append("Component ID: " + component.getId() + "\n");
-			sof.append("Herizontal sampling factor: " + component.getHSampleFactor() + "\n");
-			sof.append("Vertical sampling factor: " + component.getVSampleFactor() + "\n");
-			sof.append("Quantization table #: " + component.getQTableNumber() + "\n");
-			sof.append("DC table number: " + component.getDCTableNumber() + "\n");
-			sof.append("AC table number: " + component.getACTableNumber() + "\n");
+			sof.append("Component ID: ").append(component.getId()).append("\n");
+			sof.append("Herizontal sampling factor: ").append(component.getHSampleFactor()).append("\n");
+			sof.append("Vertical sampling factor: ").append(component.getVSampleFactor()).append("\n");
+			sof.append("Quantization table #: ").append(component.getQTableNumber()).append("\n");
+			sof.append("DC table number: ").append(component.getDCTableNumber()).append("\n");
+			sof.append("AC table number: ").append(component.getACTableNumber()).append("\n");
 		}
 		
 		sof.append("<= End of SOF information");
@@ -1366,7 +1383,7 @@ public class JPGMeta {
 	
 	private static void readDHT(InputStream is, List<HTable> m_acTables, List<HTable> m_dcTables) throws IOException {	
 		int len = IOUtils.readUnsignedShortMM(is);
-        byte buf[] = new byte[len - 2];
+        byte[] buf = new byte[len - 2];
         IOUtils.readFully(is, buf);
 		
 		DHTReader reader = new DHTReader(new Segment(Marker.DHT, len, buf));
@@ -1381,7 +1398,7 @@ public class JPGMeta {
 	// Process define Quantization table
 	private static void readDQT(InputStream is, List<QTable> m_qTables) throws IOException {
 		int len = IOUtils.readUnsignedShortMM(is);
-		byte buf[] = new byte[len - 2];
+		byte[] buf = new byte[len - 2];
 		IOUtils.readFully(is, buf);
 		
 		DQTReader reader = new DQTReader(new Segment(Marker.DQT, len, buf));
@@ -1390,19 +1407,19 @@ public class JPGMeta {
 	}
 	
 	public static Map<MetadataType, Metadata> readMetadata(InputStream is) throws IOException {
-		Map<MetadataType, Metadata> metadataMap = new HashMap<MetadataType, Metadata>();
-		Map<String, Thumbnail> thumbnails = new HashMap<String, Thumbnail>();
+		Map<MetadataType, Metadata> metadataMap = new HashMap<>();
+		Map<String, Thumbnail> thumbnails = new HashMap<>();
 		// Need to wrap the input stream with a BufferedInputStream to
 		// speed up reading SOS
 		is = new BufferedInputStream(is);
 		// Definitions
-		List<QTable> m_qTables = new ArrayList<QTable>(4);
-		List<HTable> m_acTables = new ArrayList<HTable>(4);	
-		List<HTable> m_dcTables = new ArrayList<HTable>(4);		
+		List<QTable> m_qTables = new ArrayList<>(4);
+		List<HTable> m_acTables = new ArrayList<>(4);
+		List<HTable> m_dcTables = new ArrayList<>(4);
 		// Each SOFReader is associated with a single SOF segment
 		// Usually there is only one SOF segment, but for hierarchical
 		// JPEG, there could be more than one SOF
-		List<SOFReader> readers = new ArrayList<SOFReader>();
+		List<SOFReader> readers = new ArrayList<>();
 		// Used to read multiple segment ICCProfile
 		ByteArrayOutputStream iccProfileStream = null;
 		// Used to read multiple segment Adobe APP13
@@ -1412,10 +1429,10 @@ public class JPGMeta {
 		String xmpGUID = ""; // 32 byte ASCII hex string
 		Comments comments = null;
 				
-		List<Segment> appnSegments = new ArrayList<Segment>();
+		List<Segment> appnSegments = new ArrayList<>();
 	
 		boolean finished = false;
-		int length = 0;
+		int length;
 		short marker;
 		Marker emarker;
 		
@@ -1493,8 +1510,8 @@ public class JPGMeta {
 						marker = IOUtils.readShortMM(is);
 						break;
 				    case PADDING:
-				    	int nextByte = 0;
-				    	while((nextByte = IOUtils.read(is)) == 0xff) {;}
+				    	int nextByte;
+				    	while((nextByte = IOUtils.read(is)) == 0xff) {}
 				    	marker = (short)((0xff<<8)|nextByte);
 				    	break;
 				    default:
@@ -1541,8 +1558,9 @@ public class JPGMeta {
 						i += 32;
 						long extendedXMPLength = IOUtils.readUnsignedIntMM(data, i);
 						i += 4;
-						if(extendedXMP == null)
-							extendedXMP = new byte[(int)extendedXMPLength];
+						if(extendedXMP == null) {
+							extendedXMP = new byte[(int) extendedXMPLength];
+						}
 						// Offset for the current segment
 						long offset = IOUtils.readUnsignedIntMM(data, i);
 						i += 4;
@@ -1553,8 +1571,9 @@ public class JPGMeta {
 			} else if(segment.getMarker() == Marker.APP2) {
 				// We're only interested in ICC_Profile
 				if (new String(data, 0, ICC_PROFILE_ID.length()).equals(ICC_PROFILE_ID)) {
-					if(iccProfileStream == null)
+					if(iccProfileStream == null) {
 						iccProfileStream = new ByteArrayOutputStream();
+					}
 					iccProfileStream.write(ArrayUtils.subArray(data, ICC_PROFILE_ID.length() + 2, length - ICC_PROFILE_ID.length() - 4));
 				}
 			} else if(segment.getMarker() == Marker.APP12) {
@@ -1563,8 +1582,9 @@ public class JPGMeta {
 				}
 			} else if(segment.getMarker() == Marker.APP13) {
 				if (new String(data, 0, PHOTOSHOP_IRB_ID.length()).equals(PHOTOSHOP_IRB_ID)) {
-					if(eightBIMStream == null)
+					if(eightBIMStream == null) {
 						eightBIMStream = new ByteArrayOutputStream();
+					}
 					eightBIMStream.write(ArrayUtils.subArray(data, PHOTOSHOP_IRB_ID.length(), length - PHOTOSHOP_IRB_ID.length() - 2));
 				}
 			} else if(segment.getMarker() == Marker.APP14) {
@@ -1592,19 +1612,22 @@ public class JPGMeta {
 		
 		if(extendedXMP != null) {
 			XMP xmp = ((XMP)metadataMap.get(MetadataType.XMP));
-			if(xmp != null)
+			if(xmp != null) {
 				xmp.setExtendedXMPData(extendedXMP);
+			}
 		}
 		
-		if(comments != null)
+		if(comments != null) {
 			metadataMap.put(MetadataType.COMMENT, comments);
+		}
 			
 		// Extract thumbnails to ImageMetadata
 		Metadata meta = metadataMap.get(MetadataType.EXIF);
 		if(meta != null) {
 			Exif exif = (Exif)meta;
-			if(!exif.isDataRead())
+			if(!exif.isDataRead()) {
 				exif.read();
+			}
 			if(exif.containsThumbnail()) {
 				thumbnails.put("EXIF", exif.getThumbnail());
 			}
@@ -1613,8 +1636,9 @@ public class JPGMeta {
 		meta = metadataMap.get(MetadataType.PHOTOSHOP_IRB);
 		if(meta != null) {
 			IRB irb = (IRB)meta;
-			if(!irb.isDataRead())
+			if(!irb.isDataRead()) {
 				irb.read();
+			}
 			if(irb.containsThumbnail()) {
 				thumbnails.put("PHOTOSHOP_IRB", irb.getThumbnail());
 			}
@@ -1635,27 +1659,25 @@ public class JPGMeta {
 	
 	private static SOFReader readSOF(InputStream is, Marker marker) throws IOException {		
 		int len = IOUtils.readUnsignedShortMM(is);
-		byte buf[] = new byte[len - 2];
+		byte[] buf = new byte[len - 2];
 		IOUtils.readFully(is, buf);
 		
-		Segment segment = new Segment(marker, len, buf);		
-		SOFReader reader = new SOFReader(segment);
-		
-		return reader;
+		Segment segment = new Segment(marker, len, buf);
+        return new SOFReader(segment);
 	}	
 	
 	// This method is very slow if not wrapped in some kind of cache stream but it works for multiple
 	// SOSs in case of progressive JPEG
 	private static short readSOS(InputStream is, SOFReader sofReader) throws IOException {
 		int len = IOUtils.readUnsignedShortMM(is);
-		byte buf[] = new byte[len - 2];
+		byte[] buf = new byte[len - 2];
 		IOUtils.readFully(is, buf);
 		
 		Segment segment = new Segment(Marker.SOS, len, buf);
 		new SOSReader(segment, sofReader);
 		
 		// Actual image data follow.
-		int nextByte = 0;
+		int nextByte;
 		short marker = 0;	
 		
 		while((nextByte = IOUtils.read(is)) != -1) {
@@ -1695,17 +1717,19 @@ public class JPGMeta {
 	
 	// Remove APPn segment
 	public static void removeAPPn(Marker APPn, InputStream is, OutputStream os) throws IOException {
-		if(APPn.getValue() < (short)0xffe0 || APPn.getValue() > (short)0xffef)
-			throw new IllegalArgumentException("Input marker is not an APPn marker");		
+		if(APPn.getValue() < (short)0xffe0 || APPn.getValue() > (short)0xffef) {
+			throw new IllegalArgumentException("Input marker is not an APPn marker");
+		}
 		// Flag when we are done
 		boolean finished = false;
-		int length = 0;	
+		int length;
 		short marker;
 		Marker emarker;
 				
 		// The very first marker should be the start_of_image marker!	
-		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
+		if(Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
 			throw new IOException("Invalid JPEG image, expected SOI marker not found!");
+		}
 
 		IOUtils.writeShortMM(os, Marker.SOI.getValue());
 		
@@ -1728,7 +1752,7 @@ public class JPGMeta {
 						break;
 				    case PADDING:	
 				    	IOUtils.writeShortMM(os, marker);
-				    	int nextByte = 0;
+				    	int nextByte;
 				    	while((nextByte = IOUtils.read(is)) == 0xff) {
 				    		IOUtils.write(os, nextByte);
 				    	}
@@ -1764,11 +1788,10 @@ public class JPGMeta {
 	 * @param metadataTypes a set containing all the MetadataTypes to be removed.
 	 * @param is InputStream for the original image.
 	 * @param os OutputStream for the image with metadata removed.
-	 * @throws IOException
 	 * @return A map of the removed metadata
 	 */	
 	public static Map<MetadataType, Metadata> removeMetadata(InputStream is, OutputStream os, MetadataType ... metadataTypes) throws IOException {
-		return removeMetadata(new HashSet<MetadataType>(Arrays.asList(metadataTypes)), is, os);
+		return removeMetadata(new HashSet<>(Arrays.asList(metadataTypes)), is, os);
 	}
 	
 	/**
@@ -1777,28 +1800,28 @@ public class JPGMeta {
 	 * @param metadataTypes a set containing all the MetadataTypes to be removed.
 	 * @param is InputStream for the original image.
 	 * @param os OutputStream for the image with metadata removed.
-	 * @throws IOException
 	 * @return A map of the removed metadata
 	 */
 	public static Map<MetadataType, Metadata> removeMetadata(Set<MetadataType> metadataTypes, InputStream is, OutputStream os) throws IOException {
 		// Create a map to hold all the metadata and thumbnails
-		Map<MetadataType, Metadata> metadataMap = new HashMap<MetadataType, Metadata>();
+		Map<MetadataType, Metadata> metadataMap = new HashMap<>();
 		// In case IRB data are partially removed, we keep removed metadata here
-		Map<MetadataType, Metadata> extraMetadataMap = new HashMap<MetadataType, Metadata>();
+		Map<MetadataType, Metadata> extraMetadataMap = new HashMap<>();
 	
 		Comments comments = null;
 		
-		List<Segment> appnSegments = new ArrayList<Segment>();			
+		List<Segment> appnSegments = new ArrayList<>();
 		
 		// Flag when we are done
 		boolean finished = false;
-		int length = 0;
+		int length;
 		short marker;
 		Marker emarker;
 
 		// The very first marker should be the start_of_image marker!
-		if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
+		if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
 			throw new IOException("Invalid JPEG image, expected SOI marker not found!");
+		}
 			
 		IOUtils.writeShortMM(os, Marker.SOI.getValue());
 
@@ -1821,7 +1844,7 @@ public class JPGMeta {
 						break;
 					case PADDING:
 						IOUtils.writeShortMM(os, marker);
-						int nextByte = 0;
+						int nextByte;
 						while ((nextByte = IOUtils.read(is)) == 0xff) {
 							IOUtils.write(os, nextByte);
 						}
@@ -1837,8 +1860,9 @@ public class JPGMeta {
 							if(comments == null) comments = new Comments();
 							comments.addComment(readSegmentData(is));
 						 	marker = IOUtils.readShortMM(is);
-						} else
+						} else {
 							marker = copySegment(marker, is, os);
+						}
 						break;						
 					case APP0:
 						if(metadataTypes.contains(MetadataType.JPG_JFIF)) {
@@ -1923,22 +1947,28 @@ public class JPGMeta {
 							if (temp.length >= PHOTOSHOP_IRB_ID.length() && new String(temp, 0, PHOTOSHOP_IRB_ID.length()).equals(PHOTOSHOP_IRB_ID)) {
 								IRB irb = new IRB(ArrayUtils.subArray(temp, PHOTOSHOP_IRB_ID.length(), temp.length - PHOTOSHOP_IRB_ID.length()));
 								// Shallow copy the map.
-								Map<Short, _8BIM> bimMap = new HashMap<Short, _8BIM>(irb.get8BIM());								
+								Map<Short, _8BIM> bimMap = new HashMap<>(irb.get8BIM());
 								if(!metadataTypes.contains(MetadataType.PHOTOSHOP_IRB)) {
 									if(metadataTypes.contains(MetadataType.IPTC)) {
 										// We only remove IPTC_NAA and keep the other IRB data untouched.
 										_8BIM bim = bimMap.remove(ImageResourceID.IPTC_NAA.getValue());
-										if(bim != null) extraMetadataMap.put(MetadataType.IPTC, new IPTC(bim.getData()));
+										if(bim != null) {
+											extraMetadataMap.put(MetadataType.IPTC, new IPTC(bim.getData()));
+										}
 									} 
 									if(metadataTypes.contains(MetadataType.XMP)) {
 										// We only remove XMP and keep the other IRB data untouched.
 										_8BIM bim = bimMap.remove(ImageResourceID.XMP_METADATA.getValue());
-										if(bim != null) extraMetadataMap.put(MetadataType.XMP, new JpegXMP(bim.getData()));
+										if(bim != null) {
+											extraMetadataMap.put(MetadataType.XMP, new JpegXMP(bim.getData()));
+										}
 									} 
 									if(metadataTypes.contains(MetadataType.EXIF)) {
 										// We only remove EXIF and keep the other IRB data untouched.
 										_8BIM bim = bimMap.remove(ImageResourceID.EXIF_DATA1.getValue());
-										if(bim != null) extraMetadataMap.put(MetadataType.EXIF, new JpegExif(bim.getData()));
+										if(bim != null) {
+											extraMetadataMap.put(MetadataType.EXIF, new JpegExif(bim.getData()));
+										}
 										// I can't find more information on this one, so remove it just in case.
 										bimMap.remove(ImageResourceID.EXIF_DATA3.getValue());
 									}
@@ -1985,30 +2015,37 @@ public class JPGMeta {
 		// to the removed map 
 		if(metadataTypes.contains(MetadataType.IPTC) && metadataMap.get(MetadataType.IPTC) == null) {
 			Metadata meta = extraMetadataMap.get(MetadataType.IPTC);
-			if(meta != null) metadataMap.put(MetadataType.IPTC, meta);
+			if(meta != null) {
+				metadataMap.put(MetadataType.IPTC, meta);
+			}
 		}
 		// If we are supposed to remove XMP, check if we have removed it from IRB. If yes, add it
 		// to the removed map 
 		if(metadataTypes.contains(MetadataType.XMP) && metadataMap.get(MetadataType.XMP) == null) {
 			Metadata meta = extraMetadataMap.get(MetadataType.XMP);
-			if(meta != null) metadataMap.put(MetadataType.XMP, meta);
+			if(meta != null) {
+				metadataMap.put(MetadataType.XMP, meta);
+			}
 		}
 		// If we are supposed to remove EXIF, check if we have removed it from IRB. If yes, add it
 		// to the removed map 
 		if(metadataTypes.contains(MetadataType.EXIF) && metadataMap.get(MetadataType.EXIF) == null) {
 			Metadata meta = extraMetadataMap.get(MetadataType.EXIF);
-			if(meta != null) metadataMap.put(MetadataType.EXIF, meta);
+			if(meta != null) {
+				metadataMap.put(MetadataType.EXIF, meta);
+			}
 		}
-		
-		if(comments != null)
+
+		if(comments != null) {
 			metadataMap.put(MetadataType.COMMENT, comments);
+		}
 		
 		return metadataMap;
 	}
 	
 	@SuppressWarnings("unused")
 	private static short skipSOS(InputStream is) throws IOException {
-		int nextByte = 0;
+		int nextByte;
 		short marker = 0;	
 		
 		while((nextByte = IOUtils.read(is)) != -1) {
@@ -2060,8 +2097,7 @@ public class JPGMeta {
 	 * 
 	 * @param os output stream to write the ICC_Profile
 	 * @param data ICC_Profile data
-	 * @throws IOException
-	 */
+     */
 	private static void writeICCProfile(OutputStream os, byte[] data) throws IOException {
 		// ICC_Profile ID
 		int maxSegmentLen = 65535;
@@ -2091,7 +2127,7 @@ public class JPGMeta {
 	}
 	
 	private static void writeIRB(OutputStream os, Collection<_8BIM> bims) throws IOException {
-		if(bims != null && bims.size() > 0) {
+		if(bims != null && !bims.isEmpty()) {
 			IOUtils.writeShortMM(os, Marker.APP13.getValue());
 	    	ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			for(_8BIM bim : bims)
