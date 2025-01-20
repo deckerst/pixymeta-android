@@ -26,85 +26,98 @@ import pixy.meta.string.StringUtils;
  * We could have used a TiffTag enum as the first parameter of the constructor, but this
  * will not work with unknown tags of tag type TiffTag.UNKNOWN. In that case, we cannot
  * use the tag values to sort the fields or as keys for a hash map as used by {@link IFD}.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/04/2013
  */
-public abstract class TiffField<T> implements Comparable<TiffField<?>>{
+public abstract class TiffField<T> implements Comparable<TiffField<?>> {
 
-	private final short tag;
-	private final FieldType fieldType;
-	private final int length;
-	protected T data;
-	protected static final int MAX_STRING_REPR_LEN = 10; // Default length for string representation
-		
-	protected int dataOffset;
-	
-	public TiffField(short tag, FieldType fieldType, int length) {
-		this.tag = tag;
-		this.fieldType = fieldType;
-		this.length = length;
-	}
-	
-	public int compareTo(TiffField<?> that) {
-		return (this.tag&0xffff) - (that.tag&0xffff);
+    private final short tag;
+    private final FieldType fieldType;
+    private final int length;
+    protected T data;
+    protected IFD parent;
+    protected static final int MAX_STRING_REPR_LEN = 10; // Default length for string representation
+
+    protected int dataOffset;
+
+    public TiffField(IFD parent, short tag, FieldType fieldType, int length) {
+        this(tag, fieldType, length);
+        this.parent = parent;
     }
-	
-	public T getData() {
-		return data;
-	}
-	
-	/** Return an integer array representing TIFF long field */
-	public int[] getDataAsLong() { 
-		throw new UnsupportedOperationException("getDataAsLong() method is only supported by"
-				+ " short, long, and rational data types");
-	}
-	
-	/**
-	 * @return a String representation of the field data
-	 */
-	public abstract String getDataAsString();
-	
-	public int getLength() {
-		return length;
-	}
-	
-	/**
-	 * Used to update field data when necessary.
-	 * <p>
-	 * This method should be called only after the field has been written to the underlying RandomOutputStream.
-	 * 
-	 * @return the stream position where actual data starts to write
-	 */
-	public int getDataOffset() {
-		return dataOffset;
-	}
-	
-	public short getTag() {
-		return tag;
-	}
-	
-	public FieldType getType() {
-		return this.fieldType;
-	}
 
-	@Override public String toString() {
-		short tag = this.getTag();
-		Tag tagEnum = TiffTag.fromShort(tag);
-		
-		if (tagEnum != TiffTag.UNKNOWN)
-			return tagEnum.toString();
-		return tagEnum.toString() + " [TiffTag value: "+ StringUtils.shortToHexStringMM(tag) + "]";
-	}
-	
-	public final int write(RandomAccessOutputStream os, int toOffset) throws IOException {
-		// Write the header first
-		os.writeShort(this.tag);
-		os.writeShort(getType().getValue());
-		os.writeInt(getLength());
-		// Then the actual data
-		return writeData(os, toOffset);
-	}
-	
-	protected abstract int writeData(RandomAccessOutputStream os, int toOffset) throws IOException;
+    public TiffField(short tag, FieldType fieldType, int length) {
+        this.tag = tag;
+        this.fieldType = fieldType;
+        this.length = length;
+    }
+
+    public int compareTo(TiffField<?> that) {
+        return (this.tag & 0xffff) - (that.tag & 0xffff);
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public IFD getParent() {
+        return new IFD(parent);
+    }
+
+    /**
+     * Return an integer array representing TIFF long field
+     */
+    public int[] getDataAsLong() {
+        throw new UnsupportedOperationException("getDataAsLong() method is only supported by"
+                + " short, long, and rational data types");
+    }
+
+    /**
+     * @return a String representation of the field data
+     */
+    public abstract String getDataAsString();
+
+    public int getLength() {
+        return length;
+    }
+
+    /**
+     * Used to update field data when necessary.
+     * <p>
+     * This method should be called only after the field has been written to the underlying RandomOutputStream.
+     *
+     * @return the stream position where actual data starts to write
+     */
+    public int getDataOffset() {
+        return dataOffset;
+    }
+
+    public short getTag() {
+        return tag;
+    }
+
+    public FieldType getType() {
+        return this.fieldType;
+    }
+
+    @Override
+    public String toString() {
+        short tag = this.getTag();
+        Tag tagEnum = TiffTag.fromShort(tag);
+
+        if (tagEnum != TiffTag.UNKNOWN)
+            return tagEnum.toString();
+        return tagEnum + " [TiffTag value: " + StringUtils.shortToHexStringMM(tag) + "]";
+    }
+
+    public final int write(RandomAccessOutputStream os, int toOffset) throws IOException {
+        // Write the header first
+        os.writeShort(this.tag);
+        os.writeShort(getType().getValue());
+        os.writeInt(getLength());
+        // Then the actual data
+        return writeData(os, toOffset);
+    }
+
+    protected abstract int writeData(RandomAccessOutputStream os, int toOffset) throws IOException;
 }
