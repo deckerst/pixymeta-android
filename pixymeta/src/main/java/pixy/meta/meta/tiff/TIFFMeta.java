@@ -29,6 +29,10 @@
 
 package pixy.meta.meta.tiff;
 
+import android.graphics.Bitmap;
+
+import org.w3c.dom.Document;
+
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.FileOutputStream;
@@ -46,29 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import pixy.meta.log.Logger;
-import pixy.meta.log.LoggerFactory;
-
-import org.w3c.dom.Document;
-
-import pixy.meta.meta.Metadata;
-import pixy.meta.meta.MetadataType;
-import pixy.meta.meta.adobe.DDB;
-import pixy.meta.meta.adobe.IRB;
-import pixy.meta.meta.adobe.IRBThumbnail;
-import pixy.meta.meta.adobe.ThumbnailResource;
-import pixy.meta.meta.adobe.ImageResourceID;
-import pixy.meta.meta.adobe._8BIM;
-import pixy.meta.meta.exif.Exif;
-import pixy.meta.meta.exif.ExifTag;
-import pixy.meta.meta.exif.GPSTag;
-import pixy.meta.meta.exif.InteropTag;
-import pixy.meta.meta.icc.ICCProfile;
-import pixy.meta.meta.image.Comments;
-import pixy.meta.meta.iptc.IPTC;
-import pixy.meta.meta.iptc.IPTCDataSet;
-import pixy.meta.meta.iptc.IPTCTag;
-import pixy.meta.meta.xmp.XMP;
 import pixy.meta.image.jpeg.Marker;
 import pixy.meta.image.tiff.ASCIIField;
 import pixy.meta.image.tiff.ByteField;
@@ -85,12 +66,12 @@ import pixy.meta.image.tiff.SLongField;
 import pixy.meta.image.tiff.SRationalField;
 import pixy.meta.image.tiff.SShortField;
 import pixy.meta.image.tiff.ShortField;
+import pixy.meta.image.tiff.TIFFImage;
 import pixy.meta.image.tiff.Tag;
 import pixy.meta.image.tiff.TiffField;
 import pixy.meta.image.tiff.TiffFieldEnum;
 import pixy.meta.image.tiff.TiffTag;
 import pixy.meta.image.tiff.UndefinedField;
-import pixy.meta.image.tiff.TIFFImage;
 import pixy.meta.io.IOUtils;
 import pixy.meta.io.RandomAccessInputStream;
 import pixy.meta.io.RandomAccessOutputStream;
@@ -99,11 +80,29 @@ import pixy.meta.io.ReadStrategyII;
 import pixy.meta.io.ReadStrategyMM;
 import pixy.meta.io.WriteStrategyII;
 import pixy.meta.io.WriteStrategyMM;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
+import pixy.meta.meta.Metadata;
+import pixy.meta.meta.MetadataType;
+import pixy.meta.meta.adobe.DDB;
+import pixy.meta.meta.adobe.IRB;
+import pixy.meta.meta.adobe.IRBThumbnail;
+import pixy.meta.meta.adobe.ImageResourceID;
+import pixy.meta.meta.adobe.ThumbnailResource;
+import pixy.meta.meta.adobe._8BIM;
+import pixy.meta.meta.exif.Exif;
+import pixy.meta.meta.exif.ExifTag;
+import pixy.meta.meta.exif.GPSTag;
+import pixy.meta.meta.exif.InteropTag;
+import pixy.meta.meta.icc.ICCProfile;
+import pixy.meta.meta.image.Comments;
+import pixy.meta.meta.iptc.IPTC;
+import pixy.meta.meta.iptc.IPTCDataSet;
+import pixy.meta.meta.iptc.IPTCTag;
+import pixy.meta.meta.xmp.XMP;
 import pixy.meta.string.StringUtils;
 import pixy.meta.string.XMLUtils;
 import pixy.meta.util.ArrayUtils;
-
-import android.graphics.*;
 
 public class TIFFMeta {
     // Offset where to write the value of the first IFD offset
@@ -113,6 +112,9 @@ public class TIFFMeta {
 
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(TIFFMeta.class);
+
+    // TLAD threshold for safer IFD field parsing
+    private static final int FIELD_LENGTH_DANGER_THRESHOLD = 3 * (1 << 20); // MB
 
     private static int copyHeader(RandomAccessInputStream rin, RandomAccessOutputStream rout) throws IOException {
         rin.seek(STREAM_HEAD);
@@ -1142,6 +1144,13 @@ public class TIFFMeta {
             offset += 2;
             rin.seek(offset);
             int field_length = rin.readInt();
+
+            // TLAD insert start
+            if (field_length > FIELD_LENGTH_DANGER_THRESHOLD) {
+                throw new RuntimeException("dangerous field length=" + field_length);
+            }
+            // TLAD insert end
+
             offset += 4;
             ////// Try to read actual data.
             switch (ftype) {
