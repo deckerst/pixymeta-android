@@ -24,10 +24,11 @@
 
 package pixy.meta.meta.jpeg;
 
+import android.graphics.Bitmap;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
-import android.graphics.Bitmap;
 import pixy.meta.meta.Thumbnail;
 
 public class JFIFThumbnail extends Thumbnail {
@@ -35,7 +36,7 @@ public class JFIFThumbnail extends Thumbnail {
     public JFIFThumbnail(Bitmap thumbnail) {
         super(thumbnail);
     }
-    
+
     public JFIFThumbnail(JFIFThumbnail other) { // Copy constructor
         this.dataType = other.dataType;
         this.height = other.height;
@@ -47,12 +48,13 @@ public class JFIFThumbnail extends Thumbnail {
     @Override
     public void write(OutputStream os) throws IOException {
         Bitmap thumbnail = getRawImage();
-        if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
+        if (thumbnail == null)
+            throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
         int thumbnailWidth = thumbnail.getWidth();
         int thumbnailHeight = thumbnail.getHeight();
-        int[] pixels = new int[thumbnailWidth*thumbnailHeight];
+        int[] pixels = new int[thumbnailWidth * thumbnailHeight];
         thumbnail.getPixels(pixels, 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
-        for(int pixel : pixels) {
+        for (int pixel : pixels) {
             os.write(pixel >> 16); // Red
             os.write(pixel >> 8); // Green
             os.write(pixel); // Blue

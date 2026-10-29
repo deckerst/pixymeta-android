@@ -19,7 +19,7 @@ import pixy.meta.string.StringUtils;
 
 /**
  * TIFF Rational type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2013
  */
@@ -28,7 +28,7 @@ public final class RationalField extends AbstractRationalField {
     public RationalField(short tag, int[] data) {
         super(tag, FieldType.RATIONAL, data);
     }
-    
+
     public String getDataAsString() {
         return StringUtils.rationalArrayToString(data, true);
     }

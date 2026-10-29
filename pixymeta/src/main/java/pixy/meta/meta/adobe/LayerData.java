@@ -26,18 +26,17 @@ package pixy.meta.meta.adobe;
 import java.util.ArrayList;
 import java.util.List;
 
+import pixy.meta.io.ReadStrategy;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
-import pixy.meta.io.ReadStrategy;
 
 public class LayerData extends DDBEntry {
     private int layerCount;
     private List<Channel> channels = new ArrayList<Channel>();
-        
+
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(LayerData.class);
-    
+
     public LayerData(int size, byte[] data, ReadStrategy readStrategy) {
         super(DataBlockType.Layr, size, data, readStrategy);
         read();
@@ -47,13 +46,13 @@ public class LayerData extends DDBEntry {
         super.print();
         LOGGER.info("Number of layers: {}", layerCount);
     }
-    
+
     @SuppressWarnings("unused")
     private void read() {
         int i = 0;
         layerCount = readStrategy.readUnsignedShort(data, i);
         i += 2;
-        for(int j = 0; j < layerCount; j++) { // For each layer
+        for (int j = 0; j < layerCount; j++) { // For each layer
             int topCoord = readStrategy.readInt(data, i);
             i += 4;
             int leftCoord = readStrategy.readInt(data, i);
@@ -64,7 +63,7 @@ public class LayerData extends DDBEntry {
             i += 4;
             int channelCount = readStrategy.readUnsignedShort(data, i);
             i += 2;
-            for(int k = 0; k < channelCount; k++) {
+            for (int k = 0; k < channelCount; k++) {
                 int id = readStrategy.readShort(data, i);
                 i += 2;
                 int len = readStrategy.readInt(data, i);
@@ -75,10 +74,10 @@ public class LayerData extends DDBEntry {
             i += 4;
             int blendMode = readStrategy.readInt(data, i);
             i += 4;
-            int opacity = data[i++]&0xff;
-            int clipping = data[i++]&0xff;
-            int flags = data[i++]&0xff;
-            int filler = data[i++]&0xff;
+            int opacity = data[i++] & 0xff;
+            int clipping = data[i++] & 0xff;
+            int flags = data[i++] & 0xff;
+            int filler = data[i++] & 0xff;
             int extraLen = readStrategy.readInt(data, i);
             i += 4;
             i += extraLen; // Skip the extra data for now
@@ -87,6 +86,6 @@ public class LayerData extends DDBEntry {
             //Layer blending ranges
             //Layer name: Pascal string, padded to a multiple of 4 bytes
             //Additional layer information (optional)
-        }    
+        }
     }
 }

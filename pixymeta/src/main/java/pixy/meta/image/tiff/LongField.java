@@ -19,7 +19,7 @@ import pixy.meta.string.StringUtils;
 
 /**
  * TIFF Long type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2013
  */
@@ -28,7 +28,7 @@ public final class LongField extends AbstractLongField {
     public LongField(short tag, int[] data) {
         super(tag, FieldType.LONG, data);
     }
-    
+
     public String getDataAsString() {
         return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
     }

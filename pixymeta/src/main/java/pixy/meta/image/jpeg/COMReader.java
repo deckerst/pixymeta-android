@@ -21,7 +21,7 @@ import pixy.meta.util.Reader;
 
 /**
  * JPEG COM segment reader
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 10/11/2013
  */
@@ -29,21 +29,21 @@ public class COMReader implements Reader {
 
     private Segment segment;
     private String comment;
-    
+
     public COMReader(Segment segment) throws IOException {
         //
-        if(segment.getMarker() != Marker.COM) {
+        if (segment.getMarker() != Marker.COM) {
             throw new IllegalArgumentException("Not a valid COM segment!");
         }
-        
+
         this.segment = segment;
         read();
     }
-    
+
     public String getComment() {
         return this.comment;
     }
-    
+
     public void read() throws IOException {
         this.comment = new String(segment.getData()).trim();
     }

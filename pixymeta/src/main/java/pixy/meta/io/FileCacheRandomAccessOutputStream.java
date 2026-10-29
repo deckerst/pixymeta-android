@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * FileCacheRandomAccessOutputStream.java
@@ -31,20 +31,28 @@ import java.io.RandomAccessFile;
 
 public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream {
 
-    /** The cache File. */
+    /**
+     * The cache File.
+     */
     private final File cacheFile;
 
-    /** The cache as a RandomAcessFile. */
+    /**
+     * The cache as a RandomAcessFile.
+     */
     private final RandomAccessFile cache;
 
-    /** Number of bytes in the cache. */
+    /**
+     * Number of bytes in the cache.
+     */
     private long length = 0L;
 
-    /** Next byte to be read. */
+    /**
+     * Next byte to be read.
+     */
     private long pointer = 0L;
-    
+
     private long flushPos = 0L;
-    
+
     public FileCacheRandomAccessOutputStream(OutputStream dist) throws IOException {
         super(dist);
         this.cacheFile = File.createTempFile("cafe-FCRAOS-", ".tmp");
@@ -59,7 +67,7 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
      * @throws IOException if an I/O error occurs.
      */
     public void close() throws IOException {
-        if(closed) {
+        if (closed) {
             return;
         }
         super.close();
@@ -68,7 +76,7 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         dist.close();
         dist = null;
         closed = true;
-     }
+    }
 
     @Override
     public long getFlushPos() {
@@ -84,12 +92,13 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
     public long getStreamPointer() {
         return pointer;
     }
-    
-    @Override
-    public void reset() { }
 
     @Override
-     public void seek(long pos) throws IOException {
+    public void reset() {
+    }
+
+    @Override
+    public void seek(long pos) throws IOException {
         ensureOpen();
         if (pos < 0) {
             throw new IOException("Negtive seek position.");
@@ -103,30 +112,30 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         if (b == null) {
             throw new NullPointerException("b == null!");
         }
-           
+
         if ((off < 0) || (len < 0) || (pointer < 0) ||
                 (off + len > b.length) || (off + len < 0)) {
             throw new IndexOutOfBoundsException();
         }
-        
+
         long lastPos = pointer + len - 1;
-        
+
         if (lastPos >= length) {
             length = lastPos + 1;
         }
-        
+
         cache.seek(pointer);
         cache.write(b, off, len);
         pointer += len;
     }
-    
+
     @Override
     public void write(int value) throws IOException {
         ensureOpen();
         if (pointer < 0)
             throw new IndexOutOfBoundsException("pointer < 0");
         if (pointer >= length) {
-           length = pointer + 1;
+            length = pointer + 1;
         }
         cache.seek(pointer);
         cache.write(value);
@@ -139,15 +148,15 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         if (len == 0) {
             return;
         }
-        
+
         if (pointer + len > length) {
             throw new IndexOutOfBoundsException("Argument out of cache");
         }
-        
+
         if ((pointer < 0) || (len < 0)) {
             throw new IndexOutOfBoundsException("Negative pointer or len");
         }
-        
+
         cache.seek(pointer);
 
         while (len > 0) {
@@ -161,7 +170,7 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
 
     @Override
     public void shallowClose() throws IOException {
-           if(closed) {
+        if (closed) {
             return;
         }
         super.close();

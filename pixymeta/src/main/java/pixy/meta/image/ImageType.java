@@ -15,67 +15,63 @@
 
 package pixy.meta.image;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Image types supported by ImageReader and ImageWriter.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 10/09/2012
  */
 public enum ImageType {
-    
+
     GIF("Gif") {
     },
-    
+
     PNG("Png") {
     },
-    
+
     JPG("Jpeg") {
     },
-    
+
     JPG2000("Jpeg2000") {
     },
-    
+
     BMP("Bitmap") {
     },
-    
+
     TGA("Targa") {
     },
-    
+
     TIFF("Tiff") {
     },
-    
+
     PCX("Pcx") {
     },
-    
+
     UNKNOWN("Unknown") {
     };
-    
+
     private static final Map<String, ImageType> stringMap = new HashMap<String, ImageType>();
-   
-    static
-    {
-      for(ImageType type : values())
-          stringMap.put(type.toString(), type);
+
+    static {
+        for (ImageType type : values())
+            stringMap.put(type.toString(), type);
     }
-   
-    public static ImageType fromString(String name)
-    {
-      return stringMap.get(name);
+
+    public static ImageType fromString(String name) {
+        return stringMap.get(name);
     }
-   
+
     private final String name;
-   
-    private ImageType(String name)
-    {
-      this.name = name;
+
+    private ImageType(String name) {
+        this.name = name;
     }
 
     @Override
-    public String toString()
-    {
-      return name;
+    public String toString() {
+        return name;
     }
 }

@@ -37,8 +37,8 @@
 
 package pixy.meta.util;
 
-import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
@@ -49,22 +49,21 @@ import java.nio.ShortBuffer;
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 09/18/2012
  */
-public class ArrayUtils
-{
+public class ArrayUtils {
     public static byte[] concat(byte[] first, byte[]... rest) {
-           if(first == null) {
+        if (first == null) {
             throw new IllegalArgumentException("Firt element is null");
         }
-           if(rest.length == 0) {
+        if (rest.length == 0) {
             return first;
         }
 
         // Now the real stuff
-            int totalLength = first.length;
+        int totalLength = first.length;
 
         for (byte[] array : rest) {
             totalLength += array.length;
-         }
+        }
 
         byte[] result = new byte[totalLength];
 
@@ -81,8 +80,8 @@ public class ArrayUtils
     }
 
     public static byte[] subArray(byte[] src, int offset, int len) {
-        if(offset == 0 && len == src.length) return src;
-        if((offset < 0 || offset >= src.length) || (offset + len > src.length))
+        if (offset == 0 && len == src.length) return src;
+        if ((offset < 0 || offset >= src.length) || (offset + len > src.length))
             throw new IllegalArgumentException("Copy range out of array bounds");
         byte[] dest = new byte[len];
         System.arraycopy(src, offset, dest, 0, len);
@@ -91,12 +90,12 @@ public class ArrayUtils
     }
 
     public static byte[] toByteArray(int value) {
-        return new byte[] {
-            (byte)value,
-            (byte)(value >>> 8),
-            (byte)(value >>> 16),
-            (byte)(value >>> 24)
-            };
+        return new byte[]{
+                (byte) value,
+                (byte) (value >>> 8),
+                (byte) (value >>> 16),
+                (byte) (value >>> 24)
+        };
     }
 
     public static byte[] toByteArray(int[] data, boolean bigEndian) {
@@ -115,7 +114,7 @@ public class ArrayUtils
         return byteBuffer.array();
     }
 
-      public static byte[] toByteArray(long[] data, boolean bigEndian) {
+    public static byte[] toByteArray(long[] data, boolean bigEndian) {
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 8);
 
@@ -132,8 +131,8 @@ public class ArrayUtils
     }
 
     public static byte[] toByteArray(short value) {
-         return new byte[] {
-                 (byte)value, (byte)(value >>> 8)};
+        return new byte[]{
+                (byte) value, (byte) (value >>> 8)};
     }
 
     public static byte[] toByteArray(short[] data, boolean bigEndian) {
@@ -153,12 +152,13 @@ public class ArrayUtils
     }
 
     public static byte[] toByteArrayMM(int value) {
-        return new byte[] {
-            (byte)(value >>> 24),
-            (byte)(value >>> 16),
-            (byte)(value >>> 8),
-            (byte)value};
+        return new byte[]{
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value};
     }
 
-       private ArrayUtils(){} // Prevents instantiation
+    private ArrayUtils() {
+    } // Prevents instantiation
 }

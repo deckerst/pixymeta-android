@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * ICCProfile.java
@@ -31,18 +31,17 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import pixy.meta.io.IOUtils;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
 import pixy.meta.string.StringUtils;
-import pixy.meta.io.IOUtils;
 
 /**
  * International Color Consortium Profile (ICC Profile)
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 07/02/2013
  */
@@ -68,34 +67,35 @@ public class ICCProfile extends Metadata {
         private byte[] profileID = new byte[16];
         private byte[] bytesReserved = new byte[28];
     }
+
     public static final int TAG_TABLE_OFFSET = 128;
-    
+
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(ICCProfile.class);
 
     public static void showProfile(byte[] data) {
-        if(data != null && data.length > 0) {
+        if (data != null && data.length > 0) {
             ICCProfile icc_profile = new ICCProfile(data);
             try {
                 icc_profile.read();
                 Iterator<MetadataEntry> iterator = icc_profile.iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     MetadataEntry item = iterator.next();
                     LOGGER.info(item.getKey() + ": " + item.getValue());
-                    if(item.isMetadataEntryGroup()) {
+                    if (item.isMetadataEntryGroup()) {
                         String indent = "    ";
                         Collection<MetadataEntry> entries = item.getMetadataEntries();
-                        for(MetadataEntry e : entries) {
+                        for (MetadataEntry e : entries) {
                             LOGGER.info(indent + e.getKey() + ": " + e.getValue());
-                        }            
-                    }                    
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            }            
+            }
         }
     }
-    
+
     public static void showProfile(InputStream is) {
         try {
             showProfile(IOUtils.inputStreamToByteArray(is));
@@ -103,31 +103,31 @@ public class ICCProfile extends Metadata {
             e.printStackTrace();
         }
     }
-    
-    private ICCProfileHeader header;    
+
+    private ICCProfileHeader header;
     private ProfileTagTable tagTable;
-    
+
     public ICCProfile(byte[] profile) {
         super(MetadataType.ICC_PROFILE, profile);
         ensureDataRead();
     }
-    
+
     public ICCProfile(InputStream is) throws IOException {
         this(IOUtils.inputStreamToByteArray(is));
     }
-    
+
     public boolean canBeUsedIndependently() {
-        return (((header.profileFlags[0]>>6)&0x01) == 0);
+        return (((header.profileFlags[0] >> 6) & 0x01) == 0);
     }
-    
+
     public String getBytesReserved() {
         return StringUtils.byteArrayToHexString(header.bytesReserved);
     }
-    
+
     public String getColorSpace() {
         return new String(header.colorSpace).trim();
     }
-    
+
     public String getDateTimeCreated() {
         int year = IOUtils.readUnsignedShortMM(header.dateTimeCreated, 0);
         int month = IOUtils.readUnsignedShortMM(header.dateTimeCreated, 2);
@@ -135,44 +135,44 @@ public class ICCProfile extends Metadata {
         int hour = IOUtils.readUnsignedShortMM(header.dateTimeCreated, 6);
         int minutes = IOUtils.readUnsignedShortMM(header.dateTimeCreated, 8);
         int seconds = IOUtils.readUnsignedShortMM(header.dateTimeCreated, 10);
-        
+
         return year + "/" + month + "/" + day + ", " + hour + ":" + minutes + ":" + seconds;
     }
-    
+
     public String getDeviceAttributes() {
-        return (isReflective()?"reflective":"transparency") + ", " + (isGlossy()?"glossy":"matte") + ", " + (isPositive()?"positive":"negative") + ", " + (isColor()?"color":"black & white");
+        return (isReflective() ? "reflective" : "transparency") + ", " + (isGlossy() ? "glossy" : "matte") + ", " + (isPositive() ? "positive" : "negative") + ", " + (isColor() ? "color" : "black & white");
     }
-    
+
     public String getDeviceManufacturer() {
         return new String(header.deviceManufacturer).trim();
     }
-    
+
     public String getDeviceModel() {
         return new String(header.deviceModel).trim();
     }
-    
+
     public String getPCS() {
         return new String(header.PCS).trim();
     }
-    
+
     public float[] getPCSXYZ() {
         float PCSX = IOUtils.readS15Fixed16MMNumber(header.PCSXYZ, 0);
         float PCSY = IOUtils.readS15Fixed16MMNumber(header.PCSXYZ, 4);
         float PCSZ = IOUtils.readS15Fixed16MMNumber(header.PCSXYZ, 8);
-        
-        return new float[] {PCSX, PCSY, PCSZ};
+
+        return new float[]{PCSX, PCSY, PCSZ};
     }
-    
+
     public String getPreferredCMMType() {
         return new String(header.preferredCMMType).trim();
     }
-    
+
     public String getPrimaryPlatformSignature() {
         return new String(header.primaryPlatformSignature).trim();
     }
-    
+
     public String getProfileClass() {
-        switch(header.profileClass) {
+        switch (header.profileClass) {
             case 0x73636E72:
                 return "scnr";
             case 0x6D6E7472:
@@ -191,9 +191,9 @@ public class ICCProfile extends Metadata {
                 return "unknown";
         }
     }
-    
+
     public String getProfileClassDescription() {
-        switch(header.profileClass) {
+        switch (header.profileClass) {
             case 0x73636E72:
                 return "'scnr': input devices - scanners and digital cameras";
             case 0x6D6E7472:
@@ -212,41 +212,41 @@ public class ICCProfile extends Metadata {
                 throw new IllegalArgumentException("Unknown profile/device class: " + header.profileClass);
         }
     }
-    
+
     public String getProfileCreator() {
         return new String(header.profileCreator).trim();
     }
-    
+
     public String getProfileFileSignature() {
         return new String(header.profileFileSignature).trim();
     }
-    
+
     public String getProfileFlags() {
-        return (isEmbeddedInFile()?"embedded in file":"not embedded") + ", " + (canBeUsedIndependently()?"used independently":"cannot be used independently");
+        return (isEmbeddedInFile() ? "embedded in file" : "not embedded") + ", " + (canBeUsedIndependently() ? "used independently" : "cannot be used independently");
     }
-    
+
     public String getProfileID() {
         return StringUtils.byteArrayToHexString(header.profileID);
     }
-    
+
     public long getProfileSize() {
         return header.profileSize;
     }
-    
+
     public String getProfileVersionNumber() {
-        int majorVersion = (header.profileVersionNumber[0]&0xff);
-        int minorRevision = ((header.profileVersionNumber[1]>>4)&0x0f);
-        int bugFix = (header.profileVersionNumber[1]&0x0f);
-        
-        return "" + majorVersion + "." + minorRevision + bugFix;            
+        int majorVersion = (header.profileVersionNumber[0] & 0xff);
+        int minorRevision = ((header.profileVersionNumber[1] >> 4) & 0x0f);
+        int bugFix = (header.profileVersionNumber[1] & 0x0f);
+
+        return "" + majorVersion + "." + minorRevision + bugFix;
     }
-    
+
     public int getRenderingIntent() {
-        return header.renderingIntent&0x0000ffff;
+        return header.renderingIntent & 0x0000ffff;
     }
-    
+
     public String getRenderingIntentDescription() {
-        switch(header.renderingIntent&0x0000ffff) {
+        switch (header.renderingIntent & 0x0000ffff) {
             case 0:
                 return "perceptual";
             case 1:
@@ -256,34 +256,34 @@ public class ICCProfile extends Metadata {
             case 3:
                 return "ICC-absolute colorimetric";
             default:
-                throw new IllegalArgumentException("Unknown rendering intent: " + (header.renderingIntent&0x0000ffff));
+                throw new IllegalArgumentException("Unknown rendering intent: " + (header.renderingIntent & 0x0000ffff));
         }
     }
-    
+
     public ProfileTagTable getTagTable() {
         return tagTable;
     }
-    
+
     public boolean isColor() {
-        return (((header.deviceAttributes[0]>>4)&0x01) == 0);
+        return (((header.deviceAttributes[0] >> 4) & 0x01) == 0);
     }
-    
+
     public boolean isEmbeddedInFile() {
-        return (((header.profileFlags[0]>>7)&0x01) == 1);
+        return (((header.profileFlags[0] >> 7) & 0x01) == 1);
     }
-    
+
     public boolean isGlossy() {
-        return (((header.deviceAttributes[0]>>6)&0x01) == 0);
+        return (((header.deviceAttributes[0] >> 6) & 0x01) == 0);
     }
-    
+
     public boolean isPositive() {
-        return (((header.deviceAttributes[0]>>5)&0x01) == 0);
+        return (((header.deviceAttributes[0] >> 5) & 0x01) == 0);
     }
-        
+
     public boolean isReflective() {
-        return (((header.deviceAttributes[0]>>7)&0x01) == 0);
+        return (((header.deviceAttributes[0] >> 7) & 0x01) == 0);
     }
-    
+
     public Iterator<MetadataEntry> iterator() {
         ensureDataRead();
         List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
@@ -307,28 +307,28 @@ public class ICCProfile extends Metadata {
         header.addEntry(new MetadataEntry("PCS Illuminant [Z]", getPCSXYZ()[2] + ""));
         header.addEntry(new MetadataEntry("Profile Creator", getProfileCreator()));
         header.addEntry(new MetadataEntry("Profile ID", getProfileID()));
-    
+
         entries.add(header);
-        
+
         MetadataEntry tagTableEntry = new MetadataEntry("ICC Profile", "Tag Table", true);
         tagTableEntry.addEntry(new MetadataEntry("Tag Count", tagTable.getTagCount() + ""));
-        
+
         List<ProfileTagTable.TagEntry> tagEntries = tagTable.getTagEntries();
         Collections.sort(tagEntries);
-        
-        for(ProfileTagTable.TagEntry entry : tagEntries) {
+
+        for (ProfileTagTable.TagEntry entry : tagEntries) {
             tagTableEntry.addEntry(new MetadataEntry("Tag Name", ProfileTag.fromInt(entry.getProfileTag()) + ""));
             tagTableEntry.addEntry(new MetadataEntry("Data Offset", entry.getDataOffset() + ""));
             tagTableEntry.addEntry(new MetadataEntry("Data Length", entry.getDataLength() + ""));
         }
-        
+
         entries.add(tagTableEntry);
-    
+
         return Collections.unmodifiableCollection(entries).iterator();
     }
-    
+
     public void read() throws IOException {
-        if(!isDataRead) {
+        if (!isDataRead) {
             this.header = new ICCProfileHeader();
             this.tagTable = new ProfileTagTable();
             readHeader(data);
@@ -336,7 +336,7 @@ public class ICCProfile extends Metadata {
             isDataRead = true;
         }
     }
-    
+
     private void readHeader(byte[] data) {
         header.profileSize = IOUtils.readUnsignedIntMM(data, 0);
         System.arraycopy(data, 4, header.preferredCMMType, 0, 4);
@@ -357,7 +357,7 @@ public class ICCProfile extends Metadata {
         System.arraycopy(data, 84, header.profileID, 0, 16);
         System.arraycopy(data, 100, header.bytesReserved, 0, 28);
     }
-    
+
     private void readTagTable(byte[] data) {
         tagTable.read(data);
     }

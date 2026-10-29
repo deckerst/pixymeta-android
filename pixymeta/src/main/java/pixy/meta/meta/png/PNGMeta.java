@@ -332,11 +332,11 @@ public class PNGMeta {
     private static void removeXmpChunk(List<Chunk> chunks) {
         ListIterator<Chunk> itr = chunks.listIterator();
 
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
             Chunk chunk = itr.next();
-            if(chunk.getChunkType() == ChunkType.ITXT) {
+            if (chunk.getChunkType() == ChunkType.ITXT) {
                 TextReader reader = new TextReader(chunk);
-                if(reader.getKeyword().equals(ITXT_XMP_KEYWORD)) {
+                if (reader.getKeyword().equals(ITXT_XMP_KEYWORD)) {
                     itr.remove();
                 }
             }

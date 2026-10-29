@@ -1,7 +1,7 @@
 package pixy.meta.meta.adobe;
 
 @SuppressWarnings("unused")
-public class Slice {    
+public class Slice {
     private int id;
     private int groupId;
     private int origin;
@@ -27,7 +27,7 @@ public class Slice {
     private byte[] extraData;
     private int descriptorVersion;
     private Descriptor descriptor;
-    
+
     public static final class Descriptor {
         private String name; // Unicode string
         private int numOfItems;

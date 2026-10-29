@@ -28,19 +28,18 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import pixy.meta.image.bmp.BmpCompression;
+import pixy.meta.io.IOUtils;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
 import pixy.meta.meta.image.ImageMetadata;
-import pixy.meta.image.bmp.BmpCompression;
-import pixy.meta.io.IOUtils;
-
-import pixy.meta.log.Logger;
-import pixy.meta.log.LoggerFactory;
 
 /**
  * BMP image tweaking tool
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 12/29/2014
  */
@@ -54,49 +53,49 @@ public class BMPMeta {
         private byte[] infoHeader; // 40    
         private int[] colorPalette;
     }
-    
+
     private static void readHeader(InputStream is, DataTransferObject DTO) throws IOException {
         DTO.fileHeader = new byte[14];
         DTO.infoHeader = new byte[40];
-        
+
         is.read(DTO.fileHeader);
         is.read(DTO.infoHeader);
     }
-    
+
     public static Map<MetadataType, Metadata> readMetadata(InputStream is) throws IOException {
         Map<MetadataType, Metadata> metadataMap = new HashMap<MetadataType, Metadata>();
         ImageMetadata imageMeta = new ImageMetadata();
         // Create a new data transfer object to hold data
         DataTransferObject DTO = new DataTransferObject();
         readHeader(is, DTO);
-                
+
         LOGGER.info("... BMP Image Inforamtion starts...");
         LOGGER.info("Image signature: {}", new String(DTO.fileHeader, 0, 2));
         LOGGER.info("File size: {} bytes", IOUtils.readInt(DTO.fileHeader, 2));
         LOGGER.info("Reserved1 (2 bytes): {}", IOUtils.readShort(DTO.fileHeader, 6));
         LOGGER.info("Reserved2 (2 bytes): {}", IOUtils.readShort(DTO.fileHeader, 8));
         LOGGER.info("Data offset: {}", IOUtils.readInt(DTO.fileHeader, 10));
-        
+
         MetadataEntry header = new MetadataEntry("BMP File Header", "Bitmap File Header", true);
         header.addEntry(new MetadataEntry("Image signature", new String(DTO.fileHeader, 0, 2)));
         header.addEntry(new MetadataEntry("File size", IOUtils.readInt(DTO.fileHeader, 2) + " bytes"));
-        header.addEntry(new MetadataEntry("Reserved1", IOUtils.readShort(DTO.fileHeader, 6)+""));
-        header.addEntry(new MetadataEntry("Reserved2", IOUtils.readShort(DTO.fileHeader, 8)+""));
+        header.addEntry(new MetadataEntry("Reserved1", IOUtils.readShort(DTO.fileHeader, 6) + ""));
+        header.addEntry(new MetadataEntry("Reserved2", IOUtils.readShort(DTO.fileHeader, 8) + ""));
         header.addEntry(new MetadataEntry("Data-offset", "byte " + IOUtils.readInt(DTO.fileHeader, 10)));
-        
+
         imageMeta.addMetadataEntry(header);
-    
+
         // TODO add more ImageMetadata elements
         LOGGER.info("Info header length: {}", IOUtils.readInt(DTO.infoHeader, 0));
         LOGGER.info("Image width: {}", IOUtils.readInt(DTO.infoHeader, 4));
         LOGGER.info("Image heigth: {}", IOUtils.readInt(DTO.infoHeader, 8));
-        
+
         String alignment = "";
-        if(IOUtils.readInt(DTO.infoHeader, 8) > 0)
-            alignment = "BOTTOM_UP" ;
+        if (IOUtils.readInt(DTO.infoHeader, 8) > 0)
+            alignment = "BOTTOM_UP";
         else
             alignment = "TOP_DOWN";
-        
+
         MetadataEntry infoHeader = new MetadataEntry("BMP Info Header", "Bitmap Information Header", true);
         infoHeader.addEntry(new MetadataEntry("Info-header-lengthen", IOUtils.readInt(DTO.infoHeader, 0) + " bytes"));
         infoHeader.addEntry(new MetadataEntry("Image-alignment", alignment));
@@ -108,9 +107,9 @@ public class BMPMeta {
         infoHeader.addEntry(new MetadataEntry("Vertical-resolution", IOUtils.readInt(DTO.infoHeader, 28) + " pixels/meter"));
         infoHeader.addEntry(new MetadataEntry("Colors-used", IOUtils.readInt(DTO.infoHeader, 32) + " colors used"));
         infoHeader.addEntry(new MetadataEntry("Important-colors", IOUtils.readInt(DTO.infoHeader, 36) + " important colors"));
-    
+
         imageMeta.addMetadataEntry(infoHeader);
-        
+
         LOGGER.info("Image alignment: {}", alignment);
         LOGGER.info("Number of planes: {}", IOUtils.readShort(DTO.infoHeader, 12));
         LOGGER.info("BitCount (bits per pixel): {}", IOUtils.readShort(DTO.infoHeader, 14));
@@ -119,39 +118,39 @@ public class BMPMeta {
         LOGGER.info("Horizontal resolution (Pixels/meter): {}", IOUtils.readInt(DTO.infoHeader, 24));
         LOGGER.info("Vertical resolution (Pixels/meter): {}", IOUtils.readInt(DTO.infoHeader, 28));
         LOGGER.info("Colors used (number of actually used colors): {}", IOUtils.readInt(DTO.infoHeader, 32));
-        LOGGER.info("Important colors (number of important colors): {}", IOUtils.readInt(DTO.infoHeader, 36));        
-                
+        LOGGER.info("Important colors (number of important colors): {}", IOUtils.readInt(DTO.infoHeader, 36));
+
         int bitsPerPixel = IOUtils.readShort(DTO.infoHeader, 14);
-        
-        if(bitsPerPixel <= 8) {
+
+        if (bitsPerPixel <= 8) {
             readPalette(is, DTO);
             LOGGER.info("Color map follows");
         }
-        
+
         metadataMap.put(MetadataType.IMAGE, imageMeta);
-        
-        return metadataMap;        
+
+        return metadataMap;
     }
-    
+
     private static void readPalette(InputStream is, DataTransferObject DTO) throws IOException {
         int index = 0, bindex = 0;
         int colorsUsed = IOUtils.readInt(DTO.infoHeader, 32);
         int bitsPerPixel = IOUtils.readShort(DTO.infoHeader, 14);
         int dataOffset = IOUtils.readInt(DTO.fileHeader, 10);
-        int numOfColors = (colorsUsed == 0)?(1<<bitsPerPixel):colorsUsed;
-        byte palette[] = new byte[numOfColors*4];
-        DTO.colorPalette = new int[numOfColors];    
-     
+        int numOfColors = (colorsUsed == 0) ? (1 << bitsPerPixel) : colorsUsed;
+        byte palette[] = new byte[numOfColors * 4];
+        DTO.colorPalette = new int[numOfColors];
+
         IOUtils.readFully(is, palette);
 
-        for(int i = 0; i < numOfColors; i++)
-        {
-            DTO.colorPalette[index++] = ((0xff<<24)|(palette[bindex]&0xff)|((palette[bindex+1]&0xff)<<8)|((palette[bindex+2]&0xff)<<16));
+        for (int i = 0; i < numOfColors; i++) {
+            DTO.colorPalette[index++] = ((0xff << 24) | (palette[bindex] & 0xff) | ((palette[bindex + 1] & 0xff) << 8) | ((palette[bindex + 2] & 0xff) << 16));
             bindex += 4;
         }
         // There may be some extra bytes between colorPalette and actual image data
-        IOUtils.skipFully(is, dataOffset - numOfColors*4 - 54);
+        IOUtils.skipFully(is, dataOffset - numOfColors * 4 - 54);
     }
-    
-    private BMPMeta() {}
+
+    private BMPMeta() {
+    }
 }

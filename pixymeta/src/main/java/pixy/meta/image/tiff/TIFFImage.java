@@ -27,7 +27,7 @@ import pixy.meta.meta.tiff.TIFFMeta;
 
 /**
  * TIFF image wrapper to manipulate pages and fields
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 05/23/2014
  */
@@ -45,51 +45,51 @@ public class TIFFImage implements Iterable<IFD> {
         this.numOfPages = ifds.size();
         this.workingPage = 0;
     }
-    
+
     public void addField(TiffField<?> field) {
         ifds.get(workingPage).addField(field);
     }
-    
+
     public TiffField<?> getField(Tag tag) {
         return ifds.get(workingPage).getField(tag);
     }
-    
+
     public List<IFD> getIFDs() {
         return Collections.unmodifiableList(ifds);
     }
-    
+
     public RandomAccessInputStream getInputStream() {
         return rin;
     }
-    
+
     public int getNumOfPages() {
         return numOfPages;
     }
-    
+
     public TiffField<?> removeField(Tag tag) {
         return ifds.get(workingPage).removeField(tag);
     }
-    
+
     public IFD removePage(int index) {
         IFD removed = ifds.remove(index);
         numOfPages--;
-        
+
         return removed;
     }
-    
+
     public void setWorkingPage(int workingPage) {
-        if(workingPage >= 0 && workingPage < numOfPages)
+        if (workingPage >= 0 && workingPage < numOfPages)
             this.workingPage = workingPage;
         else
             throw new IllegalArgumentException("Invalid page number: " + workingPage);
     }
-    
+
     public void write(RandomAccessOutputStream out) throws IOException {
         // Reset pageNumber if we have more than 1 pages
-        if(numOfPages > 1) { 
-            for(int i = 0; i < ifds.size(); i++) {
+        if (numOfPages > 1) {
+            for (int i = 0; i < ifds.size(); i++) {
                 ifds.get(i).removeField(TiffTag.PAGE_NUMBER);
-                ifds.get(i).addField(new ShortField(TiffTag.PAGE_NUMBER.getValue(), new short[]{(short)i, (short)(numOfPages - 1)}));
+                ifds.get(i).addField(new ShortField(TiffTag.PAGE_NUMBER.getValue(), new short[]{(short) i, (short) (numOfPages - 1)}));
             }
         }
         TIFFMeta.write(this, out);

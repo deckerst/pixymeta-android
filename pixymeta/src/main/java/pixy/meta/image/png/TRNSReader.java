@@ -21,7 +21,7 @@ import pixy.meta.util.Reader;
 
 /**
  * PNG tRNS chunk reader
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 05/03/2013
  */
@@ -29,23 +29,23 @@ public class TRNSReader implements Reader {
 
     private byte[] alpha = new byte[0];
     private Chunk chunk;
-    
+
     public TRNSReader(Chunk chunk) {
-        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-        
+        if (chunk == null) throw new IllegalArgumentException("Input chunk is null");
+
         if (chunk.getChunkType() != ChunkType.TRNS) {
             throw new IllegalArgumentException("Not a valid TRNS chunk.");
         }
-        
+
         this.chunk = chunk;
-        
+
         try {
             read();
         } catch (IOException e) {
             throw new RuntimeException("TRNSReader: error reading chunk");
         }
     }
-    
+
     public byte[] getAlpha() {
         return alpha;
     }

@@ -19,27 +19,27 @@ import pixy.meta.string.StringUtils;
 
 /**
  * TIFF Short type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2013
  */
 public final class ShortField extends AbstractShortField {
 
     public ShortField(short tag, short[] data) {
-        super(tag, FieldType.SHORT, data);    
+        super(tag, FieldType.SHORT, data);
     }
-    
+
     public int[] getDataAsLong() {
         //
         int[] temp = new int[data.length];
-        
-        for(int i=0; i<data.length; i++) {
-            temp[i] = data[i]&0xffff;
+
+        for (int i = 0; i < data.length; i++) {
+            temp[i] = data[i] & 0xffff;
         }
-                
+
         return temp;
     }
-    
+
     public String getDataAsString() {
         return StringUtils.shortArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
     }

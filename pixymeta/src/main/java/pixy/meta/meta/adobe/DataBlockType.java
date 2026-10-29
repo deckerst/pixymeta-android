@@ -32,38 +32,37 @@ public enum DataBlockType {
     Patt("Pattern", 0x50617474),
     FMsk("Filter Mask", 0x464d736b),
     Anno("Annotations", 0x416e6e6f),
-    
+
     UNKNOWN("Unknown Data Block", 0xFFFFFFFF);
-    
+
     private DataBlockType(String description, int value) {
         this.description = description;
         this.value = value;
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     public static DataBlockType fromInt(int value) {
-           DataBlockType type = typeMap.get(value);
+        DataBlockType type = typeMap.get(value);
         if (type == null)
             return UNKNOWN;
-           return type;
+        return type;
     }
-    
+
     private static final Map<Integer, DataBlockType> typeMap = new HashMap<Integer, DataBlockType>();
-       
-    static
-    {
-      for(DataBlockType type : values()) {
-           typeMap.put(type.getValue(), type);
-      }
+
+    static {
+        for (DataBlockType type : values()) {
+            typeMap.put(type.getValue(), type);
+        }
     }
-    
-     private final String description;
+
+    private final String description;
     private final int value;
 }

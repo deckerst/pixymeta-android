@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * IRBThumbnail.java
@@ -25,30 +25,33 @@
 
 package pixy.meta.meta.adobe;
 
+import android.graphics.Bitmap;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
-import android.graphics.Bitmap;
 import pixy.meta.meta.Thumbnail;
 
-/** 
+/**
  * Photoshop Image Resource Block thumbnail wrapper.
  *
- * @author Wen Yu, yuwen_66@yahoo.com 
- * @version 1.0 01/10/2015   
+ * @author Wen Yu, yuwen_66@yahoo.com
+ * @version 1.0 01/10/2015
  */
 public class IRBThumbnail extends Thumbnail {
-    
-    public IRBThumbnail() { ; }
-    
+
+    public IRBThumbnail() {
+        ;
+    }
+
     public IRBThumbnail(Bitmap thumbnail) {
         super(thumbnail);
     }
-    
+
     public IRBThumbnail(int width, int height, int dataType, byte[] compressedThumbnail) {
         super(width, height, dataType, compressedThumbnail);
     }
-    
+
     public IRBThumbnail(IRBThumbnail other) { // Copy constructor
         this.dataType = other.dataType;
         this.height = other.height;
@@ -59,16 +62,17 @@ public class IRBThumbnail extends Thumbnail {
 
     @Override
     public void write(OutputStream os) throws IOException {
-        if(getDataType() == Thumbnail.DATA_TYPE_KJpegRGB) { // Compressed old-style JPEG format
+        if (getDataType() == Thumbnail.DATA_TYPE_KJpegRGB) { // Compressed old-style JPEG format
             os.write(getCompressedImage());
-        } else if(getDataType() == Thumbnail.DATA_TYPE_KRawRGB) {
+        } else if (getDataType() == Thumbnail.DATA_TYPE_KRawRGB) {
             Bitmap thumbnail = getRawImage();
-            if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
+            if (thumbnail == null)
+                throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
             try {
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, writeQuality, os);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to compress thumbnail as JPEG");
-            }            
+            }
         }
     }
- }
+}

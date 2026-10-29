@@ -21,7 +21,7 @@ import pixy.meta.util.Reader;
 
 /**
  * PNG sRGB chunk reader
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 10/16/2013
  */
@@ -29,23 +29,23 @@ public class SRGBReader implements Reader {
 
     private Chunk chunk;
     private byte renderingIntent;
-    
+
     public SRGBReader(Chunk chunk) {
-        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-        
+        if (chunk == null) throw new IllegalArgumentException("Input chunk is null");
+
         if (chunk.getChunkType() != ChunkType.SRGB) {
             throw new IllegalArgumentException("Not a valid sRGB chunk.");
         }
-        
+
         this.chunk = chunk;
-        
+
         try {
             read();
         } catch (IOException e) {
             throw new RuntimeException("SRGBReader: error reading chunk");
         }
     }
-    
+
     /**
      * sRGB rendering intent:
      * <p>
@@ -71,8 +71,8 @@ public class SRGBReader implements Reader {
 
     public void read() throws IOException {
         byte[] data = chunk.getData();
-        if(data.length > 0)
-            renderingIntent = data[0]; 
+        if (data.length > 0)
+            renderingIntent = data[0];
         else renderingIntent = -1;
     }
 }

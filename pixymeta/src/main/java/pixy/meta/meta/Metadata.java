@@ -74,7 +74,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(Metadata.class);
 
-    public static void  extractThumbnails(File image, String pathToThumbnail) throws IOException {
+    public static void extractThumbnails(File image, String pathToThumbnail) throws IOException {
         FileInputStream fin = new FileInputStream(image);
         extractThumbnails(fin, pathToThumbnail);
         fin.close();
@@ -85,7 +85,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate thumbnail extracting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.extractThumbnails(peekHeadInputStream, pathToThumbnail);
                 break;
@@ -114,7 +114,9 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         extractThumbnails(new File(image), pathToThumbnail);
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertComment(InputStream is, OutputStream os, String comment) throws IOException {
         insertComments(is, os, Collections.singletonList(comment));
     }
@@ -124,7 +126,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate IPTC inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertComments(peekHeadInputStream, os, comments);
                 break;
@@ -154,8 +156,8 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
     }
 
     /**
-     * @param is input image stream
-     * @param os output image stream
+     * @param is   input image stream
+     * @param os   output image stream
      * @param exif Exif instance
      * @noinspection unused
      */
@@ -164,9 +166,9 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
     }
 
     /**
-     * @param is input image stream
-     * @param os output image stream
-     * @param exif Exif instance
+     * @param is     input image stream
+     * @param os     output image stream
+     * @param exif   Exif instance
      * @param update true to keep the original data, otherwise false
      */
     public static void insertExif(InputStream is, OutputStream os, Exif exif, boolean update) throws IOException {
@@ -174,7 +176,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate EXIF inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertExif(peekHeadInputStream, os, exif, update);
                 break;
@@ -199,13 +201,15 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         peekHeadInputStream.shallowClose();
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertICCProfile(InputStream is, OutputStream out, byte[] icc_profile) throws IOException {
         // ImageIO.IMAGE_MAGIC_NUMBER_LEN bytes as image magic number
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate ICCP inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertICCProfile(peekHeadInputStream, out, icc_profile);
                 break;
@@ -229,7 +233,9 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         peekHeadInputStream.shallowClose();
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertIPTC(InputStream is, OutputStream out, Collection<IPTCDataSet> iptcs) throws IOException {
         insertIPTC(is, out, iptcs, false);
     }
@@ -239,7 +245,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate IPTC inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertIPTC(peekHeadInputStream, out, iptcs, update);
                 break;
@@ -264,7 +270,9 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         peekHeadInputStream.shallowClose();
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertIRB(InputStream is, OutputStream out, Collection<_8BIM> bims) throws IOException {
         insertIRB(is, out, bims, false);
     }
@@ -274,7 +282,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate IRB inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertIRB(peekHeadInputStream, os, bims, update);
                 break;
@@ -299,13 +307,15 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         peekHeadInputStream.shallowClose();
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertIRBThumbnail(InputStream is, OutputStream out, Bitmap thumbnail) throws IOException {
         // ImageIO.IMAGE_MAGIC_NUMBER_LEN bytes as image magic number
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate IRB thumbnail inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertIRBThumbnail(peekHeadInputStream, out, thumbnail);
                 break;
@@ -335,7 +345,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate XMP inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertXMP(peekHeadInputStream, out, xmp); // No ExtendedXMP
                 break;
@@ -364,13 +374,15 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         peekHeadInputStream.shallowClose();
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public static void insertXMP(InputStream is, OutputStream out, String xmp) throws IOException {
         // ImageIO.IMAGE_MAGIC_NUMBER_LEN bytes as image magic number
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate XMP inserting to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 JPGMeta.insertXMP(peekHeadInputStream, out, xmp, null); // No ExtendedXMP
                 break;
@@ -420,7 +432,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
         PeekHeadInputStream peekHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peekHeadInputStream);
         // Delegate metadata reading to corresponding image tweakers.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 metadataMap = JPGMeta.readMetadata(peekHeadInputStream);
                 break;
@@ -458,14 +470,14 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
      * @param is InputStream for the input image
      * @param os OutputStream for the output image
      */
-    public static Map<MetadataType, Metadata> removeMetadata(InputStream is, OutputStream os, MetadataType ...metadataTypes) throws IOException {
+    public static Map<MetadataType, Metadata> removeMetadata(InputStream is, OutputStream os, MetadataType... metadataTypes) throws IOException {
         // ImageIO.IMAGE_MAGIC_NUMBER_LEN bytes as image magic number
         PeekHeadInputStream peakHeadInputStream = new PeekHeadInputStream(is, IMAGE_MAGIC_NUMBER_LEN);
         ImageType imageType = MetadataUtils.guessImageType(peakHeadInputStream);
         // The map of removed metadata
         Map<MetadataType, Metadata> metadataMap = Collections.emptyMap();
         // Delegate meta data removing to corresponding image tweaker.
-        switch(imageType) {
+        switch (imageType) {
             case JPG:
                 metadataMap = JPGMeta.removeMetadata(peakHeadInputStream, os, metadataTypes);
                 break;
@@ -496,15 +508,15 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
     }
 
     public Metadata(MetadataType type, byte[] data) {
-        if(type == null) throw new IllegalArgumentException("Metadata type must be specified");
-        if(data == null) throw new IllegalArgumentException("Input data array is null");
-        if(data.length == 0) isDataRead = true; // Allow for zero length data but disable read
+        if (type == null) throw new IllegalArgumentException("Metadata type must be specified");
+        if (data == null) throw new IllegalArgumentException("Input data array is null");
+        if (data.length == 0) isDataRead = true; // Allow for zero length data but disable read
         this.type = type;
         this.data = data;
     }
 
     public void ensureDataRead() {
-        if(!isDataRead) {
+        if (!isDataRead) {
             try {
                 read();
             } catch (IOException e) {
@@ -514,7 +526,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
     }
 
     public byte[] getData() {
-        if(data != null)
+        if (data != null)
             return data.clone();
 
         return null;
@@ -535,7 +547,7 @@ public abstract class Metadata implements MetadataReader, Iterable<MetadataEntry
      */
     public void write(OutputStream out) throws IOException {
         byte[] data = getData();
-        if(data != null)
+        if (data != null)
             out.write(data);
     }
 }

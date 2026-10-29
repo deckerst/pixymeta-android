@@ -25,11 +25,6 @@
 
 package pixy.meta.meta.xmp;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.Iterator;
-
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -40,6 +35,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Iterator;
 
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
@@ -54,47 +54,47 @@ public abstract class XMP extends Metadata {
     private Document mergedXmpDocument;
     private boolean hasExtendedXmp;
     private byte[] extendedXmpData;
-    
+
     private String xmp;
-    
+
 
     public static void showXMP(XMP xmp) {
         XMLUtils.showXML(xmp.getMergedDocument());
     }
-        
+
     public XMP(byte[] data) {
         super(MetadataType.XMP, data);
     }
-    
+
     public XMP(String xmp) {
         super(MetadataType.XMP);
         this.xmp = xmp;
     }
-    
+
     public XMP(String xmp, String extendedXmp) {
         super(MetadataType.XMP);
-        if(xmp == null) throw new IllegalArgumentException("Input XMP string is null");
+        if (xmp == null) throw new IllegalArgumentException("Input XMP string is null");
         this.xmp = xmp;
-        if(extendedXmp != null) { // We have ExtendedXMP
+        if (extendedXmp != null) { // We have ExtendedXMP
             try {
                 setExtendedXMPData(XMLUtils.serializeToByteArray(XMLUtils.createXML(extendedXmp)));
-            } catch (IOException e) {                
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     private void addNodeToEntry(Node node, MetadataEntry entry) {
-        if(node != null) {
-            switch(node.getNodeType()) {
+        if (node != null) {
+            switch (node.getNodeType()) {
                 case Node.DOCUMENT_NODE: {
                     Node child = node.getFirstChild();
-                    while(child != null) {
+                    while (child != null) {
                         addNodeToEntry(child, entry);
                         child = child.getNextSibling();
                     }
                     break;
-                } 
+                }
                 case Node.DOCUMENT_TYPE_NODE: {
                     DocumentType doctype = (DocumentType) node;
                     entry.addEntry(new MetadataEntry("!DOCTYPE", doctype.getName()));
@@ -102,32 +102,32 @@ public abstract class XMP extends Metadata {
                 }
                 case Node.ELEMENT_NODE: { // Element node
                     Element ele = (Element) node;
-               
+
                     NamedNodeMap attrs = ele.getAttributes();
                     StringBuilder attributes = new StringBuilder();
-                    for(int i = 0; i < attrs.getLength(); i++) {
+                    for (int i = 0; i < attrs.getLength(); i++) {
                         Node a = attrs.item(i);
                         attributes.append(a.getNodeName()).append("=").append("'" + a.getNodeValue()).append("' ");
                     }
                     MetadataEntry element = new MetadataEntry(ele.getTagName(), attributes.toString().trim(), true);
                     entry.addEntry(element);
-           
+
                     Node child = ele.getFirstChild();
-                    while(child != null) {
+                    while (child != null) {
                         addNodeToEntry(child, element);
                         child = child.getNextSibling();
                     }
                     break;
                 }
                 case Node.TEXT_NODE: {
-                    Text textNode = (Text)node;
+                    Text textNode = (Text) node;
                     String text = textNode.getData().trim();
                     if ((text != null) && text.length() > 0)
                         entry.addEntry(new MetadataEntry(text, ""));
                     break;
                 }
                 case Node.PROCESSING_INSTRUCTION_NODE: {
-                    ProcessingInstruction pi = (ProcessingInstruction)node;
+                    ProcessingInstruction pi = (ProcessingInstruction) node;
                     entry.addEntry(new MetadataEntry("?" + pi.getTarget(), pi.getData() + "?"));
                     break;
                 }
@@ -136,12 +136,12 @@ public abstract class XMP extends Metadata {
                     break;
                 }
                 case Node.CDATA_SECTION_NODE: { // Output CDATA sections
-                    CDATASection cdata = (CDATASection)node;
+                    CDATASection cdata = (CDATASection) node;
                     entry.addEntry(new MetadataEntry("![CDATA[" + cdata.getData() + "]]", ""));
                     break;
                 }
                 case Node.COMMENT_NODE: {
-                    Comment c = (Comment)node;
+                    Comment c = (Comment) node;
                     entry.addEntry(new MetadataEntry("!--" + c.getData() + "--", ""));
                     break;
                 }
@@ -153,7 +153,7 @@ public abstract class XMP extends Metadata {
 
     public byte[] getData() {
         byte[] data = super.getData();
-        if(data != null && !hasExtendedXmp)
+        if (data != null && !hasExtendedXmp)
             return data;
         try {
             return XMLUtils.serializeToByteArray(getMergedDocument());
@@ -161,33 +161,33 @@ public abstract class XMP extends Metadata {
             return null;
         }
     }
-    
+
     public byte[] getExtendedXmpData() {
         return extendedXmpData;
     }
-    
+
     public Document getExtendedXmpDocument() {
-        if(hasExtendedXmp && extendedXmpDocument == null)
+        if (hasExtendedXmp && extendedXmpDocument == null)
             extendedXmpDocument = XMLUtils.createXML(extendedXmpData);
 
         return extendedXmpDocument;
     }
-    
+
     /**
      * Merge the standard XMP and the extended XMP DOM
      * <p>
      * This is a very expensive operation, avoid if possible
-     * 
+     *
      * @return a merged Document for the entire XMP data with the GUID from the standard XMP document removed
      */
     public Document getMergedDocument() {
-        if(mergedXmpDocument != null)
+        if (mergedXmpDocument != null)
             return mergedXmpDocument;
-        else if(getExtendedXmpDocument() != null) { // Merge document
+        else if (getExtendedXmpDocument() != null) { // Merge document
             mergedXmpDocument = XMLUtils.createDocumentNode();
             Document rootDoc = getXmpDocument();
             NodeList children = rootDoc.getChildNodes();
-            for(int i = 0; i< children.getLength(); i++) {
+            for (int i = 0; i < children.getLength(); i++) {
                 Node importedNode = mergedXmpDocument.importNode(children.item(i), true);
                 mergedXmpDocument.appendChild(importedNode);
             }
@@ -195,8 +195,8 @@ public abstract class XMP extends Metadata {
             XMLUtils.removeAttribute(mergedXmpDocument, "rdf:Description", "xmpNote:HasExtendedXMP");
             // Copy all the children of rdf:RDF element
             NodeList list = extendedXmpDocument.getElementsByTagName("rdf:RDF").item(0).getChildNodes();
-            Element rdf = (Element)(mergedXmpDocument.getElementsByTagName("rdf:RDF").item(0));
-              for(int i = 0; i < list.getLength(); i++) {
+            Element rdf = (Element) (mergedXmpDocument.getElementsByTagName("rdf:RDF").item(0));
+            for (int i = 0; i < list.getLength(); i++) {
                 Node curr = list.item(i);
                 Node newNode = mergedXmpDocument.importNode(curr, true);
                 rdf.appendChild(newNode);
@@ -205,45 +205,45 @@ public abstract class XMP extends Metadata {
         } else
             return getXmpDocument();
     }
-    
+
     public Document getXmpDocument() {
-        ensureDataRead();        
+        ensureDataRead();
         return xmpDocument;
     }
-    
+
     public boolean hasExtendedXmp() {
         return hasExtendedXmp;
     }
-    
+
     public Iterator<MetadataEntry> iterator() {
         Document doc = getMergedDocument();
-        
+
         MetadataEntry dummy = new MetadataEntry("XMP", " Document", true);
         addNodeToEntry(doc, dummy);
-        
+
         return Collections.unmodifiableCollection(dummy.getMetadataEntries()).iterator();
     }
-    
+
     public void read() throws IOException {
-        if(!isDataRead) {
-            if(xmp != null)
+        if (!isDataRead) {
+            if (xmp != null)
                 xmpDocument = XMLUtils.createXML(xmp);
-            else if(data != null)
+            else if (data != null)
                 xmpDocument = XMLUtils.createXML(data);
-            
+
             isDataRead = true;
         }
     }
-    
+
     public void setExtendedXMPData(byte[] extendedXmpData) {
         this.extendedXmpData = extendedXmpData;
         hasExtendedXmp = true;
     }
-    
+
     public void showMetadata() {
         ensureDataRead();
         XMLUtils.showXML(getMergedDocument());
     }
-    
+
     public abstract void write(OutputStream os) throws IOException;
 }

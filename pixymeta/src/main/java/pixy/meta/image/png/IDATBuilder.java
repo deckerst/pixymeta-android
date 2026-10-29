@@ -22,7 +22,7 @@ import pixy.meta.util.Builder;
 
 /**
  * PNG IDAT chunk builder
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 04/26/2013
  */
@@ -30,23 +30,23 @@ public class IDATBuilder extends ChunkBuilder implements Builder<Chunk> {
 
     private ByteArrayOutputStream bout = new ByteArrayOutputStream(4096);
     private Deflater deflater = new Deflater(5);
-        
+
     public IDATBuilder() {
-        super(ChunkType.IDAT);        
+        super(ChunkType.IDAT);
     }
-    
+
     public IDATBuilder(int compressionLevel) {
         this();
         deflater = new Deflater(compressionLevel);
     }
-    
+
     public IDATBuilder data(byte[] data, int offset, int length) {
         // Caches the bytes
         bout.write(data, offset, length);
-        
+
         return this;
     }
-    
+
     public IDATBuilder data(byte[] data) {
         return data(data, 0, data.length);
     }
@@ -55,30 +55,30 @@ public class IDATBuilder extends ChunkBuilder implements Builder<Chunk> {
     protected byte[] buildData() {
         // Compresses raw data
         deflater.setInput(bout.toByteArray());
-        
+
         bout.reset();
         byte buffer[] = new byte[4096];
-        
-        if(finish)
+
+        if (finish)
             // This is to make sure we get all the input data compressed
             deflater.finish();
-        
-        while(!deflater.finished()) {
+
+        while (!deflater.finished()) {
             int bytesCompressed = deflater.deflate(buffer);
-            if(bytesCompressed <= 0) break;
+            if (bytesCompressed <= 0) break;
             bout.write(buffer, 0, bytesCompressed);
-        }         
-        
+        }
+
         byte temp[] = bout.toByteArray();
-            
+
         bout.reset();
-        
+
         return temp;
     }
-    
+
     public void setFinish(boolean finish) {
         this.finish = finish;
     }
-    
+
     private boolean finish;
 }

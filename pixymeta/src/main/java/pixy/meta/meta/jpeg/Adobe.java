@@ -30,11 +30,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import pixy.meta.io.IOUtils;
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
 import pixy.meta.string.StringUtils;
-import pixy.meta.io.IOUtils;
 
 public class Adobe extends Metadata {
 
@@ -42,12 +42,12 @@ public class Adobe extends Metadata {
     private int m_APP14Flags0;
     private int m_APP14Flags1;
     private int m_ColorTransform;
-    
+
     public Adobe(byte[] data) {
         super(MetadataType.JPG_ADOBE, data);
         ensureDataRead();
     }
-    
+
     public Adobe(int dctEncodeVersion, int app14Flags0, int app14Flags1, int colorTransform) {
         super(MetadataType.JPG_ADOBE);
         this.m_DCTEncodeVersion = dctEncodeVersion;
@@ -56,28 +56,28 @@ public class Adobe extends Metadata {
         this.m_ColorTransform = colorTransform;
         isDataRead = true;
     }
-    
+
     public int getAPP14Flags0() {
         return m_APP14Flags0;
     }
-    
+
     public int getAPP14Flags1() {
         return m_APP14Flags1;
     }
-    
+
     public int getColorTransform() {
         return m_ColorTransform;
     }
-    
+
     public int getDCTEncodeVersion() {
         return m_DCTEncodeVersion;
     }
-    
+
     public void read() throws IOException {
-        if(!isDataRead) {
+        if (!isDataRead) {
             int expectedLen = 7;
             int offset = 0;
-            
+
             if (data.length >= expectedLen) {
                 m_DCTEncodeVersion = IOUtils.readUnsignedShortMM(data, offset);
                 offset += 2;
@@ -85,23 +85,23 @@ public class Adobe extends Metadata {
                 offset += 2;
                 m_APP14Flags1 = IOUtils.readUnsignedShortMM(data, offset);
                 offset += 2;
-                m_ColorTransform = data[offset]&0xff;            
+                m_ColorTransform = data[offset] & 0xff;
             }
-            
+
             isDataRead = true;
         }
     }
 
     public Iterator<MetadataEntry> iterator() {
         ensureDataRead();
-        
+
         List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
         String[] colorTransform = {"Unknown (RGB or CMYK)", "YCbCr", "YCCK"};
         entries.add(new MetadataEntry("DCTEncodeVersion", m_DCTEncodeVersion + ""));
-        entries.add(new MetadataEntry("APP14Flags0", StringUtils.shortToHexStringMM((short)m_APP14Flags0)));
-        entries.add(new MetadataEntry("APP14Flags1", StringUtils.shortToHexStringMM((short)m_APP14Flags1)));
-        entries.add(new MetadataEntry("ColorTransform", (m_ColorTransform <= 2)?colorTransform[m_ColorTransform]:m_ColorTransform + ""));
-        
+        entries.add(new MetadataEntry("APP14Flags0", StringUtils.shortToHexStringMM((short) m_APP14Flags0)));
+        entries.add(new MetadataEntry("APP14Flags1", StringUtils.shortToHexStringMM((short) m_APP14Flags1)));
+        entries.add(new MetadataEntry("ColorTransform", (m_ColorTransform <= 2) ? colorTransform[m_ColorTransform] : m_ColorTransform + ""));
+
         return Collections.unmodifiableCollection(entries).iterator();
     }
 

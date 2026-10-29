@@ -17,7 +17,7 @@ package pixy.meta.image.tiff;
 
 /**
  * TIFF SByte type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 02/24/2013
  */
@@ -25,5 +25,5 @@ public final class SByteField extends AbstractByteField {
 
     public SByteField(short tag, byte[] data) {
         super(tag, FieldType.SBYTE, data);
-    }    
+    }
 }

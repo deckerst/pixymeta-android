@@ -23,7 +23,8 @@
 
 package pixy.meta.io;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 import pixy.meta.util.ArrayUtils;
 
@@ -33,7 +34,9 @@ import pixy.meta.util.ArrayUtils;
  *
  */
 public class PeekHeadInputStream extends InputStream {
-    /** The source stream. */
+    /**
+     * The source stream.
+     */
     private InputStream src;
 
     /**
@@ -45,48 +48,48 @@ public class PeekHeadInputStream extends InputStream {
      * Current buffer position.
      */
     private int position;
-    
+
     private boolean closed;
 
     /**
      * @param bytesToPeek number of bytes to peek
-     * @param src The source InputStream to use
+     * @param src         The source InputStream to use
      */
     public PeekHeadInputStream(InputStream src, int bytesToPeek) {
         this.src = src;
         this.buffer = new byte[bytesToPeek];
         try {
             IOUtils.readFully(src, buffer);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException("Error while reading bytes into buffer");
         }
     }
-    
+
     public void close() throws IOException {
-        if(closed) return;
+        if (closed) return;
         buffer = null;
         src.close();
         src = null;
         closed = true;
     }
-    
+
     public void shallowClose() throws IOException {
-        if(closed) return;
+        if (closed) return;
         buffer = null;
         closed = true;
     }
-    
+
     /**
      * Check to make sure that this stream has not been closed
      */
-    private  void ensureOpen() throws IOException {
+    private void ensureOpen() throws IOException {
         if (closed)
             throw new IOException("Stream closed");
     }
-    
+
     public byte[] peek(int len) throws IOException {
         ensureOpen();
-        if(len <= buffer.length) return ArrayUtils.subArray(buffer, 0, len);
+        if (len <= buffer.length) return ArrayUtils.subArray(buffer, 0, len);
         throw new IllegalArgumentException("Peek length larger than buffer");
     }
 
@@ -96,21 +99,20 @@ public class PeekHeadInputStream extends InputStream {
         if (position >= buffer.length)
             return src.read();
         else
-            return (buffer[position++]&0xff);
+            return (buffer[position++] & 0xff);
     }
-    
+
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         ensureOpen();
         if (position >= buffer.length) {
             return src.read(b, off, len);
-        } else if(position + len > buffer.length) {
+        } else if (position + len > buffer.length) {
             int bytesAvailable = buffer.length - position;
             System.arraycopy(buffer, position, b, off, bytesAvailable);
-            position += bytesAvailable;            
+            position += bytesAvailable;
             return bytesAvailable + src.read(b, off + bytesAvailable, len - bytesAvailable);
-        }
-        else {
+        } else {
             System.arraycopy(buffer, position, b, off, len);
             position += len;
             return len;

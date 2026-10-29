@@ -19,7 +19,7 @@ import pixy.meta.string.StringUtils;
 
 /**
  * TIFF IFD type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 06/20/2014
  */
@@ -28,7 +28,7 @@ public final class IFDField extends AbstractLongField {
     public IFDField(short tag, int[] data) {
         super(tag, FieldType.IFD, data);
     }
-    
+
     public String getDataAsString() {
         return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
     }

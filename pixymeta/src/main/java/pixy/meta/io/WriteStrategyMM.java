@@ -24,50 +24,50 @@ import java.io.OutputStream;
  */
 public class WriteStrategyMM implements WriteStrategy {
 
-    private static final WriteStrategyMM instance = new WriteStrategyMM();    
-     
-    public static WriteStrategyMM getInstance() 
-    {
+    private static final WriteStrategyMM instance = new WriteStrategyMM();
+
+    public static WriteStrategyMM getInstance() {
         return instance;
     }
-     
-    private WriteStrategyMM(){}
-    
+
+    private WriteStrategyMM() {
+    }
+
     public void writeInt(byte[] buf, int start_idx, int value)
             throws IOException {
-        
-        byte[] tmp =  {(byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value};
-        
+
+        byte[] tmp = {(byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};
+
         System.arraycopy(tmp, 0, buf, start_idx, 4);
     }
 
     public void writeInt(OutputStream os, int value) throws IOException {
-        os.write(new byte[] {
-             (byte)(value >>> 24),
-             (byte)(value >>> 16),
-             (byte)(value >>> 8),
-             (byte)value});
+        os.write(new byte[]{
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value});
     }
-    
+
     public void writeLong(byte[] buf, int start_idx, long value) {
-        
-        byte[] tmp = new byte[] { (byte)(value>>>56), (byte)(value>>>48),
-                 (byte)(value>>>40), (byte)(value>>>32), (byte)(value>>>24),
-                 (byte)(value>>>16), (byte)(value>>>8), (byte)value};
-        
+
+        byte[] tmp = new byte[]{(byte) (value >>> 56), (byte) (value >>> 48),
+                (byte) (value >>> 40), (byte) (value >>> 32), (byte) (value >>> 24),
+                (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};
+
         System.arraycopy(tmp, 0, buf, start_idx, 8);
     }
 
     public void writeShort(byte[] buf, int start_idx, int value)
             throws IOException {
-        buf[start_idx] = (byte)(value>>>8);
-        buf[start_idx + 1] = (byte)value;
+        buf[start_idx] = (byte) (value >>> 8);
+        buf[start_idx + 1] = (byte) value;
     }
 
     public void writeShort(OutputStream os, int value) throws IOException {
-        os.write(new byte[] {
-                 (byte)(value >>> 8),
-                 (byte)value});
+        os.write(new byte[]{
+                (byte) (value >>> 8),
+                (byte) value});
     }
 
 }

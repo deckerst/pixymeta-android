@@ -23,19 +23,19 @@ import java.io.InputStream;
 
 /**
  * Endian-aware InputStream backed up by ReadStrategy
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
- * @version 1.0 02/03/2014 
- */ 
+ * @version 1.0 02/03/2014
+ */
 public class EndianAwareInputStream extends InputStream implements DataInput {
-    
+
     private final InputStream src;
     private final ReadStrategy strategy = ReadStrategyMM.getInstance();
-    
+
     public EndianAwareInputStream(InputStream is) {
-          this.src = is;
+        this.src = is;
     }
-    
+
     public int read() throws IOException {
         return src.read();
     }
@@ -50,14 +50,14 @@ public class EndianAwareInputStream extends InputStream implements DataInput {
     public byte readByte() throws IOException {
         int ch = this.read();
         if (ch < 0)
-           throw new EOFException();
-        return (byte)ch;
+            throw new EOFException();
+        return (byte) ch;
     }
-    
+
     public char readChar() throws IOException {
-        return (char)(readShort()&0xffff);
+        return (char) (readShort() & 0xffff);
     }
-    
+
     public double readDouble() throws IOException {
         return Double.longBitsToDouble(readLong());
     }
@@ -65,11 +65,11 @@ public class EndianAwareInputStream extends InputStream implements DataInput {
     public float readFloat() throws IOException {
         return Float.intBitsToFloat(readInt());
     }
-    
+
     public void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
-    }    
-    
+    }
+
     public void readFully(byte[] b, int off, int len) throws IOException {
         int n = 0;
         do {
@@ -89,7 +89,7 @@ public class EndianAwareInputStream extends InputStream implements DataInput {
     @Deprecated
     public String readLine() {
         throw new UnsupportedOperationException(
-            "readLine is not supported by RandomAccessInputStream."
+                "readLine is not supported by RandomAccessInputStream."
         );
     }
 
@@ -114,28 +114,28 @@ public class EndianAwareInputStream extends InputStream implements DataInput {
     }
 
     public int readUnsignedShort() throws IOException {
-        return readShort()&0xffff;
+        return readShort() & 0xffff;
     }
 
     /**
-     *  Due to the current implementation, writeUTF and readUTF are the
-     *  only methods which are machine or byte sequence independent as
-     *  they are actually both Motorola byte sequence under the hood.
+     * Due to the current implementation, writeUTF and readUTF are the
+     * only methods which are machine or byte sequence independent as
+     * they are actually both Motorola byte sequence under the hood.
      * <p>
-     *  Whereas the following static method is byte sequence dependent
-     *  as it calls readUnsignedShort of RandomAccessInputStream.
+     * Whereas the following static method is byte sequence dependent
+     * as it calls readUnsignedShort of RandomAccessInputStream.
      * <p>
-     *  <code>DataInputStream.readUTF(this)</code>;
+     * <code>DataInputStream.readUTF(this)</code>;
      */
     public String readUTF() throws IOException {
-        return new DataInputStream(this).readUTF();    
+        return new DataInputStream(this).readUTF();
     }
 
     public int skipBytes(int n) throws IOException {
         /* return the actual number of bytes skipped */
         return src.read(new byte[n], 0, n);
     }
-    
+
     public void close() throws IOException {
         src.close();
     }

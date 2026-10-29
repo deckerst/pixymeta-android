@@ -24,11 +24,12 @@ import java.io.PrintStream;
  * @version 1.0 09/19/2012
  */
 public class LangUtils {
-    private LangUtils(){} // Prevents instantiation
+    private LangUtils() {
+    } // Prevents instantiation
 
     public static void log(String message, PrintStream out) {
         StackTraceElement se = Thread.currentThread().getStackTrace()[2];
-        out.println("; " + message + " - [" + se.getClassName() + "." + se.getMethodName() +"(): line " + se.getLineNumber() + "]");
+        out.println("; " + message + " - [" + se.getClassName() + "." + se.getMethodName() + "(): line " + se.getLineNumber() + "]");
     }
 
     /**

@@ -1134,7 +1134,8 @@ public class TIFFMeta {
             Tag ftag = TiffTag.UNKNOWN;
             try {
                 ftag = (Tag) method.invoke(null, tag);
-            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+            } catch (IllegalAccessException | InvocationTargetException |
+                     IllegalArgumentException e) {
                 e.printStackTrace();
             }
             offset += 2;
@@ -1509,13 +1510,15 @@ public class TIFFMeta {
             switch (metaType) {
                 case XMP:
                     TiffField<?> xmpField = workingPage.removeField(TiffTag.XMP);
-                    if (xmpField != null) metadataMap.put(MetadataType.XMP, new TiffXMP((byte[]) xmpField.getData()));
+                    if (xmpField != null)
+                        metadataMap.put(MetadataType.XMP, new TiffXMP((byte[]) xmpField.getData()));
                     metadata = workingPage.removeField(TiffTag.PHOTOSHOP);
                     if (metadata != null) {
                         byte[] data = (byte[]) metadata.getData();
                         // We only remove XMP and keep the other IRB data untouched.
                         List<_8BIM> bims = removeMetadataFromIRB(workingPage, data, ImageResourceID.XMP_METADATA);
-                        if (!bims.isEmpty() && xmpField == null) metadataMap.put(MetadataType.XMP, new TiffXMP(bims.get(0).getData()));
+                        if (!bims.isEmpty() && xmpField == null)
+                            metadataMap.put(MetadataType.XMP, new TiffXMP(bims.get(0).getData()));
                     }
                     break;
                 case IPTC:
@@ -1539,27 +1542,32 @@ public class TIFFMeta {
                         byte[] data = (byte[]) metadata.getData();
                         // We only remove IPTC_NAA and keep the other IRB data untouched.
                         List<_8BIM> bims = removeMetadataFromIRB(workingPage, data, ImageResourceID.IPTC_NAA);
-                        if (!bims.isEmpty() && iptcField == null) metadataMap.put(MetadataType.IPTC, new IPTC(bims.get(0).getData()));
+                        if (!bims.isEmpty() && iptcField == null)
+                            metadataMap.put(MetadataType.IPTC, new IPTC(bims.get(0).getData()));
                     }
                     break;
                 case ICC_PROFILE:
                     TiffField<?> iccField = workingPage.removeField(TiffTag.ICC_PROFILE);
-                    if (iccField != null) metadataMap.put(MetadataType.ICC_PROFILE, new ICCProfile((byte[]) iccField.getData()));
+                    if (iccField != null)
+                        metadataMap.put(MetadataType.ICC_PROFILE, new ICCProfile((byte[]) iccField.getData()));
                     metadata = workingPage.removeField(TiffTag.PHOTOSHOP);
                     if (metadata != null) {
                         byte[] data = (byte[]) metadata.getData();
                         // We only remove ICC_PROFILE and keep the other IRB data untouched.
                         List<_8BIM> bims = removeMetadataFromIRB(workingPage, data, ImageResourceID.ICC_PROFILE);
-                        if (!bims.isEmpty() && iccField == null) metadataMap.put(MetadataType.ICC_PROFILE, new ICCProfile(bims.get(0).getData()));
+                        if (!bims.isEmpty() && iccField == null)
+                            metadataMap.put(MetadataType.ICC_PROFILE, new ICCProfile(bims.get(0).getData()));
                     }
                     break;
                 case PHOTOSHOP_IRB:
                     TiffField<?> irbField = workingPage.removeField(TiffTag.PHOTOSHOP);
-                    if (irbField != null) metadataMap.put(MetadataType.PHOTOSHOP_IRB, new IRB((byte[]) irbField.getData()));
+                    if (irbField != null)
+                        metadataMap.put(MetadataType.PHOTOSHOP_IRB, new IRB((byte[]) irbField.getData()));
                     break;
                 case EXIF:
                     TiffField<?> exifField = workingPage.removeField(TiffTag.EXIF_SUB_IFD);
-                    if (exifField != null) metadataMap.put(MetadataType.EXIF, new TiffExif(workingPage));
+                    if (exifField != null)
+                        metadataMap.put(MetadataType.EXIF, new TiffExif(workingPage));
                     workingPage.removeField(TiffTag.GPS_SUB_IFD);
                     metadata = workingPage.removeField(TiffTag.PHOTOSHOP);
                     if (metadata != null) {

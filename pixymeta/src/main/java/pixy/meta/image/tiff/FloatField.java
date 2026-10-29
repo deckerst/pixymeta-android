@@ -32,27 +32,27 @@ public class FloatField extends TiffField<float[]> {
         super(tag, FieldType.FLOAT, data.length);
         this.data = data;
     }
-    
+
     public float[] getData() {
         return data.clone();
     }
-    
+
     public String getDataAsString() {
         return Arrays.toString(data);
     }
 
     protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
         if (data.length == 1) {
-            dataOffset = (int)os.getStreamPointer();
+            dataOffset = (int) os.getStreamPointer();
             os.writeFloat(data[0]);
         } else {
             dataOffset = toOffset;
             os.writeInt(toOffset);
             os.seek(toOffset);
-            
+
             for (float value : data)
                 os.writeFloat(value);
-            
+
             toOffset += (data.length << 2);
         }
         return toOffset;

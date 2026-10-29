@@ -29,28 +29,31 @@ import pixy.meta.io.IOUtils;
 public class UnknownChunk extends Chunk {
 
     private final int chunkValue;
-    
+
     public UnknownChunk(long length, int chunkValue, byte[] data, long crc) {
-        super(ChunkType.UNKNOWN,length, data, crc);
+        super(ChunkType.UNKNOWN, length, data, crc);
         this.chunkValue = chunkValue;
     }
-    
-    public int getChunkValue(){
+
+    public int getChunkValue() {
         return chunkValue;
     }
-    
-    @Override public boolean isValidCRC() {                 
+
+    @Override
+    public boolean isValidCRC() {
         return (calculateCRC(chunkValue, getData()) == getCRC());
     }
-    
-    @Override public void write(OutputStream os) throws IOException{
-        IOUtils.writeIntMM(os, (int)getLength());
+
+    @Override
+    public void write(OutputStream os) throws IOException {
+        IOUtils.writeIntMM(os, (int) getLength());
         IOUtils.writeIntMM(os, this.chunkValue);
         IOUtils.write(os, getData());
-        IOUtils.writeIntMM(os, (int)getCRC());
+        IOUtils.writeIntMM(os, (int) getCRC());
     }
-    
-    @Override public String toString() {
-        return super.toString() + "[Chunk type value: 0x"+ Integer.toHexString(chunkValue)+"]";
-    }    
+
+    @Override
+    public String toString() {
+        return super.toString() + "[Chunk type value: 0x" + Integer.toHexString(chunkValue) + "]";
+    }
 }

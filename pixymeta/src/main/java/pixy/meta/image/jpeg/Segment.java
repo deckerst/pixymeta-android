@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * Segment.java
@@ -30,7 +30,7 @@ import pixy.meta.io.IOUtils;
 
 /**
  * JPEG segment.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 05/21/2013
  */
@@ -39,35 +39,36 @@ public class Segment {
     private Marker marker;
     private int length;
     private byte[] data;
-    
+
     public Segment(Marker marker, int length, byte[] data) {
         this.marker = marker;
         this.length = length;
         this.data = data;
     }
-    
+
     public Marker getMarker() {
         return marker;
     }
-    
+
     public int getLength() {
         return length;
     }
-    
+
     public byte[] getData() {
         return data;
     }
-    
+
     public void write(OutputStream os) throws IOException {
         IOUtils.writeShortMM(os, marker.getValue());
         // If this is not a stand-alone segment, write the content as well
-        if(length > 0) {
+        if (length > 0) {
             IOUtils.writeShortMM(os, length);
             IOUtils.write(os, data);
         }
     }
-    
-    @Override public String toString() {
+
+    @Override
+    public String toString() {
         return this.marker.toString();
     }
 }

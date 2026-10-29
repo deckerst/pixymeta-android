@@ -22,12 +22,12 @@ import java.util.Map;
  * TiffFieldEnum.java
  * <p>
  * This class provides a central place for all the TIFF fields related enumerations
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 06/26/2014
  */
 public class TiffFieldEnum {
-    
+
     public enum PhotoMetric {
         // Baseline
         WHITE_IS_ZERO("WhiteIsZero (for bilevel and grayscale images)", 0),
@@ -43,47 +43,46 @@ public class TiffFieldEnum {
         ITU_LAB("ITU L*a*b*", 10),
         CFA("CFA (Color Filter Array)", 32803),
         LINEAR__RAW("LinearRaw", 34892),
-        
+
         UNKNOWN("Unknown", 9999);
-         
+
         PhotoMetric(String description, int value) {
             this.description = description;
             this.value = value;
         }
-        
+
         public String getDescription() {
             return description;
         }
-        
+
         public int getValue() {
             return value;
         }
-        
+
         @Override
         public String toString() {
             return description;
         }
-        
+
         public static PhotoMetric fromValue(int value) {
-               PhotoMetric photoMetric = typeMap.get(value);
+            PhotoMetric photoMetric = typeMap.get(value);
             if (photoMetric == null) {
                 return UNKNOWN;
             }
-              return photoMetric;
+            return photoMetric;
         }
-        
+
         private static final Map<Integer, PhotoMetric> typeMap = new HashMap<>();
-           
-        static
-        {
-          for(PhotoMetric photoMetric : values())
-              typeMap.put(photoMetric.getValue(), photoMetric);
-        } 
+
+        static {
+            for (PhotoMetric photoMetric : values())
+                typeMap.put(photoMetric.getValue(), photoMetric);
+        }
 
         private final String description;
         private final int value;
     }
-    
+
     public enum Compression {
         //
         NONE("No Compression", 1),
@@ -97,90 +96,89 @@ public class TiffFieldEnum {
         JBIG_ON_BW("JBIG on black and white", 9),
         JBIG_ON_COLOR("JBIG on color", 10),
         PACKBITS("PackBits compression, aka Macintosh RLE", 32773),
-        DEFLATE("Deflate", 32946),    
-        
+        DEFLATE("Deflate", 32946),
+
         UNKNOWN("Unknown", 9999);
-        
+
         private Compression(String description, int value) {
             this.description = description;
             this.value = value;
         }
-        
+
         public String getDescription() {
             return description;
         }
-        
+
         public int getValue() {
             return value;
         }
-        
+
         @Override
         public String toString() {
             return description;
         }
-        
+
         public static Compression fromValue(int value) {
-               Compression compression = typeMap.get(value);
+            Compression compression = typeMap.get(value);
             if (compression == null) {
                 return UNKNOWN;
             }
-              return compression;
+            return compression;
         }
-        
+
         private static final Map<Integer, Compression> typeMap = new HashMap<Integer, Compression>();
-           
-        static
-        {
-          for(Compression compression : values())
-              typeMap.put(compression.getValue(), compression);
-        } 
+
+        static {
+            for (Compression compression : values())
+                typeMap.put(compression.getValue(), compression);
+        }
 
         private final String description;
         private final int value;
     }
-    
+
     public enum PlanarConfiguration {
         CONTIGUOUS("Chunky format (The component values for each pixel are stored contiguously)", 1),
         SEPARATE("Planar format (The components are stored in separate component planes)", 2),
         UNKNOWN("Unknown", 9999);
-        
+
         private PlanarConfiguration(String description, int value) {
             this.description = description;
             this.value = value;
         }
-        
+
         public String getDescription() {
             return description;
         }
-        
+
         public int getValue() {
             return value;
         }
-        
+
         @Override
         public String toString() {
             return description;
         }
-        
+
         public static PlanarConfiguration fromValue(int value) {
-               PlanarConfiguration planarConfiguration = typeMap.get(value);
+            PlanarConfiguration planarConfiguration = typeMap.get(value);
             if (planarConfiguration == null) {
                 return UNKNOWN;
             }
-              return planarConfiguration;
+            return planarConfiguration;
         }
-        
+
         private static final Map<Integer, PlanarConfiguration> typeMap = new HashMap<>();
-           
-        static
-        {
-          for(PlanarConfiguration planarConfiguration : values())
-              typeMap.put(planarConfiguration.getValue(), planarConfiguration);
-        } 
-        
+
+        static {
+            for (PlanarConfiguration planarConfiguration : values())
+                typeMap.put(planarConfiguration.getValue(), planarConfiguration);
+        }
+
         private final String description;
         private final int value;
     }
-    
-    private TiffFieldEnum() {}    
+
+    private TiffFieldEnum() {
+    }
 }

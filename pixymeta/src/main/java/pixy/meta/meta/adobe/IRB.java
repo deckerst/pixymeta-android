@@ -34,35 +34,34 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import pixy.meta.io.IOUtils;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
 import pixy.meta.util.ArrayUtils;
-import pixy.meta.io.IOUtils;
 
 public class IRB extends Metadata {
     private boolean containsThumbnail;
     private ThumbnailResource thumbnail;
     Map<Short, _8BIM> _8bims = new HashMap<Short, _8BIM>();
-    
+
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(IRB.class);
-    
+
     public static void showIRB(byte[] data) {
-        if(data != null && data.length > 0) {
+        if (data != null && data.length > 0) {
             IRB irb = new IRB(data);
             try {
                 irb.read();
                 irb.showMetadata();
             } catch (IOException e) {
                 e.printStackTrace();
-            }            
+            }
         }
     }
-    
+
     public static void showIRB(InputStream is) {
         try {
             showIRB(IOUtils.inputStreamToByteArray(is));
@@ -70,19 +69,19 @@ public class IRB extends Metadata {
             e.printStackTrace();
         }
     }
-    
+
     public IRB(byte[] data) {
         super(MetadataType.PHOTOSHOP_IRB, data);
     }
-    
+
     public Iterator<MetadataEntry> iterator() {
         ensureDataRead();
         List<MetadataEntry> items = new ArrayList<MetadataEntry>();
 
-        for(_8BIM _8bim : _8bims.values())
+        for (_8BIM _8bim : _8bims.values())
             items.add(_8bim.getMetadataEntry());
-    
-        if(containsThumbnail) {
+
+        if (containsThumbnail) {
             int thumbnailFormat = thumbnail.getDataType(); //1 = kJpegRGB. Also supports kRawRGB (0).
             switch (thumbnailFormat) {
                 case IRBThumbnail.DATA_TYPE_KJpegRGB:
@@ -105,59 +104,59 @@ public class IRB extends Metadata {
             // Number of planes. = 1
             items.add(new MetadataEntry("Thumbnail Number of planes: ", "" + thumbnail.getNumOfPlanes()));
         }
-    
+
         return Collections.unmodifiableList(items).iterator();
     }
-    
+
     public boolean containsThumbnail() {
         ensureDataRead();
         return containsThumbnail;
     }
-    
+
     public Map<Short, _8BIM> get8BIM() {
         ensureDataRead();
         return Collections.unmodifiableMap(_8bims);
     }
-    
+
     public _8BIM get8BIM(short tag) {
         ensureDataRead();
         return _8bims.get(tag);
     }
-    
-    public IRBThumbnail getThumbnail()  {
+
+    public IRBThumbnail getThumbnail() {
         ensureDataRead();
         return thumbnail.getThumbnail();
     }
-    
+
     public ThumbnailResource getThumbnailResource() {
         ensureDataRead();
         return thumbnail;
     }
-    
+
     public void read() throws IOException {
-        if(!isDataRead) {
+        if (!isDataRead) {
             int i = 0;
-            while((i+4) < data.length) {
+            while ((i + 4) < data.length) {
                 String _8bim = new String(data, i, 4);
-                i += 4;            
-                if(_8bim.equals("8BIM")) {
+                i += 4;
+                if (_8bim.equals("8BIM")) {
                     short id = IOUtils.readShortMM(data, i);
                     i += 2;
                     // Pascal string for name follows
                     // First byte denotes string length -
-                    int nameLen = data[i++]&0xff;
-                    if((nameLen%2) == 0) nameLen++;
+                    int nameLen = data[i++] & 0xff;
+                    if ((nameLen % 2) == 0) nameLen++;
                     String name = new String(data, i, nameLen).trim();
                     i += nameLen;
                     //
                     int size = IOUtils.readIntMM(data, i);
                     i += 4;
-                    
-                    if(size <= 0) continue; //Fix bug with zero size 8BIM
-                    
-                    ImageResourceID eId = ImageResourceID.fromShort(id); 
-                    
-                    switch(eId) {
+
+                    if (size <= 0) continue; //Fix bug with zero size 8BIM
+
+                    ImageResourceID eId = ImageResourceID.fromShort(id);
+
+                    switch (eId) {
                         case JPEG_QUALITY:
                             _8bims.put(id, new JPGQuality(name, ArrayUtils.subArray(data, i, size)));
                             break;
@@ -167,7 +166,7 @@ public class IRB extends Metadata {
                         case IPTC_NAA:
                             byte[] newData = ArrayUtils.subArray(data, i, size);
                             _8BIM iptcBim = _8bims.get(id);
-                            if(iptcBim != null) {
+                            if (iptcBim != null) {
                                 byte[] oldData = iptcBim.getData();
                                 _8bims.put(id, new IPTC_NAA(name, ArrayUtils.concat(oldData, newData)));
                             } else
@@ -181,23 +180,23 @@ public class IRB extends Metadata {
                             break;
                         default:
                             _8bims.put(id, new _8BIM(id, name, size, ArrayUtils.subArray(data, i, size)));
-                    }                
-                    
+                    }
+
                     i += size;
-                    if(size%2 != 0) i++; // Skip padding byte
+                    if (size % 2 != 0) i++; // Skip padding byte
                 }
             }
             isDataRead = true;
         }
     }
-    
+
     public void showMetadata() {
         ensureDataRead();
         LOGGER.info("<<Adobe IRB information starts>>");
-        for(_8BIM _8bim : _8bims.values()) {
+        for (_8BIM _8bim : _8bims.values()) {
             _8bim.print();
         }
-        if(containsThumbnail) {
+        if (containsThumbnail) {
             LOGGER.info("{}", thumbnail.getResouceID());
             int thumbnailFormat = thumbnail.getDataType(); //1 = kJpegRGB. Also supports kRawRGB (0).
             switch (thumbnailFormat) {
@@ -221,7 +220,7 @@ public class IRB extends Metadata {
             // Number of planes. = 1
             LOGGER.info("Number of planes: {}", thumbnail.getNumOfPlanes());
         }
-        
+
         LOGGER.info("<<Adobe IRB information ends>>");
     }
 }

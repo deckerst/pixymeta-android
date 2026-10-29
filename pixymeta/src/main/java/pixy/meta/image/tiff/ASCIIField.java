@@ -22,7 +22,7 @@ import pixy.meta.io.RandomAccessOutputStream;
 
 /**
  * TIFF ASCII type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2013
  */
@@ -32,7 +32,7 @@ public final class ASCIIField extends TiffField<String> {
         super(tag, FieldType.ASCII, getLength(data));
         this.data = data.trim() + '\0'; // Add NULL to the end of the string
     }
-    
+
     private static int getLength(String data) {
         try {
             return data.trim().getBytes("UTF-8").length + 1;
@@ -40,18 +40,18 @@ public final class ASCIIField extends TiffField<String> {
             throw new RuntimeException("Failed to create ASCIIField.");
         }
     }
-    
+
     public String getDataAsString() {
         // ASCII field allows for multiple NUL separated strings
         return data.trim().replace("\0", "; ");
     }
 
     protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
-        
+
         byte[] buf = data.getBytes("UTF-8");
-        
+
         if (buf.length <= 4) {
-            dataOffset = (int)os.getStreamPointer();
+            dataOffset = (int) os.getStreamPointer();
             byte[] tmp = new byte[4];
             System.arraycopy(buf, 0, tmp, 0, buf.length);
             os.write(tmp);
@@ -60,8 +60,8 @@ public final class ASCIIField extends TiffField<String> {
             os.writeInt(toOffset);
             os.seek(toOffset);
             os.write(buf);
-            toOffset += buf.length; 
-        }        
+            toOffset += buf.length;
+        }
         return toOffset;
     }
 }

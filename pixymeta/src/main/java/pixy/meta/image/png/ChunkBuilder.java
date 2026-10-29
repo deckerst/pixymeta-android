@@ -26,22 +26,22 @@ import pixy.meta.util.Builder;
 public abstract class ChunkBuilder implements Builder<Chunk> {
 
     private final ChunkType chunkType;
-    
+
     public ChunkBuilder(ChunkType chunkType) {
         this.chunkType = chunkType;
     }
-    
+
     protected ChunkType getChunkType() {
         return chunkType;
     }
-    
+
     public final Chunk build() {
         byte[] data = buildData();
-        
+
         long crc = Chunk.calculateCRC(chunkType.getValue(), data);
-        
+
         return new Chunk(chunkType, data.length, data, crc);
     }
-    
+
     protected abstract byte[] buildData();
 }

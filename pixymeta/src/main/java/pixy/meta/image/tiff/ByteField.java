@@ -17,7 +17,7 @@ package pixy.meta.image.tiff;
 
 /**
  * TIFF Byte type field.
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/06/2013
  */

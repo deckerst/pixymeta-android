@@ -23,7 +23,7 @@ import pixy.meta.log.LoggerFactory;
 
 /**
  * ICC Profile Tag
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 03/13/2015
  */
@@ -84,56 +84,55 @@ public enum ProfileTag {
     wtpt(TagType.PUBLIC, 0x77747074, "mediaWhitePointTag"), // nCIEXYZ of media white point
 
     UNKNOWN(TagType.UNKNOWN, 0xFFFFFFFF, "UnknownTag");
-    
+
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileTag.class);
 
     public enum TagType { //
         PUBLIC,
         PRIVATE,
-        UNKNOWN;        
+        UNKNOWN;
     }
-    
+
     public TagType getTagType() {
         return tagType;
     }
-    
+
     private ProfileTag(TagType tagType, int value, String description) {
         this.description = description;
         this.value = value;
         this.tagType = tagType;
-    }    
-    
+    }
+
     public String getDescription() {
         return description;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     @Override
     public String toString() {
         return name() + " (" + description + ")";
     }
-    
+
     public static ProfileTag fromInt(int value) {
-           ProfileTag tag = typeMap.get(value);
+        ProfileTag tag = typeMap.get(value);
         if (tag == null) {
-         LOGGER.warn("tag value 0x{} unknown", Integer.toHexString(value));
+            LOGGER.warn("tag value 0x{} unknown", Integer.toHexString(value));
             return UNKNOWN;
         }
-           return tag;
+        return tag;
     }
-    
+
     private static final Map<Integer, ProfileTag> typeMap = new HashMap<Integer, ProfileTag>();
-       
-    static
-    {
-      for(ProfileTag tagSignature : values())
-           typeMap.put(tagSignature.getValue(), tagSignature);
-    } 
-    
+
+    static {
+        for (ProfileTag tagSignature : values())
+            typeMap.put(tagSignature.getValue(), tagSignature);
+    }
+
     private final TagType tagType;
     private final String description;
     private final int value;

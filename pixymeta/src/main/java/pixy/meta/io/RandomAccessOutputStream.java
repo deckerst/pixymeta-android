@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * RandomAccessOutputStream.java
@@ -35,41 +35,43 @@ import java.io.OutputStream;
  * stream. It's up to the underlying stream creator to close them. This ensures the actual
  * stream out-lives the random stream itself in case we need to write more content to the
  * underlying stream.
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 01/29/2013
  */
 public abstract class RandomAccessOutputStream extends OutputStream implements DataOutput {
 
     private WriteStrategy strategy = WriteStrategyMM.getInstance();
-    
-    /** The destination stream. */
+
+    /**
+     * The destination stream.
+     */
     protected OutputStream dist;
     protected boolean closed;
-    
+
     protected RandomAccessOutputStream(OutputStream dist) {
         this.dist = dist;
     }
-    
+
     public void close() throws IOException {
         long flushPos = getFlushPos();
         long length = getLength();
-        
-        if(flushPos < length) {
+
+        if (flushPos < length) {
             seek(flushPos);
             writeToStream(length - flushPos);
         }
     }
-    
+
     /**
      * Closes the RandomAccessInputStream and it's underlying stream
      */
     public abstract void shallowClose() throws IOException;
-    
+
     /**
      * Check to make sure that this stream has not been closed
      */
-    protected  void ensureOpen() throws IOException {
+    protected void ensureOpen() throws IOException {
         if (closed)
             throw new IOException("Stream closed");
     }
@@ -78,37 +80,38 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
         super.finalize();
         close();
     }
-        
+
     public short getEndian() {
-        return strategy instanceof WriteStrategyMM?IOUtils.BIG_ENDIAN:IOUtils.LITTLE_ENDIAN;
+        return strategy instanceof WriteStrategyMM ? IOUtils.BIG_ENDIAN : IOUtils.LITTLE_ENDIAN;
     }
-    
+
     public abstract long getFlushPos();
-    
+
     /**
      * Returns the total length of data that has been cached,
      * regardless of whether any early blocks have been disposed.
-     * This value will only ever increase. 
+     * This value will only ever increase.
      */
     public abstract long getLength();
-    
+
     /**
      * @return the current stream position
      */
-    public abstract long getStreamPointer();    
-    
-    /** Reset this stream to be used again */
+    public abstract long getStreamPointer();
+
+    /**
+     * Reset this stream to be used again
+     */
     public abstract void reset();
-    
+
     public abstract void seek(long pos) throws IOException;
-    
-    public void setWriteStrategy(WriteStrategy strategy) 
-    {
+
+    public void setWriteStrategy(WriteStrategy strategy) {
         this.strategy = strategy;
     }
-    
+
     public abstract void write(byte[] b, int off, int len) throws IOException;
-    
+
     @Override
     public abstract void write(int value) throws IOException;
 
@@ -130,19 +133,19 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
 
     public final void writeChars(String value) throws IOException {
         int len = value.length();
-        
-        for (int i = 0 ; i < len ; i++) {
+
+        for (int i = 0; i < len; i++) {
             int v = value.charAt(i);
             this.writeShort(v);
         }
     }
 
     public final void writeDouble(double value) throws IOException {
-         writeLong(Double.doubleToLongBits(value));
+        writeLong(Double.doubleToLongBits(value));
     }
 
     public final void writeFloat(float value) throws IOException {
-         writeInt(Float.floatToIntBits(value));
+        writeInt(Float.floatToIntBits(value));
     }
 
     public final void writeInt(int value) throws IOException {
@@ -150,7 +153,7 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
         strategy.writeInt(buf, 0, value);
         this.write(buf, 0, 4);
     }
-    
+
     public final void writeLong(long value) throws IOException {
         byte[] buf = new byte[8];
         strategy.writeLong(buf, 0, value);
@@ -161,8 +164,8 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
         byte[] buf = new byte[2];
         strategy.writeShort(buf, 0, value);
         this.write(buf, 0, 2);
-    } 
-        
+    }
+
     public abstract void writeToStream(long len) throws IOException;
 
     public final void writeUTF(String value) throws IOException {

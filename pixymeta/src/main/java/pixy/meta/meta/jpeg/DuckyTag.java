@@ -31,42 +31,43 @@ public enum DuckyTag {
     QUALITY(1, "Quality"),
     COMMENT(2, "Comment"),
     COPYRIGHT(3, "Copyright"),
-     
+
     UNKNOWN(999, "Unknown");
-     
+
     private static final Map<Integer, DuckyTag> recordMap = new HashMap<Integer, DuckyTag>();
-     
+
     static {
-        for(DuckyTag record : values()) {
+        for (DuckyTag record : values()) {
             recordMap.put(record.getTag(), record);
         }
     }
-     
+
     public static DuckyTag fromTag(int value) {
-         DuckyTag record = recordMap.get(value);
-         if (record == null)
-             return UNKNOWN;
-         return record;
-     }
-     
+        DuckyTag record = recordMap.get(value);
+        if (record == null)
+            return UNKNOWN;
+        return record;
+    }
+
     private final int tag;
-   
+
     private final String name;
-   
+
     private DuckyTag(int tag, String name) {
         this.tag = tag;
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
-    }        
-  
-    public int getTag() { 
+    }
+
+    public int getTag() {
         return tag;
     }
-     
-    @Override public String toString() {
+
+    @Override
+    public String toString() {
         return name;
-    }    
+    }
 }

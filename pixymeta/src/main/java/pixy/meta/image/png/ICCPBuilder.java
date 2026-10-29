@@ -23,27 +23,27 @@ import pixy.meta.util.Builder;
 
 /**
  * PNG iCCP chunk builder
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 12/23/2014
  */
 public class ICCPBuilder extends ChunkBuilder implements Builder<Chunk> {
-    
+
     private String profileName;
     private byte[] profileData;
 
     public ICCPBuilder() {
         super(ChunkType.ICCP);
     }
-    
+
     public ICCPBuilder data(byte[] data) {
-        this.profileData = data;        
+        this.profileData = data;
         return this;
     }
-    
+
     public ICCPBuilder name(String name) {
         this.profileName = name.trim().replaceAll("\\s+", " ");
-        return this;        
+        return this;
     }
 
     @Override
@@ -51,18 +51,18 @@ public class ICCPBuilder extends ChunkBuilder implements Builder<Chunk> {
         StringBuilder sb = new StringBuilder(this.profileName);
         sb.append('\0'); // Null separator
         sb.append('\0'); // Compression method    
-        ByteArrayOutputStream bo = new ByteArrayOutputStream(1024);    
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(1024);
         try {
-            bo.write(sb.toString().getBytes("iso-8859-1"));        
+            bo.write(sb.toString().getBytes("iso-8859-1"));
             DeflaterOutputStream ds = new DeflaterOutputStream(bo);
             BufferedOutputStream bout = new BufferedOutputStream(ds);
             bout.write(profileData);
             bout.flush();
             bout.close();
-        } catch(Exception ex) { 
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
-        return bo.toByteArray();                
+
+        return bo.toByteArray();
     }
 }

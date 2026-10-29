@@ -25,6 +25,8 @@
 
 package pixy.meta.meta.exif;
 
+import android.graphics.Bitmap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,17 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import pixy.meta.log.Logger;
-import pixy.meta.log.LoggerFactory;
-
-import android.graphics.Bitmap;
-
-import pixy.meta.meta.Metadata;
-import pixy.meta.meta.MetadataEntry;
-import pixy.meta.meta.MetadataType;
-import pixy.meta.meta.Thumbnail;
-import pixy.meta.meta.tiff.TIFFMeta;
-import pixy.meta.string.StringUtils;
 import pixy.meta.image.tiff.FieldType;
 import pixy.meta.image.tiff.IFD;
 import pixy.meta.image.tiff.Tag;
@@ -60,6 +51,14 @@ import pixy.meta.io.FileCacheRandomAccessOutputStream;
 import pixy.meta.io.IOUtils;
 import pixy.meta.io.RandomAccessInputStream;
 import pixy.meta.io.RandomAccessOutputStream;
+import pixy.meta.log.Logger;
+import pixy.meta.log.LoggerFactory;
+import pixy.meta.meta.Metadata;
+import pixy.meta.meta.MetadataEntry;
+import pixy.meta.meta.MetadataType;
+import pixy.meta.meta.Thumbnail;
+import pixy.meta.meta.tiff.TIFFMeta;
+import pixy.meta.string.StringUtils;
 
 /**
  * EXIF wrapper

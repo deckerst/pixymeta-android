@@ -32,11 +32,11 @@ public class DoubleField extends TiffField<double[]> {
         super(tag, FieldType.DOUBLE, data.length);
         this.data = data;
     }
-    
+
     public double[] getData() {
         return data.clone();
     }
-    
+
     public String getDataAsString() {
         return Arrays.toString(data);
     }
@@ -48,12 +48,12 @@ public class DoubleField extends TiffField<double[]> {
         dataOffset = toOffset;
         os.writeInt(toOffset);
         os.seek(toOffset);
-        
+
         for (double value : data)
             os.writeDouble(value);
-        
+
         toOffset += (data.length << 3);
-        
+
         return toOffset;
     }
 }

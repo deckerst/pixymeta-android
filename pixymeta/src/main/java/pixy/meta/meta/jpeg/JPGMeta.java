@@ -1944,17 +1944,20 @@ public class JPGMeta {
                                     if (metadataTypes.contains(MetadataType.IPTC)) {
                                         // We only remove IPTC_NAA and keep the other IRB data untouched.
                                         _8BIM bim = bimMap.remove(ImageResourceID.IPTC_NAA.getValue());
-                                        if (bim != null) extraMetadataMap.put(MetadataType.IPTC, new IPTC(bim.getData()));
+                                        if (bim != null)
+                                            extraMetadataMap.put(MetadataType.IPTC, new IPTC(bim.getData()));
                                     }
                                     if (metadataTypes.contains(MetadataType.XMP)) {
                                         // We only remove XMP and keep the other IRB data untouched.
                                         _8BIM bim = bimMap.remove(ImageResourceID.XMP_METADATA.getValue());
-                                        if (bim != null) extraMetadataMap.put(MetadataType.XMP, new JpegXMP(bim.getData()));
+                                        if (bim != null)
+                                            extraMetadataMap.put(MetadataType.XMP, new JpegXMP(bim.getData()));
                                     }
                                     if (metadataTypes.contains(MetadataType.EXIF)) {
                                         // We only remove EXIF and keep the other IRB data untouched.
                                         _8BIM bim = bimMap.remove(ImageResourceID.EXIF_DATA1.getValue());
-                                        if (bim != null) extraMetadataMap.put(MetadataType.EXIF, new JpegExif(bim.getData()));
+                                        if (bim != null)
+                                            extraMetadataMap.put(MetadataType.EXIF, new JpegExif(bim.getData()));
                                         // I can't find more information on this one, so remove it just in case.
                                         bimMap.remove(ImageResourceID.EXIF_DATA3.getValue());
                                     }

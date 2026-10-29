@@ -55,38 +55,37 @@ public enum BlendModeKey {
     sat("saturation", 0x73617420),
     colr("color", 0x636f6c72),
     lum("luminosity", 0x6c756d20),
-    
+
     UNKNOWN("Unknown Blending Mode", 0xFFFFFFFF);
-    
+
     private BlendModeKey(String description, int value) {
         this.description = description;
         this.value = value;
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     public static BlendModeKey fromInt(int value) {
-           BlendModeKey key = keyMap.get(value);
+        BlendModeKey key = keyMap.get(value);
         if (key == null)
             return UNKNOWN;
-           return key;
+        return key;
     }
-    
+
     private static final Map<Integer, BlendModeKey> keyMap = new HashMap<Integer, BlendModeKey>();
-    
-    static
-    {
-      for(BlendModeKey key : values()) {
-           keyMap.put(key.getValue(), key);
-      }
+
+    static {
+        for (BlendModeKey key : values()) {
+            keyMap.put(key.getValue(), key);
+        }
     }
-    
-     private final String description;
+
+    private final String description;
     private final int value;
 }

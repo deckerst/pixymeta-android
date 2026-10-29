@@ -22,7 +22,7 @@ import pixy.meta.util.Reader;
 
 /**
  * PNG IHDR chunk reader
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 04/25/2013
  */
@@ -36,35 +36,55 @@ public class IHDRReader implements Reader {
     private byte filterMethod = 0;
     private byte interlaceMethod = 0;
     private Chunk chunk;
-    
+
     public IHDRReader(Chunk chunk) {
-        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-        
+        if (chunk == null) throw new IllegalArgumentException("Input chunk is null");
+
         if (chunk.getChunkType() != ChunkType.IHDR) {
             throw new IllegalArgumentException("Not a valid IHDR chunk.");
         }
-        
+
         this.chunk = chunk;
-        
+
         try {
             read();
         } catch (IOException e) {
             throw new RuntimeException("IHDRReader: error reading chunk");
         }
     }
-    
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-    public byte getBitDepth() { return bitDepth; }
-    public byte getColorType() { return colorType; }
-    public byte getCompressionMethod() { return compressionMethod; }
-    public byte getFilterMethod() { return filterMethod; }
-    public byte getInterlaceMethod() { return interlaceMethod; }
 
-    public void read() throws IOException {    
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public byte getBitDepth() {
+        return bitDepth;
+    }
+
+    public byte getColorType() {
+        return colorType;
+    }
+
+    public byte getCompressionMethod() {
+        return compressionMethod;
+    }
+
+    public byte getFilterMethod() {
+        return filterMethod;
+    }
+
+    public byte getInterlaceMethod() {
+        return interlaceMethod;
+    }
+
+    public void read() throws IOException {
         //
         byte[] data = chunk.getData();
-        
+
         this.width = IOUtils.readIntMM(data, 0);
         this.height = IOUtils.readIntMM(data, 4);
         this.bitDepth = data[8];

@@ -21,21 +21,20 @@ import java.nio.charset.StandardCharsets;
  * A simple base64 encoding and decoding utility class. It can also
  * encode and decode non ASII characters such as Chinese.
  * <p>
- * Changed decode method to remove potential problem when decoding 
+ * Changed decode method to remove potential problem when decoding
  * concatenated encoded strings.
  *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.01 04/18/2012
  */
-public final class Base64
-{
+public final class Base64 {
     public static byte[] decodeToByteArray(String s) {
-        if(s.isEmpty()) {
+        if (s.isEmpty()) {
             return null;
         }
-        byte[] buf = s.getBytes(StandardCharsets.ISO_8859_1) ;
-        byte[] debuf = new byte[buf.length*3/4] ;
-        byte[] tempBuf = new byte[4] ;
+        byte[] buf = s.getBytes(StandardCharsets.ISO_8859_1);
+        byte[] debuf = new byte[buf.length * 3 / 4];
+        byte[] tempBuf = new byte[4];
         int index = 0;
         int index1 = 0;
         int temp;

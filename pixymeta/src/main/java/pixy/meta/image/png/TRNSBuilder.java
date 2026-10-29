@@ -19,7 +19,7 @@ import pixy.meta.util.Builder;
 
 /**
  * PNG tRNS chunk builder
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 05/03/2013
  */
@@ -27,12 +27,12 @@ public class TRNSBuilder extends ChunkBuilder implements Builder<Chunk> {
 
     private int colorType = 0;
     private byte[] alpha;
-    
+
     public TRNSBuilder(int colorType) {
         super(ChunkType.TRNS);
         this.colorType = colorType;
     }
-    
+
     public TRNSBuilder alpha(byte[] alpha) {
         this.alpha = alpha;
         return this;
@@ -40,18 +40,17 @@ public class TRNSBuilder extends ChunkBuilder implements Builder<Chunk> {
 
     @Override
     protected byte[] buildData() {
-        switch(colorType)
-        {            
-            case 0:    
-            case 2:                
-            case 3:            
+        switch (colorType) {
+            case 0:
+            case 2:
+            case 3:
                 break;
             case 4:
-            case 6:        
+            case 6:
             default:
                 throw new IllegalArgumentException("Invalid color type: " + colorType);
         }
-        
+
         return alpha;
     }
 }

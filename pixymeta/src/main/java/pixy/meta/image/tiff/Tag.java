@@ -23,8 +23,12 @@ package pixy.meta.image.tiff;
  */
 public interface Tag {
     public String getFieldAsString(Object value);
+
     public FieldType getFieldType();
+
     public String getName();
+
     public short getValue();
+
     public boolean isCritical();
 }

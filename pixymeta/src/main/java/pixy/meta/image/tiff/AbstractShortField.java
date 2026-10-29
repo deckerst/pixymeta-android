@@ -23,16 +23,16 @@ public abstract class AbstractShortField extends TiffField<short[]> {
 
     public AbstractShortField(short tag, FieldType fieldType, short[] data) {
         super(tag, fieldType, data.length);
-        this.data = data;    
+        this.data = data;
     }
-    
+
     public short[] getData() {
         return data.clone();
     }
 
     protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
         if (data.length <= 2) {
-            dataOffset = (int)os.getStreamPointer();
+            dataOffset = (int) os.getStreamPointer();
             short[] tmp = new short[2];
             System.arraycopy(data, 0, tmp, 0, data.length);
             for (short value : tmp)
@@ -41,10 +41,10 @@ public abstract class AbstractShortField extends TiffField<short[]> {
             dataOffset = toOffset;
             os.writeInt(toOffset);
             os.seek(toOffset);
-            
+
             for (short value : data)
                 os.writeShort(value);
-            
+
             toOffset += (data.length << 1);
         }
         return toOffset;

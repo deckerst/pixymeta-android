@@ -19,14 +19,14 @@ import pixy.meta.util.Builder;
 
 /**
  * PNG IEND chunk builder
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 04/29/2013
  */
 public class IENDBuilder extends ChunkBuilder implements Builder<Chunk> {
 
     public IENDBuilder() {
-        super(ChunkType.IEND);    
+        super(ChunkType.IEND);
     }
 
     @Override

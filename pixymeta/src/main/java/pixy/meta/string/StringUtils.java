@@ -38,7 +38,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * String utility class
@@ -267,7 +268,8 @@ public class StringUtils {
     }
 
     public static String rationalToString(DecimalFormat df, boolean unsigned, int... rational) {
-        if (rational.length < 2) throw new IllegalArgumentException("Input data length is too short");
+        if (rational.length < 2)
+            throw new IllegalArgumentException("Input data length is too short");
         if (rational[1] == 0) throw new ArithmeticException("Divided by zero");
 
         long numerator = rational[0];

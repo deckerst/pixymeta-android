@@ -32,14 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import pixy.meta.io.IOUtils;
+import pixy.meta.io.ReadStrategy;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
-import pixy.meta.io.IOUtils;
-import pixy.meta.io.ReadStrategy;
 import pixy.meta.util.ArrayUtils;
 
 public class DDB extends Metadata {
@@ -50,19 +49,19 @@ public class DDB extends Metadata {
     public static final int _8BIM = 0x3842494d; // "8BIM"
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(DDB.class);
-    
+
     public static void showDDB(byte[] data, ReadStrategy readStrategy) {
-        if(data != null && data.length > 0) {
+        if (data != null && data.length > 0) {
             DDB ddb = new DDB(data, readStrategy);
             try {
                 ddb.read();
                 ddb.showMetadata();
             } catch (IOException e) {
                 e.printStackTrace();
-            }            
+            }
         }
     }
-    
+
     public static void showDDB(InputStream is, ReadStrategy readStrategy) {
         try {
             showDDB(IOUtils.inputStreamToByteArray(is), readStrategy);
@@ -70,44 +69,44 @@ public class DDB extends Metadata {
             e.printStackTrace();
         }
     }
-    
+
     public DDB(byte[] data, ReadStrategy readStrategy) {
         super(MetadataType.PHOTOSHOP_DDB, data);
-        if(readStrategy == null) throw new IllegalArgumentException("Input readStategy is null");
+        if (readStrategy == null) throw new IllegalArgumentException("Input readStategy is null");
         this.readStrategy = readStrategy;
     }
-    
+
     public Map<Integer, DDBEntry> getEntries() {
         return Collections.unmodifiableMap(entries);
     }
-    
+
     public Iterator<MetadataEntry> iterator() {
         ensureDataRead();
         List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
 
-        for(DDBEntry entry : this.entries.values())
+        for (DDBEntry entry : this.entries.values())
             entries.add(entry.getMetadataEntry());
-        
+
         return Collections.unmodifiableCollection(entries).iterator();
     }
-    
+
     public void read() throws IOException {
-        if(!isDataRead) {
+        if (!isDataRead) {
             int i = 0;
-            if(!new String(data, i, DDB_ID.length()).equals(DDB_ID)) {
+            if (!new String(data, i, DDB_ID.length()).equals(DDB_ID)) {
                 throw new RuntimeException("Invalid Photoshop Document Data Block");
             }
             i += DDB_ID.length();
-            while((i+4) < data.length) {
+            while ((i + 4) < data.length) {
                 int signature = readStrategy.readInt(data, i);
                 i += 4;
-                if(signature ==_8BIM) {
+                if (signature == _8BIM) {
                     int type = readStrategy.readInt(data, i);
                     i += 4;
                     int size = readStrategy.readInt(data, i);
                     i += 4;
                     DataBlockType etype = DataBlockType.fromInt(type);
-                    switch(etype) {
+                    switch (etype) {
                         case Layr:
                             entries.put(type, new LayerData(size, ArrayUtils.subArray(data, i, size), readStrategy));
                             break;
@@ -120,17 +119,17 @@ public class DDB extends Metadata {
                         default:
                             entries.put(type, new DDBEntry(type, size, ArrayUtils.subArray(data, i, size), readStrategy));
                     }
-                    i += ((size + 3)>>2)<<2;// Skip data with padding bytes (padded to a 4 byte offset)
+                    i += ((size + 3) >> 2) << 2;// Skip data with padding bytes (padded to a 4 byte offset)
                 }
             }
             isDataRead = true;
         }
     }
-    
+
     public void showMetadata() {
         ensureDataRead();
         LOGGER.info("<<Adobe DDB information starts>>");
-        for(DDBEntry entry : entries.values()) {
+        for (DDBEntry entry : entries.values()) {
             entry.print();
         }
         LOGGER.info("<<Adobe DDB information ends>>");

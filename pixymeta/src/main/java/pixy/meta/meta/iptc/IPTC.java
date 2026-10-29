@@ -25,8 +25,6 @@
 
 package pixy.meta.meta.iptc;
 
-import android.os.Build;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,25 +35,24 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
+import pixy.meta.io.IOUtils;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
 import pixy.meta.meta.Metadata;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
-import pixy.meta.io.IOUtils;
 
 public class IPTC extends Metadata {
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(IPTC.class);
 
     public static void showIPTC(byte[] data) {
-        if(data != null && data.length > 0) {
+        if (data != null && data.length > 0) {
             IPTC iptc = new IPTC(data);
             try {
                 iptc.read();
@@ -74,6 +71,7 @@ public class IPTC extends Metadata {
             }
         }
     }
+
     public static void showIPTC(InputStream is) {
         try {
             showIPTC(IOUtils.inputStreamToByteArray(is));
@@ -96,27 +94,27 @@ public class IPTC extends Metadata {
     }
 
     public void addDataSet(IPTCDataSet dataSet) {
-        if(datasetMap != null) {
+        if (datasetMap != null) {
             IPTCTag tag = dataSet.getTagEnum();
-            if(datasetMap.get(tag) == null) {
+            if (datasetMap.get(tag) == null) {
                 List<IPTCDataSet> list = new ArrayList<IPTCDataSet>();
                 list.add(dataSet);
                 datasetMap.put(tag, list);
-            } else if(dataSet.allowMultiple()) {
+            } else if (dataSet.allowMultiple()) {
                 Objects.requireNonNull(datasetMap.get(tag)).add(dataSet);
             }
         } else throw new IllegalStateException("DataSet Map is empty");
     }
 
     public void addDataSets(Collection<? extends IPTCDataSet> dataSets) {
-        if(datasetMap != null) {
-            for(IPTCDataSet dataSet: dataSets) {
+        if (datasetMap != null) {
+            for (IPTCDataSet dataSet : dataSets) {
                 IPTCTag tag = dataSet.getTagEnum();
-                if(datasetMap.get(tag) == null) {
+                if (datasetMap.get(tag) == null) {
                     List<IPTCDataSet> list = new ArrayList<IPTCDataSet>();
                     list.add(dataSet);
                     datasetMap.put(tag, list);
-                } else if(dataSet.allowMultiple()) {
+                } else if (dataSet.allowMultiple()) {
                     Objects.requireNonNull(datasetMap.get(tag)).add(dataSet);
                 }
             }
@@ -136,11 +134,11 @@ public class IPTC extends Metadata {
 
         String value = "";
 
-        if(list != null) {
-            if(list.size() == 1) {
+        if (list != null) {
+            if (list.size() == 1) {
                 value = list.get(0).getDataAsString();
             } else {
-                for(int i = 0; i < list.size() - 1; i++)
+                for (int i = 0; i < list.size() - 1; i++)
                     value += list.get(i).getDataAsString() + ";";
                 value += list.get(list.size() - 1).getDataAsString();
             }
@@ -171,7 +169,7 @@ public class IPTC extends Metadata {
 
     public Iterator<MetadataEntry> iterator() {
         ensureDataRead();
-        if(datasetMap != null){
+        if (datasetMap != null) {
             // Print multiple entry IPTCDataSet
             Set<Entry<IPTCTag, List<IPTCDataSet>>> entries = datasetMap.entrySet();
             final Iterator<Entry<IPTCTag, List<IPTCDataSet>>> iter = entries.iterator();
@@ -181,7 +179,7 @@ public class IPTC extends Metadata {
                     String key = entry.getKey().getName();
                     String value = "";
 
-                    for(IPTCDataSet item : entry.getValue()) {
+                    for (IPTCDataSet item : entry.getValue()) {
                         value += ";" + item.getDataAsString();
                     }
 
@@ -201,22 +199,22 @@ public class IPTC extends Metadata {
     }
 
     public void read() throws IOException {
-        if(!isDataRead) {
+        if (!isDataRead) {
             int i = 0;
             int tagMarker = data[i];
             datasetMap = new TreeMap<IPTCTag, List<IPTCDataSet>>(new IPTCTagComparator());
             while (tagMarker == 0x1c) {
                 i++;
-                int recordNumber = data[i++]&0xff;
-                int tag = data[i++]&0xff;
+                int recordNumber = data[i++] & 0xff;
+                int tag = data[i++] & 0xff;
                 int recordSize = IOUtils.readUnsignedShortMM(data, i);
                 i += 2;
 
-                if(recordSize > 0) {
+                if (recordSize > 0) {
                     IPTCDataSet dataSet = new IPTCDataSet(recordNumber, tag, recordSize, data, i);
 
                     IPTCTag tagEnum = dataSet.getTagEnum();
-                    if(datasetMap.get(tagEnum) == null) {
+                    if (datasetMap.get(tagEnum) == null) {
                         List<IPTCDataSet> list = new ArrayList<IPTCDataSet>();
                         list.add(dataSet);
                         datasetMap.put(tagEnum, list);
@@ -226,11 +224,11 @@ public class IPTC extends Metadata {
 
                 i += recordSize;
                 // Sanity check
-                if(i >= data.length) break;
+                if (i >= data.length) break;
                 tagMarker = data[i];
             }
             // Remove possible duplicates
-            for (Map.Entry<IPTCTag, List<IPTCDataSet>> entry : datasetMap.entrySet()){
+            for (Map.Entry<IPTCTag, List<IPTCDataSet>> entry : datasetMap.entrySet()) {
                 entry.setValue(new ArrayList<IPTCDataSet>(new LinkedHashSet<IPTCDataSet>(entry.getValue())));
             }
 
@@ -239,8 +237,8 @@ public class IPTC extends Metadata {
     }
 
     public void write(OutputStream os) throws IOException {
-        for(List<IPTCDataSet> datasets : getDataSets().values())
-            for(IPTCDataSet dataset : datasets)
+        for (List<IPTCDataSet> datasets : getDataSets().values())
+            for (IPTCDataSet dataset : datasets)
                 dataset.write(os);
     }
 }

@@ -27,10 +27,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import pixy.meta.io.IOUtils;
 import pixy.meta.log.Logger;
 import pixy.meta.log.LoggerFactory;
-
-import pixy.meta.io.IOUtils;
 import pixy.meta.meta.MetadataEntry;
 import pixy.meta.util.ArrayUtils;
 
@@ -39,39 +38,39 @@ public class DuckyDataSet {
     private int size;
     private byte[] data;
     private int offset;
-    
+
     // Obtain a logger instance
     private static final Logger LOGGER = LoggerFactory.getLogger(DuckyDataSet.class);
-    
+
     public DuckyDataSet(int tag, byte[] data) {
         this(tag, data.length, data, 0);
     }
-    
+
     public DuckyDataSet(int tag, int size, byte[] data, int offset) {
         this.tag = tag;
         this.size = size;
         this.data = data;
         this.offset = offset;
     }
-    
+
     public byte[] getData() {
         return ArrayUtils.subArray(data, offset, size);
     }
-    
+
     public MetadataEntry getMetadataEntry() {
         //
         MetadataEntry entry = null;
-        
-        if(size < 4) {
+
+        if (size < 4) {
             LOGGER.warn("Data set size {} is too small, should >= 4", size);
             return new MetadataEntry("Bad Ducky DataSet", "Data set size " + size + " is two small, should >= 4");
         }
-            
+
         DuckyTag etag = DuckyTag.fromTag(tag);
-        
-        if(etag == DuckyTag.UNKNOWN) {
+
+        if (etag == DuckyTag.UNKNOWN) {
             entry = new MetadataEntry("Unknown tag", tag + "");
-        } else if(etag == DuckyTag.QUALITY) {
+        } else if (etag == DuckyTag.QUALITY) {
             entry = new MetadataEntry(etag.getName(), IOUtils.readUnsignedIntMM(data, offset) + "");
         } else {
             String value = "";
@@ -83,29 +82,29 @@ public class DuckyDataSet {
             }
             entry = new MetadataEntry(etag.getName(), value);
         }
-        
+
         return entry;
     }
-    
+
     public int getSize() {
         return size;
     }
-    
+
     public int getTag() {
         return tag;
     }
-    
+
     public void print() {
-        if(size < 4) {
+        if (size < 4) {
             LOGGER.warn("Data set size {} is too small, should >= 4", size);
             return;
         }
-            
+
         DuckyTag etag = DuckyTag.fromTag(tag);
-        
-        if(etag == DuckyTag.UNKNOWN) {
+
+        if (etag == DuckyTag.UNKNOWN) {
             LOGGER.info("Unknown tag: {}", tag);
-        } else if(etag == DuckyTag.QUALITY) {
+        } else if (etag == DuckyTag.QUALITY) {
             LOGGER.info(etag + ": {}", IOUtils.readUnsignedIntMM(data, offset));
         } else {
             String value = "";
@@ -118,7 +117,7 @@ public class DuckyDataSet {
             LOGGER.info(etag + ": {}", value);
         }
     }
-    
+
     public void write(OutputStream out) throws IOException {
         IOUtils.writeShortMM(out, tag);
         IOUtils.writeShortMM(out, size);

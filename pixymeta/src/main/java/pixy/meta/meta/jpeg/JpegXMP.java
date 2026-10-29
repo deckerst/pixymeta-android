@@ -1,11 +1,14 @@
 package pixy.meta.meta.jpeg;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import static pixy.meta.image.jpeg.JPGConsts.XMP_EXT_ID;
+import static pixy.meta.image.jpeg.JPGConsts.XMP_ID;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 import pixy.meta.image.jpeg.Marker;
 import pixy.meta.io.IOUtils;
@@ -14,25 +17,23 @@ import pixy.meta.string.StringUtils;
 import pixy.meta.string.XMLUtils;
 import pixy.meta.util.ArrayUtils;
 
-import static pixy.meta.image.jpeg.JPGConsts.*;
-
 public class JpegXMP extends XMP {
 
     // Largest size for each extended XMP chunk
     private static final int MAX_EXTENDED_XMP_CHUNK_SIZE = 65458;
     private static final int MAX_XMP_CHUNK_SIZE = 65504;
     private static final int GUID_LEN = 32;
-        
+
     public JpegXMP(byte[] data) {
         super(data);
     }
-    
+
     public JpegXMP(String xmp) {
         super(xmp);
     }
-    
+
     /**
-     * @param xmp XML string for the XMP - Assuming in UTF-8 format.
+     * @param xmp         XML string for the XMP - Assuming in UTF-8 format.
      * @param extendedXmp XML string for the extended XMP - Assuming in UTF-8 format
      */
     public JpegXMP(String xmp, String extendedXmp) {
@@ -48,19 +49,19 @@ public class JpegXMP extends XMP {
         XMLUtils.insertTrailingPI(xmpDoc, "xpacket", "end='r'");
         byte[] extendedXmp = getExtendedXmpData();
         String guid = null;
-        if(extendedXmp != null) { // We have ExtendedXMP
+        if (extendedXmp != null) { // We have ExtendedXMP
             guid = StringUtils.generateMD5(extendedXmp);
             NodeList descriptions = xmpDoc.getElementsByTagName("rdf:Description");
             int length = descriptions.getLength();
-            if(length > 0) {
-                Element node = (Element)descriptions.item(length - 1);
+            if (length > 0) {
+                Element node = (Element) descriptions.item(length - 1);
                 node.setAttribute("xmlns:xmpNote", "http://ns.adobe.com/xmp/note/");
                 node.setAttribute("xmpNote:HasExtendedXMP", guid);
             }
         }
         // Serialize XMP to byte array
         byte[] xmp = XMLUtils.serializeToByteArray(xmpDoc);
-        if(xmp.length > MAX_XMP_CHUNK_SIZE)
+        if (xmp.length > MAX_XMP_CHUNK_SIZE)
             throw new RuntimeException("XMP data size exceededs JPEG segment size");
         // Write XMP segment
         IOUtils.writeShortMM(os, Marker.APP1.getValue());
@@ -70,12 +71,12 @@ public class JpegXMP extends XMP {
         os.write(XMP_ID.getBytes());
         os.write(xmp);
         // Write ExtendedXMP if we have
-        if(extendedXmp != null) {
+        if (extendedXmp != null) {
             int numOfChunks = extendedXmp.length / MAX_EXTENDED_XMP_CHUNK_SIZE;
             int extendedXmpLen = extendedXmp.length;
             int offset = 0;
-            
-            for(int i = 0; i < numOfChunks; i++) {
+
+            for (int i = 0; i < numOfChunks; i++) {
                 IOUtils.writeShortMM(os, Marker.APP1.getValue());
                 // Write segment length
                 IOUtils.writeShortMM(os, 2 + XMP_EXT_ID.length() + GUID_LEN + 4 + 4 + MAX_EXTENDED_XMP_CHUNK_SIZE);
@@ -85,12 +86,12 @@ public class JpegXMP extends XMP {
                 IOUtils.writeIntMM(os, extendedXmpLen);
                 IOUtils.writeIntMM(os, offset);
                 os.write(ArrayUtils.subArray(extendedXmp, offset, MAX_EXTENDED_XMP_CHUNK_SIZE));
-                offset += MAX_EXTENDED_XMP_CHUNK_SIZE;            
+                offset += MAX_EXTENDED_XMP_CHUNK_SIZE;
             }
-            
+
             int leftOver = extendedXmp.length % MAX_EXTENDED_XMP_CHUNK_SIZE;
-            
-            if(leftOver != 0) {
+
+            if (leftOver != 0) {
                 IOUtils.writeShortMM(os, Marker.APP1.getValue());
                 // Write segment length
                 IOUtils.writeShortMM(os, 2 + XMP_EXT_ID.length() + GUID_LEN + 4 + 4 + leftOver);

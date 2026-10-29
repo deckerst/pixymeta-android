@@ -29,23 +29,25 @@ import pixy.meta.io.IOUtils;
 public class UnknownSegment extends Segment {
 
     private short markerValue;
-    
+
     public UnknownSegment(short markerValue, int length, byte[] data) {
         super(Marker.UNKNOWN, length, data);
         this.markerValue = markerValue;
     }
-    
+
     public short getMarkerValue() {
         return markerValue;
     }
-    
-    @Override public void write(OutputStream os) throws IOException{
+
+    @Override
+    public void write(OutputStream os) throws IOException {
         IOUtils.writeIntMM(os, getLength());
         IOUtils.writeIntMM(os, this.markerValue);
         IOUtils.write(os, getData());
     }
-    
-    @Override public String toString() {
-        return super.toString() + "[Marker value: 0x"+ Integer.toHexString(markerValue&0xffff)+"]";
+
+    @Override
+    public String toString() {
+        return super.toString() + "[Marker value: 0x" + Integer.toHexString(markerValue & 0xffff) + "]";
     }
 }

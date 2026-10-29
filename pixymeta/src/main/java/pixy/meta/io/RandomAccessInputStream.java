@@ -33,49 +33,51 @@ import java.io.InputStream;
  * <p>
  * NOTE:  for MemoryCacheRandomAccessInputStream, there is the risk of "over read" in which
  * more bytes are cached in the buffer than actually needed. In this case, the underlying
- * stream might not be usable anymore afterwards. 
- * 
+ * stream might not be usable anymore afterwards.
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
- * @version 1.0 01/24/2013 
- */ 
-public abstract class RandomAccessInputStream extends InputStream implements DataInput {    
-    
+ * @version 1.0 01/24/2013
+ */
+public abstract class RandomAccessInputStream extends InputStream implements DataInput {
+
     private ReadStrategy strategy = ReadStrategyMM.getInstance();
 
-     /** The source stream. */
+    /**
+     * The source stream.
+     */
     protected InputStream src;
     protected boolean closed;
-    
+
     protected RandomAccessInputStream(InputStream src) {
         this.src = src;
     }
-    
+
     /**
      * Closes the RandomAccessInputStream and it's underlying stream
      */
     public abstract void shallowClose() throws IOException;
-   
+
     /**
      * Check to make sure that this stream has not been closed
      */
-    protected  void ensureOpen() throws IOException {
+    protected void ensureOpen() throws IOException {
         if (closed)
             throw new IOException("Stream closed");
     }
-    
+
     protected void finalize() throws Throwable {
         super.finalize();
         close();
     }
-    
+
     public short getEndian() {
-        return strategy instanceof ReadStrategyMM?IOUtils.BIG_ENDIAN:IOUtils.LITTLE_ENDIAN;
+        return strategy instanceof ReadStrategyMM ? IOUtils.BIG_ENDIAN : IOUtils.LITTLE_ENDIAN;
     }
-    
+
     public abstract long getStreamPointer();
-    
+
     public abstract int read() throws IOException;
-    
+
     public abstract int read(byte[] b, int off, int len) throws IOException;
 
     public final boolean readBoolean() throws IOException {
@@ -84,26 +86,26 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
             throw new EOFException();
         return (ch != 0);
     }
-    
+
     public final byte readByte() throws IOException {
         int ch = this.read();
         if (ch < 0)
-           throw new EOFException();
-        return (byte)ch;
+            throw new EOFException();
+        return (byte) ch;
     }
-    
+
     public final char readChar() throws IOException {
-        return (char)(readShort()&0xffff);
+        return (char) (readShort() & 0xffff);
     }
 
     public final double readDouble() throws IOException {
         return Double.longBitsToDouble(readLong());
     }
-    
+
     public final float readFloat() throws IOException {
         return Float.intBitsToFloat(readInt());
-    }    
-    
+    }
+
     public final void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
     }
@@ -127,7 +129,7 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
     @Deprecated
     public final String readLine() {
         throw new UnsupportedOperationException(
-            "readLine is not supported by RandomAccessInputStream."
+                "readLine is not supported by RandomAccessInputStream."
         );
     }
 
@@ -152,33 +154,33 @@ public abstract class RandomAccessInputStream extends InputStream implements Dat
     }
 
     public final int readUnsignedShort() throws IOException {
-        return readShort()&0xffff;
+        return readShort() & 0xffff;
     }
 
     /**
-     *  Due to the current implementation, writeUTF and readUTF are the
-     *  only methods which are machine or byte sequence independent as
-     *  they are actually both Motorola byte sequence under the hood.
+     * Due to the current implementation, writeUTF and readUTF are the
+     * only methods which are machine or byte sequence independent as
+     * they are actually both Motorola byte sequence under the hood.
      * <p>
-     *  Whereas the following static method is byte sequence dependent
-     *  as it calls readUnsignedShort of RandomAccessInputStream.
+     * Whereas the following static method is byte sequence dependent
+     * as it calls readUnsignedShort of RandomAccessInputStream.
      * <p>
-     *  <code>DataInputStream.readUTF(this)</code>;
+     * <code>DataInputStream.readUTF(this)</code>;
      */
     public final String readUTF() throws IOException {
-        return new DataInputStream(this).readUTF();    
-    } 
-    
+        return new DataInputStream(this).readUTF();
+    }
+
     public abstract void seek(long loc) throws IOException;
-    
+
     public void setReadStrategy(ReadStrategy strategy) {
         this.strategy = strategy;
-    }    
-    
+    }
+
     public int skipBytes(int n) throws IOException {
         if (n <= 0) {
             return 0;
         }
-        return (int)skip(n);
+        return (int) skip(n);
     }
 }

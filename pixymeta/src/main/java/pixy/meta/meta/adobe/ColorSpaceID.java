@@ -32,48 +32,47 @@ public enum ColorSpaceID {
     //They are full unsigned 16-bit values as in Apple's HSVColor data structure. Pure red = 0,65535, 65535.
     HSB("HSB:  The first three values in the color data are hue, saturation, and brightness", 1),
     //They are full unsigned 16-bit values. 0 = 100% ink. For example, pure cyan = 0,65535,65535,65535.
-    CMYK("CMYK: The four values in the color data are cyan, magenta, yellow, and black", 2),     
+    CMYK("CMYK: The four values in the color data are cyan, magenta, yellow, and black", 2),
     PANTONE("Pantone matching system", 3), // Custom color space
     FOCOLTONE("Focoltone colour system", 4), // Custom color space
     TRUMATCH("Trumatch color", 5), // Custom color space
     TOYO88("Toyo 88 colorfinder 1050", 6),
     //Lightness is a 16-bit value from 0...10000. Chrominance components are each 16-bit values from -12800...12700.
     //Gray values are represented by chrominance components of 0. Pure white = 10000,0,0.
-    Lab("Lab: The first three values in the color data are lightness, a chrominance, and b chrominance", 7), 
+    Lab("Lab: The first three values in the color data are lightness, a chrominance, and b chrominance", 7),
     Grayscale("Grayscale: The first value in the color data is the gray value, from 0...10000", 8),
     HKS("HKS colors", 10),
 
     UNKNOWN("Unknown", 99);
-    
+
     private ColorSpaceID(String description, int value) {
         this.description = description;
         this.value = value;
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public int getValue() {
         return value;
     }
-    
+
     public static ColorSpaceID fromInt(int value) {
-           ColorSpaceID id = idMap.get(value);
+        ColorSpaceID id = idMap.get(value);
         if (id == null)
             return UNKNOWN;
-           return id;
+        return id;
     }
-    
+
     private static final Map<Integer, ColorSpaceID> idMap = new HashMap<Integer, ColorSpaceID>();
-       
-    static
-    {
-      for(ColorSpaceID id : values()) {
-           idMap.put(id.getValue(), id);
-      }
+
+    static {
+        for (ColorSpaceID id : values()) {
+            idMap.put(id.getValue(), id);
+        }
     }
-    
+
     private final String description;
     private final int value;
 }

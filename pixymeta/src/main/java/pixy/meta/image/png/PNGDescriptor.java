@@ -20,8 +20,8 @@ public class PNGDescriptor {
     public static String getCompressionTypeDescrition(int compressionType) {
         //
         String description = "";
-        
-        switch(compressionType) {
+
+        switch (compressionType) {
             case 0:
                 description = "Deflate/inflate compression with a 32K sliding window";
                 break;
@@ -29,15 +29,15 @@ public class PNGDescriptor {
                 description = "Invalid compression value";
                 break;
         }
-         
-        return description;             
+
+        return description;
     }
-    
+
     public static String getFilterDescription(int filter) {
         //
         String description = "";
-        
-        switch(filter) {
+
+        switch (filter) {
             case 0:
                 description = "No filter";
                 break;
@@ -57,15 +57,15 @@ public class PNGDescriptor {
                 description = "Invalid filter type";
                 break;
         }
-    
-        return description;        
+
+        return description;
     }
-    
+
     public static String getFilterTypeDescription(int filterType) {
         //
         String description = "";
-        
-        switch(filterType) {
+
+        switch (filterType) {
             case 0:
                 description = "Adaptive filtering with five basic filter types";
                 break;
@@ -73,15 +73,15 @@ public class PNGDescriptor {
                 description = "Invalid filter type";
                 break;
         }
-         
-        return description;        
+
+        return description;
     }
-    
+
     public static String getInterlaceTypeDescription(int interlaceType) {
         //
         String description = "";
-        
-        switch(interlaceType) {
+
+        switch (interlaceType) {
             case 0:
                 description = "No interlace";
                 break;
@@ -93,8 +93,9 @@ public class PNGDescriptor {
                 break;
         }
 
-        return description;        
+        return description;
     }
-    
-    private PNGDescriptor() {}
+
+    private PNGDescriptor() {
+    }
 }

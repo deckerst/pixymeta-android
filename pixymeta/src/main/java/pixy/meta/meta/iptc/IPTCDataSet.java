@@ -11,7 +11,7 @@
  * or any later version.
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
- * 
+ *
  * Change History - most recent changes go on top of previous changes
  *
  * IPTCDataSet.java
@@ -35,7 +35,7 @@ import pixy.meta.util.ArrayUtils;
 
 /**
  * International Press Telecommunications Council (IPTC) data set
- * 
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 06/10/2013
  */
@@ -47,68 +47,68 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
     private final byte[] data;
     private final int offset;
     private IPTCTag tagEnum;
-    
+
     // A unique name used as HashMap key
     private final String name;
-    
+
     private static byte[] getBytes(String str) {
         return str.getBytes(StandardCharsets.UTF_8);
     }
-    
+
     public IPTCDataSet(int tag, byte[] data) {
         this(IPTCRecord.APPLICATION, tag, data);
     }
-    
+
     public IPTCDataSet(int recordNumber, int tag, int size, byte[] data, int offset) {
         this.recordNumber = recordNumber;
         this.tag = tag;
         this.size = size;
         this.data = data;
-        this.offset = offset;        
+        this.offset = offset;
         this.name = getTagName();
     }
-    
+
     public IPTCDataSet(int tag, String value) {
         this(tag, IPTCDataSet.getBytes(value));
     }
-    
+
     public IPTCDataSet(IPTCApplicationTag appTag, byte[] data) {
         this(appTag.getTag(), data);
     }
-    
+
     public IPTCDataSet(IPTCApplicationTag appTag, String value) {
         this(appTag.getTag(), value);
     }
-    
+
     public IPTCDataSet(IPTCRecord record, int tag, byte[] data) {
         this(record.getRecordNumber(), tag, data.length, data, 0);
     }
-    
+
     public IPTCDataSet(IPTCRecord record, int tag, String value) {
         this(record, tag, IPTCDataSet.getBytes(value));
     }
-    
+
     public boolean allowMultiple() {
         return tagEnum.allowMultiple();
     }
-    
+
     @Override
     public int compareTo(IPTCDataSet other) {
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
-        
-        if(this == other) return EQUAL;
-        
+
+        if (this == other) return EQUAL;
+
         if (this.getRecordNumber() < other.getRecordNumber()) return BEFORE;
         if (this.getRecordNumber() > other.getRecordNumber()) return AFTER;
-        if(this.getRecordNumber() == other.getRecordNumber()) {
+        if (this.getRecordNumber() == other.getRecordNumber()) {
             return Integer.compare(this.getTag(), other.getTag());
         }
-    
+
         return EQUAL;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -127,19 +127,19 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
         }
         return tag == other.tag;
     }
-    
+
     public byte[] getData() {
         return ArrayUtils.subArray(data, offset, size);
     }
-    
+
     public String getDataAsString() {
         return tagEnum.getDataAsString(getData());
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getRecordType() {
         //
         switch (recordNumber) {
@@ -161,25 +161,25 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
                 return "Unknown Record";
         }
     }
-    
+
     public int getRecordNumber() {
         return recordNumber;
     }
-    
+
     public int getSize() {
         return size;
     }
-    
+
     public int getTag() {
         return tag;
     }
-    
+
     public IPTCTag getTagEnum() {
         return tagEnum;
     }
-    
+
     private String getTagName() {
-        switch(IPTCRecord.fromRecordNumber(recordNumber)) {
+        switch (IPTCRecord.fromRecordNumber(recordNumber)) {
             case APPLICATION:
                 tagEnum = IPTCApplicationTag.fromTag(tag);
                 break;
@@ -202,7 +202,7 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
                 tagEnum = IPTCPreObjectDataTag.fromTag(tag);
                 break;
             case UNKNOWN:
-                switch(IPTCRecord.fromRecordNumber(recordNumber)) {
+                switch (IPTCRecord.fromRecordNumber(recordNumber)) {
                     case APPLICATION:
                         tagEnum = IPTCApplicationTag.UNKNOWN;
                         break;
@@ -225,13 +225,13 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
                         tagEnum = IPTCFotoStationTag.UNKNOWN;
                         break;
                     case UNKNOWN:
-                        throw new RuntimeException("Unknown IPTC record"); 
+                        throw new RuntimeException("Unknown IPTC record");
                 }
         }
-        
+
         return tagEnum.getName();
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -241,10 +241,10 @@ public class IPTCDataSet implements Comparable<IPTCDataSet> {
         result = prime * result + tag;
         return result;
     }
-    
+
     /**
      * Write the current IPTCDataSet to the OutputStream
-     * 
+     *
      * @param out OutputStream to write the IPTCDataSet
      */
     public void write(OutputStream out) throws IOException {

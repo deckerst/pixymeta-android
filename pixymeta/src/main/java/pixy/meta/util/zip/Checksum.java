@@ -18,13 +18,12 @@ package pixy.meta.util.zip;
 /**
  * Interface to be implemented by CRC32 and Adler32 etc.
  */
-public interface Checksum
-{  
-  long getValue();
-  
-  void update(int b);
- 
-  void update(byte[] b, int offset, int length);
- 
-  void reset();
+public interface Checksum {
+    long getValue();
+
+    void update(int b);
+
+    void update(byte[] b, int offset, int length);
+
+    void reset();
 }

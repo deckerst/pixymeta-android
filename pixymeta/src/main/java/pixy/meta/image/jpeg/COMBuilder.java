@@ -17,7 +17,7 @@ package pixy.meta.image.jpeg;
 
 /**
  * JPEG COM segment builder
- *  
+ *
  * @author Wen Yu, yuwen_66@yahoo.com
  * @version 1.0 10/11/2013
  */
@@ -25,16 +25,16 @@ package pixy.meta.image.jpeg;
 public class COMBuilder extends SegmentBuilder {
 
     private String comment;
-    
+
     public COMBuilder() {
-        super(Marker.COM);    
+        super(Marker.COM);
     }
-    
+
     public COMBuilder comment(String comment) {
         this.comment = comment;
         return this;
     }
-    
+
     @Override
     protected byte[] buildData() {
         return comment.getBytes();
