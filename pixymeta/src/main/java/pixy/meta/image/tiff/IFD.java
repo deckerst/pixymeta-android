@@ -205,19 +205,17 @@ public final class IFD {
         os.writeInt(0);    // Set next IFD offset to default 0 
 
         // Write sub IFDs if any (we assume bare-bone sub IFDs pointed by long field type with no image data associated)
-        if (children.size() > 0) {
-            for (Map.Entry<Tag, IFD> entry : children.entrySet()) {
-                Tag key = entry.getKey();
-                IFD value = entry.getValue();
-                // Update parent field if present, otherwise skip
-                TiffField<?> tiffField = this.getField(key);
-                if (tiffField != null) {
-                    int dataPos = tiffField.getDataOffset();
-                    os.seek(dataPos);
-                    os.writeInt(toOffset);
-                    os.seek(toOffset);
-                    toOffset = value.write(os, toOffset);
-                }
+        for (Map.Entry<Tag, IFD> entry : children.entrySet()) {
+            Tag key = entry.getKey();
+            IFD value = entry.getValue();
+            // Update parent field if present, otherwise skip
+            TiffField<?> tiffField = this.getField(key);
+            if (tiffField != null) {
+                int dataPos = tiffField.getDataOffset();
+                os.seek(dataPos);
+                os.writeInt(toOffset);
+                os.seek(toOffset);
+                toOffset = value.write(os, toOffset);
             }
         }
 

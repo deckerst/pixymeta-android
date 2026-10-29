@@ -151,7 +151,7 @@ public class TIFFMeta {
         return rin.readInt();
     }
 
-    private static Collection<IPTCDataSet> copyIPTCDataSet(Collection<IPTCDataSet> iptcs, byte[] data) throws IOException {
+    private static void copyIPTCDataSet(Collection<IPTCDataSet> iptcs, byte[] data) throws IOException {
         IPTC iptc = new IPTC(data);
         // Shallow copy the map
         Map<IPTCTag, List<IPTCDataSet>> dataSetMap = new HashMap<>(iptc.getDataSets());
@@ -160,8 +160,6 @@ public class TIFFMeta {
                 dataSetMap.remove(set.getTagEnum());
         for (List<IPTCDataSet> iptcList : dataSetMap.values())
             iptcs.addAll(iptcList);
-
-        return iptcs;
     }
 
     private static TiffField<?> copyJpegHufTable(RandomAccessInputStream rin, RandomAccessOutputStream rout, TiffField<?> field, int curPos) throws IOException {
@@ -347,7 +345,7 @@ public class TIFFMeta {
 
             // Uncompressed image with one strip or tile (may contain wrong StripByteCounts value)
             // Bug fix for uncompressed image with one strip and wrong StripByteCounts value
-            if ((tiffField == null) || (tiffField != null && tiffField.getDataAsLong()[0] == 1)) { // Uncompressed data
+            if (tiffField == null || tiffField.getDataAsLong()[0] == 1) { // Uncompressed data
                 int planaryConfiguration = 1;
 
                 tiffField = ifd.getField(TiffTag.PLANAR_CONFIGURATTION);
@@ -509,8 +507,7 @@ public class TIFFMeta {
             byte[] data = (byte[]) f_photoshop.getData();
             IRB irb = new IRB(data);
             if (irb.containsThumbnail()) {
-                IRBThumbnail thumbnail = irb.getThumbnail();
-                return thumbnail;
+                return irb.getThumbnail();
             }
         }
 
@@ -938,7 +935,7 @@ public class TIFFMeta {
         // Sanity check
         if (thumbnail == null) throw new IllegalArgumentException("Input thumbnail is null");
         _8BIM bim = new ThumbnailResource(thumbnail);
-        insertIRB(rin, rout, Arrays.asList(bim), true);
+        insertIRB(rin, rout, List.of(bim), true);
     }
 
     public static void insertXMP(XMP xmp, RandomAccessInputStream rin, RandomAccessOutputStream rout) throws IOException {
@@ -1121,7 +1118,7 @@ public class TIFFMeta {
         try {
             method = tagClass.getDeclaredMethod("fromShort", short.class);
         } catch (NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
+            LOGGER.error("failed to get method `fromShort`", e);
         }
         IFD tiffIFD = new IFD();
         rin.seek(offset);
@@ -1136,7 +1133,7 @@ public class TIFFMeta {
                 ftag = (Tag) method.invoke(null, tag);
             } catch (IllegalAccessException | InvocationTargetException |
                      IllegalArgumentException e) {
-                e.printStackTrace();
+                LOGGER.error("failed to invoke method `fromShort`", e);
             }
             offset += 2;
             rin.seek(offset);
@@ -1157,7 +1154,7 @@ public class TIFFMeta {
             switch (ftype) {
                 case BYTE:
                 case SBYTE:
-                case UNDEFINED:
+                case UNDEFINED: {
                     byte[] data = new byte[field_length];
                     rin.seek(offset);
                     if (field_length <= 4) {
@@ -1180,22 +1177,21 @@ public class TIFFMeta {
                     tiffIFD.addField(byteField);
                     offset += 4;
                     break;
-                case ASCII:
-                    data = new byte[field_length];
-                    if (field_length <= 4) {
-                        rin.seek(offset);
-                        rin.readFully(data, 0, field_length);
-                    } else {
-                        rin.seek(offset);
+                }
+                case ASCII: {
+                    byte[] data = new byte[field_length];
+                    rin.seek(offset);
+                    if (field_length > 4) {
                         rin.seek(rin.readInt());
-                        rin.readFully(data, 0, field_length);
                     }
+                    rin.readFully(data, 0, field_length);
                     TiffField<String> ascIIField = new ASCIIField(tag, new String(data, StandardCharsets.UTF_8));
                     tiffIFD.addField(ascIIField);
                     offset += 4;
                     break;
+                }
                 case SHORT:
-                case SSHORT:
+                case SSHORT: {
                     short[] sdata = new short[field_length];
                     if (field_length == 1) {
                         rin.seek(offset);
@@ -1226,15 +1222,15 @@ public class TIFFMeta {
                     }
                     tiffIFD.addField(shortField);
                     break;
+                }
                 case LONG:
-                case SLONG:
+                case SLONG: {
                     int[] ldata = new int[field_length];
+                    rin.seek(offset);
                     if (field_length == 1) {
-                        rin.seek(offset);
                         ldata[0] = rin.readInt();
                         offset += 4;
                     } else {
-                        rin.seek(offset);
                         int toOffset = rin.readInt();
                         offset += 4;
                         for (int j = 0; j < field_length; j++) {
@@ -1256,21 +1252,21 @@ public class TIFFMeta {
                             readIFD(tiffIFD, TiffTag.EXIF_SUB_IFD, ExifTag.class, rin, null, ldata[0]);
                         } catch (Exception e) {
                             tiffIFD.removeField(TiffTag.EXIF_SUB_IFD);
-                            e.printStackTrace();
+                            LOGGER.error("failed to read IFD from `EXIF_SUB_IFD`", e);
                         }
                     } else if ((ftag == TiffTag.GPS_SUB_IFD) && (ldata[0] != 0)) {
                         try {
                             readIFD(tiffIFD, TiffTag.GPS_SUB_IFD, GPSTag.class, rin, null, ldata[0]);
                         } catch (Exception e) {
                             tiffIFD.removeField(TiffTag.GPS_SUB_IFD);
-                            e.printStackTrace();
+                            LOGGER.error("failed to read IFD from `GPS_SUB_IFD`", e);
                         }
                     } else if ((ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET) && (ldata[0] != 0)) {
                         try {
                             readIFD(tiffIFD, ExifTag.EXIF_INTEROPERABILITY_OFFSET, InteropTag.class, rin, null, ldata[0]);
                         } catch (Exception e) {
                             tiffIFD.removeField(ExifTag.EXIF_INTEROPERABILITY_OFFSET);
-                            e.printStackTrace();
+                            LOGGER.error("failed to read IFD from `EXIF_INTEROPERABILITY_OFFSET`", e);
                         }
                     } else if (ftag == TiffTag.SUB_IFDS) {
                         for (int ifd = 0; ifd < ldata.length; ifd++) {
@@ -1278,19 +1274,19 @@ public class TIFFMeta {
                                 readIFD(tiffIFD, TiffTag.SUB_IFDS, TiffTag.class, rin, null, ldata[0]);
                             } catch (Exception e) {
                                 tiffIFD.removeField(TiffTag.SUB_IFDS);
-                                e.printStackTrace();
+                                LOGGER.error("failed to read IFD from `SUB_IFDS` at ifd=" + ifd, e);
                             }
                         }
                     }
                     break;
-                case FLOAT:
+                }
+                case FLOAT: {
                     float[] fdata = new float[field_length];
+                    rin.seek(offset);
                     if (field_length == 1) {
-                        rin.seek(offset);
                         fdata[0] = rin.readFloat();
                         offset += 4;
                     } else {
-                        rin.seek(offset);
                         int toOffset = rin.readInt();
                         offset += 4;
                         for (int j = 0; j < field_length; j++) {
@@ -1301,9 +1297,9 @@ public class TIFFMeta {
                     }
                     TiffField<float[]> floatField = new FloatField(tag, fdata);
                     tiffIFD.addField(floatField);
-
                     break;
-                case DOUBLE:
+                }
+                case DOUBLE: {
                     double[] ddata = new double[field_length];
                     rin.seek(offset);
                     int toOffset = rin.readInt();
@@ -1315,14 +1311,14 @@ public class TIFFMeta {
                     }
                     TiffField<double[]> doubleField = new DoubleField(tag, ddata);
                     tiffIFD.addField(doubleField);
-
                     break;
+                }
                 case RATIONAL:
-                case SRATIONAL:
+                case SRATIONAL: {
                     int len = 2 * field_length;
-                    ldata = new int[len];
+                    int[] ldata = new int[len];
                     rin.seek(offset);
-                    toOffset = rin.readInt();
+                    int toOffset = rin.readInt();
                     offset += 4;
                     for (int j = 0; j < len; j += 2) {
                         rin.seek(toOffset);
@@ -1339,17 +1335,16 @@ public class TIFFMeta {
                         rationalField = new RationalField(tag, ldata);
                     }
                     tiffIFD.addField(rationalField);
-
                     break;
-                case IFD:
-                    ldata = new int[field_length];
+                }
+                case IFD: {
+                    int[] ldata = new int[field_length];
+                    rin.seek(offset);
                     if (field_length == 1) {
-                        rin.seek(offset);
                         ldata[0] = rin.readInt();
                         offset += 4;
                     } else {
-                        rin.seek(offset);
-                        toOffset = rin.readInt();
+                        int toOffset = rin.readInt();
                         offset += 4;
                         for (int j = 0; j < field_length; j++) {
                             rin.seek(toOffset);
@@ -1364,9 +1359,11 @@ public class TIFFMeta {
                     }
 
                     break;
-                default:
+                }
+                default: {
                     offset += 4;
                     break;
+                }
             }
         }
         // If this is a child IFD, add it to its parent
@@ -1700,8 +1697,7 @@ public class TIFFMeta {
         }
         // Step 3: copy the remaining pages
         // 0x08 is the first write offset
-        int writeOffset = FIRST_WRITE_OFFSET;
-        offset = copyPages(list, writeOffset, rin, rout);
+        offset = copyPages(list, FIRST_WRITE_OFFSET, rin, rout);
         int firstIFDOffset = list.get(0).getStartOffset();
 
         writeToStream(rout, firstIFDOffset);

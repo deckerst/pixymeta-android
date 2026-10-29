@@ -15,6 +15,8 @@
 
 package pixy.meta.image.tiff;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import pixy.meta.io.RandomAccessOutputStream;
@@ -100,6 +102,7 @@ public abstract class TiffField<T> implements Comparable<TiffField<?>> {
         return this.fieldType;
     }
 
+    @NonNull
     @Override
     public String toString() {
         short tag = this.getTag();
