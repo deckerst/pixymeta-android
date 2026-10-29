@@ -1248,36 +1248,36 @@ public class TIFFMeta {
                     tiffIFD.addField(longField);
 
                     // If something bad happens, we skip the sub IFD
-                    int firstSubIfdOffset = ldata[0];
-                    boolean offsetIsValid = firstSubIfdOffset != 0;
-                    if (ftag == TiffTag.EXIF_SUB_IFD && offsetIsValid) {
+                    int nextIndex = ldata[0];
+                    boolean hasOffset = nextIndex != 0;
+                    if (ftag == TiffTag.EXIF_SUB_IFD && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, ExifTag.class, rin, null, firstSubIfdOffset);
+                            readIFD(tiffIFD, ftag, ExifTag.class, rin, null, nextIndex);
                         } catch (Exception e) {
                             tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
                         }
-                    } else if (ftag == TiffTag.GPS_SUB_IFD && offsetIsValid) {
+                    } else if (ftag == TiffTag.GPS_SUB_IFD && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, GPSTag.class, rin, null, firstSubIfdOffset);
+                            readIFD(tiffIFD, ftag, GPSTag.class, rin, null, nextIndex);
                         } catch (Exception e) {
                             tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
                         }
-                    } else if (ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && offsetIsValid) {
+                    } else if (ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, InteropTag.class, rin, null, firstSubIfdOffset);
+                            readIFD(tiffIFD, ftag, InteropTag.class, rin, null, nextIndex);
                         } catch (Exception e) {
                             tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
                         }
                     } else if (ftag == TiffTag.SUB_IFDS) {
-                        for (int subIfdOffset = 0; subIfdOffset < ldata.length; subIfdOffset++) {
+                        for (int index = 0; index < ldata.length; index++) {
                             try {
-                                readIFD(tiffIFD, ftag, TiffTag.class, rin, null, subIfdOffset);
+                                readIFD(tiffIFD, ftag, TiffTag.class, rin, null, index);
                             } catch (Exception e) {
                                 tiffIFD.removeField(ftag);
-                                LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + subIfdOffset, e);
+                                LOGGER.error("failed to read IFD from ftag=" + ftag + " at index=" + index, e);
                             }
                         }
                     }
