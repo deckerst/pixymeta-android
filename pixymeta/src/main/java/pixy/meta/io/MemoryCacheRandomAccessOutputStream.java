@@ -30,30 +30,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStream {
-	private static final int BUFFER_SHIFT = 12;
-	private static final int BUFFER_SIZE = 1 << BUFFER_SHIFT;
-	private static final int BUFFER_MASK = BUFFER_SIZE - 1;
-	
-	private long pointer = 0L;
-	// The largest position ever written to the cache.
-	private long length = 0L;
-	private List<byte[]> cache;
-	private final long cacheStart = 0L;
-	private long flushPos = 0L;
-	
-	public MemoryCacheRandomAccessOutputStream(OutputStream dist) {
-		super(dist);
-		cache = new ArrayList<>(10);
-	}
-	
-	public void close() throws IOException {
-		if(closed) return;
-		super.close();
- 		cache.clear();
- 		cache = null;
- 		dist.close();
- 		dist = null;
- 		closed = true;
+    private static final int BUFFER_SHIFT = 12;
+    private static final int BUFFER_SIZE = 1 << BUFFER_SHIFT;
+    private static final int BUFFER_MASK = BUFFER_SIZE - 1;
+    
+    private long pointer = 0L;
+    // The largest position ever written to the cache.
+    private long length = 0L;
+    private List<byte[]> cache;
+    private final long cacheStart = 0L;
+    private long flushPos = 0L;
+    
+    public MemoryCacheRandomAccessOutputStream(OutputStream dist) {
+        super(dist);
+        cache = new ArrayList<>(10);
+    }
+    
+    public void close() throws IOException {
+        if(closed) return;
+        super.close();
+         cache.clear();
+         cache = null;
+         dist.close();
+         dist = null;
+         closed = true;
     }
 
     private void expandCache(long pos) throws IOException {
@@ -69,47 +69,47 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
             }
         }
     }
-	
-	private byte[] getCacheBlock(long blockNum) throws IOException {
+    
+    private byte[] getCacheBlock(long blockNum) throws IOException {
         long blockOffset = blockNum - cacheStart;
         if (blockOffset > Integer.MAX_VALUE) {
             throw new IOException("Cache addressing limit exceeded!");
         }
         return cache.get((int)blockOffset);
     }
-	
-	public long getFlushPos() {
-		return flushPos;
-	}
-	
-	/**
-	 * Returns the total length of data that has been cached,
-	 * regardless of whether any early blocks have been disposed.
-	 * This value will only ever increase. 
-	 */
-	public long getLength() {
-	    return length;
-	}	
-	
-	public long getStreamPointer() {
-	  	return pointer;
-	}
-	
-	@Override
-	public void reset() {
-		throw new UnsupportedOperationException("This method is not implemented");
-	}
-	
-	public void seek(long pos) throws IOException {
-		ensureOpen();
+    
+    public long getFlushPos() {
+        return flushPos;
+    }
+    
+    /**
+     * Returns the total length of data that has been cached,
+     * regardless of whether any early blocks have been disposed.
+     * This value will only ever increase. 
+     */
+    public long getLength() {
+        return length;
+    }    
+    
+    public long getStreamPointer() {
+          return pointer;
+    }
+    
+    @Override
+    public void reset() {
+        throw new UnsupportedOperationException("This method is not implemented");
+    }
+    
+    public void seek(long pos) throws IOException {
+        ensureOpen();
         if (pos < 0L)
-        	throw new IOException("Negative seek position.");
-		
+            throw new IOException("Negative seek position.");
+        
         pointer = pos;
     }
-	
-	public void write(byte[] b, int off, int len) throws IOException {
-		ensureOpen();
+    
+    public void write(byte[] b, int off, int len) throws IOException {
+        ensureOpen();
         if (b == null) {
             throw new NullPointerException("b == null!");
         }
@@ -137,14 +137,14 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
             offset = 0; // Always after the first time
         }
     }
-	
-	@Override
-	public void write(int value) throws IOException {
-		ensureOpen();
-	    if (pointer < 0) {
+    
+    @Override
+    public void write(int value) throws IOException {
+        ensureOpen();
+        if (pointer < 0) {
             throw new ArrayIndexOutOfBoundsException("pointer < 0");
         }
-		// Ensure there is space for the incoming data
+        // Ensure there is space for the incoming data
         if (pointer >= length) {
             expandCache(pointer);
             length = pointer + 1;
@@ -153,15 +153,15 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
         byte[] buf = getCacheBlock(pointer >> BUFFER_SHIFT);
         int offset = (int)(pointer++ & BUFFER_MASK);
         buf[offset] = (byte)value;
-	}
+    }
 
-	public void writeToStream(long len) throws IOException {
-		ensureOpen();
-		if (len == 0) {
+    public void writeToStream(long len) throws IOException {
+        ensureOpen();
+        if (len == 0) {
             return;
         }
-		
-		if (pointer + len > length) {
+        
+        if (pointer + len > length) {
             throw new IndexOutOfBoundsException("Argument out of cache");
         }
         
@@ -173,7 +173,7 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
 
         int offset = (int)(pointer & BUFFER_MASK);
         byte[] buf = getCacheBlock(bufIndex++);
-        	
+            
         while (len > 0) {
             if (buf == null) {
                 buf = getCacheBlock(bufIndex++);
@@ -187,14 +187,14 @@ public class MemoryCacheRandomAccessOutputStream extends RandomAccessOutputStrea
         }
     }
 
-	@Override
-	public void shallowClose() throws IOException {
+    @Override
+    public void shallowClose() throws IOException {
 
-		if(closed) return;
-		super.close();
- 		cache.clear();
- 		cache = null;
- 		dist = null;
- 		closed = true;		
-	}
+        if(closed) return;
+        super.close();
+         cache.clear();
+         cache = null;
+         dist = null;
+         closed = true;        
+    }
 }

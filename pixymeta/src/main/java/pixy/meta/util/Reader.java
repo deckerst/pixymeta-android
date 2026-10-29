@@ -17,6 +17,6 @@ package pixy.meta.util;
 
 import java.io.IOException;
 
-public interface Reader {	
-	void read() throws IOException;
+public interface Reader {    
+    void read() throws IOException;
 }

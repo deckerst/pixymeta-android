@@ -22,9 +22,9 @@ package pixy.meta.image.tiff;
  * @version 1.0 03/28/2014
  */
 public interface Tag {
-	public String getFieldAsString(Object value);
-	public FieldType getFieldType();
-	public String getName();
-	public short getValue();
-	public boolean isCritical();
+    public String getFieldAsString(Object value);
+    public FieldType getFieldType();
+    public String getName();
+    public short getValue();
+    public boolean isCritical();
 }

@@ -22,51 +22,51 @@ package pixy.meta.image.jpeg;
  * @version 1.0 10/09/2013
  */
 public class Component {
-	//
-	private byte id;
-	private byte hSampleFactor;
-	private byte vSampleFactor;
-	private byte qTableNumber;
-	
-	private byte acTableNumber;
-	private byte dcTableNumber;
-	
-	Component(byte id, byte hSampleFactor, byte vSampleFactor, byte qTableNumber) {
-		this.id = id;
-		this.hSampleFactor = hSampleFactor;
-		this.vSampleFactor = vSampleFactor;
-		this.qTableNumber = qTableNumber;
-	}
-	
-	public byte getACTableNumber() {
-		return acTableNumber;
-	}
-	
-	public byte getDCTableNumber() {
-		return dcTableNumber;
-	}
-	
-	public byte getId() {
-		return id;		
-	}
-	
-	public byte getHSampleFactor() {
-		return hSampleFactor;
-	}
-	
-	public byte getVSampleFactor() {
-		return vSampleFactor;
-	}
-	
-	public byte getQTableNumber() {
-		return qTableNumber;
-	}
-	
-	public void setACTableNumber(byte acTableNumber) {
-		this.acTableNumber = acTableNumber;
-	}
-	
-	public void setDCTableNumber(byte dcTableNumber) {
-		this.dcTableNumber = dcTableNumber;
-	}
+    //
+    private byte id;
+    private byte hSampleFactor;
+    private byte vSampleFactor;
+    private byte qTableNumber;
+    
+    private byte acTableNumber;
+    private byte dcTableNumber;
+    
+    Component(byte id, byte hSampleFactor, byte vSampleFactor, byte qTableNumber) {
+        this.id = id;
+        this.hSampleFactor = hSampleFactor;
+        this.vSampleFactor = vSampleFactor;
+        this.qTableNumber = qTableNumber;
+    }
+    
+    public byte getACTableNumber() {
+        return acTableNumber;
+    }
+    
+    public byte getDCTableNumber() {
+        return dcTableNumber;
+    }
+    
+    public byte getId() {
+        return id;        
+    }
+    
+    public byte getHSampleFactor() {
+        return hSampleFactor;
+    }
+    
+    public byte getVSampleFactor() {
+        return vSampleFactor;
+    }
+    
+    public byte getQTableNumber() {
+        return qTableNumber;
+    }
+    
+    public void setACTableNumber(byte acTableNumber) {
+        this.acTableNumber = acTableNumber;
+    }
+    
+    public void setDCTableNumber(byte dcTableNumber) {
+        this.dcTableNumber = dcTableNumber;
+    }
 }

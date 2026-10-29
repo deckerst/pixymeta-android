@@ -41,27 +41,27 @@ import java.io.OutputStream;
  */
 public abstract class RandomAccessOutputStream extends OutputStream implements DataOutput {
 
-	private WriteStrategy strategy = WriteStrategyMM.getInstance();
-	
-	/** The destination stream. */
-	protected OutputStream dist;
-	protected boolean closed;
-	
-	protected RandomAccessOutputStream(OutputStream dist) {
-		this.dist = dist;
-	}
-	
-	public void close() throws IOException {
-		long flushPos = getFlushPos();
-		long length = getLength();
-		
-		if(flushPos < length) {
-			seek(flushPos);
-			writeToStream(length - flushPos);
-		}
-	}
-	
-	/**
+    private WriteStrategy strategy = WriteStrategyMM.getInstance();
+    
+    /** The destination stream. */
+    protected OutputStream dist;
+    protected boolean closed;
+    
+    protected RandomAccessOutputStream(OutputStream dist) {
+        this.dist = dist;
+    }
+    
+    public void close() throws IOException {
+        long flushPos = getFlushPos();
+        long length = getLength();
+        
+        if(flushPos < length) {
+            seek(flushPos);
+            writeToStream(length - flushPos);
+        }
+    }
+    
+    /**
      * Closes the RandomAccessInputStream and it's underlying stream
      */
     public abstract void shallowClose() throws IOException;
@@ -70,102 +70,102 @@ public abstract class RandomAccessOutputStream extends OutputStream implements D
      * Check to make sure that this stream has not been closed
      */
     protected  void ensureOpen() throws IOException {
-    	if (closed)
-    		throw new IOException("Stream closed");
+        if (closed)
+            throw new IOException("Stream closed");
     }
 
-	protected void finalize() throws Throwable {
-		super.finalize();
-		close();
-	}
-		
-	public short getEndian() {
-		return strategy instanceof WriteStrategyMM?IOUtils.BIG_ENDIAN:IOUtils.LITTLE_ENDIAN;
-	}
-	
-	public abstract long getFlushPos();
-	
-	/**
-	 * Returns the total length of data that has been cached,
-	 * regardless of whether any early blocks have been disposed.
-	 * This value will only ever increase. 
+    protected void finalize() throws Throwable {
+        super.finalize();
+        close();
+    }
+        
+    public short getEndian() {
+        return strategy instanceof WriteStrategyMM?IOUtils.BIG_ENDIAN:IOUtils.LITTLE_ENDIAN;
+    }
+    
+    public abstract long getFlushPos();
+    
+    /**
+     * Returns the total length of data that has been cached,
+     * regardless of whether any early blocks have been disposed.
+     * This value will only ever increase. 
      */
-	public abstract long getLength();
-	
-	/**
-	 * @return the current stream position
+    public abstract long getLength();
+    
+    /**
+     * @return the current stream position
      */
-	public abstract long getStreamPointer();	
-	
-	/** Reset this stream to be used again */
-	public abstract void reset();
-	
-	public abstract void seek(long pos) throws IOException;
-	
-	public void setWriteStrategy(WriteStrategy strategy) 
-	{
-		this.strategy = strategy;
-	}
-	
-	public abstract void write(byte[] b, int off, int len) throws IOException;
-	
-	@Override
-	public abstract void write(int value) throws IOException;
+    public abstract long getStreamPointer();    
+    
+    /** Reset this stream to be used again */
+    public abstract void reset();
+    
+    public abstract void seek(long pos) throws IOException;
+    
+    public void setWriteStrategy(WriteStrategy strategy) 
+    {
+        this.strategy = strategy;
+    }
+    
+    public abstract void write(byte[] b, int off, int len) throws IOException;
+    
+    @Override
+    public abstract void write(int value) throws IOException;
 
-	public final void writeBoolean(boolean value) throws IOException {
-		this.write(value ? 1 : 0);
-	}
+    public final void writeBoolean(boolean value) throws IOException {
+        this.write(value ? 1 : 0);
+    }
 
-	public final void writeByte(int value) throws IOException {
-		this.write(value);
-	}
+    public final void writeByte(int value) throws IOException {
+        this.write(value);
+    }
 
-	public final void writeBytes(String value) throws IOException {
-		new DataOutputStream(this).writeBytes(value);
-	}
+    public final void writeBytes(String value) throws IOException {
+        new DataOutputStream(this).writeBytes(value);
+    }
 
-	public final void writeChar(int value) throws IOException {
-		this.writeShort(value);
-	}
+    public final void writeChar(int value) throws IOException {
+        this.writeShort(value);
+    }
 
-	public final void writeChars(String value) throws IOException {
-		int len = value.length();
-		
-		for (int i = 0 ; i < len ; i++) {
-			int v = value.charAt(i);
-		    this.writeShort(v);
-		}
-	}
+    public final void writeChars(String value) throws IOException {
+        int len = value.length();
+        
+        for (int i = 0 ; i < len ; i++) {
+            int v = value.charAt(i);
+            this.writeShort(v);
+        }
+    }
 
-	public final void writeDouble(double value) throws IOException {
-		 writeLong(Double.doubleToLongBits(value));
-	}
+    public final void writeDouble(double value) throws IOException {
+         writeLong(Double.doubleToLongBits(value));
+    }
 
-	public final void writeFloat(float value) throws IOException {
-		 writeInt(Float.floatToIntBits(value));
-	}
+    public final void writeFloat(float value) throws IOException {
+         writeInt(Float.floatToIntBits(value));
+    }
 
-	public final void writeInt(int value) throws IOException {
-		byte[] buf = new byte[4];
-		strategy.writeInt(buf, 0, value);
-		this.write(buf, 0, 4);
-	}
-	
-	public final void writeLong(long value) throws IOException {
-		byte[] buf = new byte[8];
-		strategy.writeLong(buf, 0, value);
-		this.write(buf, 0, 8);
-	}
+    public final void writeInt(int value) throws IOException {
+        byte[] buf = new byte[4];
+        strategy.writeInt(buf, 0, value);
+        this.write(buf, 0, 4);
+    }
+    
+    public final void writeLong(long value) throws IOException {
+        byte[] buf = new byte[8];
+        strategy.writeLong(buf, 0, value);
+        this.write(buf, 0, 8);
+    }
 
-	public final void writeShort(int value) throws IOException {
-		byte[] buf = new byte[2];
-		strategy.writeShort(buf, 0, value);
-		this.write(buf, 0, 2);
-	} 
-		
-	public abstract void writeToStream(long len) throws IOException;
+    public final void writeShort(int value) throws IOException {
+        byte[] buf = new byte[2];
+        strategy.writeShort(buf, 0, value);
+        this.write(buf, 0, 2);
+    } 
+        
+    public abstract void writeToStream(long len) throws IOException;
 
-	public final void writeUTF(String value) throws IOException {
-		new DataOutputStream(this).writeUTF(value);
-	}
+    public final void writeUTF(String value) throws IOException {
+        new DataOutputStream(this).writeUTF(value);
+    }
 }

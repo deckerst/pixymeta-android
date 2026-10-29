@@ -28,33 +28,33 @@ import pixy.meta.io.RandomAccessOutputStream;
  */
 public class FloatField extends TiffField<float[]> {
 
-	public FloatField(short tag, float[] data) {
-		super(tag, FieldType.FLOAT, data.length);
-		this.data = data;
-	}
-	
-	public float[] getData() {
-		return data.clone();
-	}
-	
-	public String getDataAsString() {
-		return Arrays.toString(data);
-	}
+    public FloatField(short tag, float[] data) {
+        super(tag, FieldType.FLOAT, data.length);
+        this.data = data;
+    }
+    
+    public float[] getData() {
+        return data.clone();
+    }
+    
+    public String getDataAsString() {
+        return Arrays.toString(data);
+    }
 
-	protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
-		if (data.length == 1) {
-			dataOffset = (int)os.getStreamPointer();
-			os.writeFloat(data[0]);
-		} else {
-			dataOffset = toOffset;
-			os.writeInt(toOffset);
-			os.seek(toOffset);
-			
-			for (float value : data)
-				os.writeFloat(value);
-			
-			toOffset += (data.length << 2);
-		}
-		return toOffset;
-	}
+    protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
+        if (data.length == 1) {
+            dataOffset = (int)os.getStreamPointer();
+            os.writeFloat(data[0]);
+        } else {
+            dataOffset = toOffset;
+            os.writeInt(toOffset);
+            os.seek(toOffset);
+            
+            for (float value : data)
+                os.writeFloat(value);
+            
+            toOffset += (data.length << 2);
+        }
+        return toOffset;
+    }
 }

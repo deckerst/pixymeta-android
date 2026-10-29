@@ -7,13 +7,13 @@ import pixy.meta.meta.xmp.XMP;
 
 public class PngXMP extends XMP {
 
-	public PngXMP(String string) {
-		super(string);
-		// TODO Auto-generated constructor stub
-	}
+    public PngXMP(String string) {
+        super(string);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	public void write(OutputStream os) throws IOException {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void write(OutputStream os) throws IOException {
+        // TODO Auto-generated method stub
+    }
 }

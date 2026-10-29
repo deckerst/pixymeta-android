@@ -27,36 +27,36 @@ import pixy.meta.util.Reader;
  */
 public class UnknownChunkReader implements Reader {
 
-	private int chunkValue;
-	private byte[] data;
-	private Chunk chunk;
-		
-	public UnknownChunkReader(Chunk chunk) {
-		if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-		
-		this.chunk = chunk;
-		
-		try {
-			read();
-		} catch (IOException e) {
-			throw new RuntimeException("UnknownChunkReader: error reading chunk");
-		}
-	}
-	
-	public int getChunkValue() {
-		return this.chunkValue;
-	}
-	
-	public byte[] getData() {
-		return data;
-	}
-	
-	public void read() throws IOException {       
-   		if (chunk instanceof UnknownChunk) {
-   			UnknownChunk unknownChunk = (UnknownChunk)chunk;
-   			this.chunkValue = unknownChunk.getChunkValue();
-   			this.data = unknownChunk.getData();
-   		} else
-   		    throw new IllegalArgumentException("Expect UnknownChunk.");
+    private int chunkValue;
+    private byte[] data;
+    private Chunk chunk;
+        
+    public UnknownChunkReader(Chunk chunk) {
+        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
+        
+        this.chunk = chunk;
+        
+        try {
+            read();
+        } catch (IOException e) {
+            throw new RuntimeException("UnknownChunkReader: error reading chunk");
+        }
+    }
+    
+    public int getChunkValue() {
+        return this.chunkValue;
+    }
+    
+    public byte[] getData() {
+        return data;
+    }
+    
+    public void read() throws IOException {       
+           if (chunk instanceof UnknownChunk) {
+               UnknownChunk unknownChunk = (UnknownChunk)chunk;
+               this.chunkValue = unknownChunk.getChunkValue();
+               this.data = unknownChunk.getData();
+           } else
+               throw new IllegalArgumentException("Expect UnknownChunk.");
      }
 }

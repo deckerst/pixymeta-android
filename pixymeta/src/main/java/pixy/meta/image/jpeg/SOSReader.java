@@ -20,66 +20,66 @@ import java.io.IOException;
 import pixy.meta.util.Reader;
 
 public class SOSReader implements Reader {
-	//
-	private Segment segment;
-	private SOFReader reader;
-	
-	int Ss, Se, Ah_Al, Ah, Al;
-	
-	public SOSReader(Segment segment) throws IOException {
-		//
-		if(segment.getMarker() != Marker.SOS) {
-			throw new IllegalArgumentException("Not a valid SOS segment!");
-		}
-		
-		this.segment = segment;
-		read();
-	}
-	
-	public SOSReader(Segment segment, SOFReader reader) throws IOException {
-		//
-		if(segment.getMarker() != Marker.SOS) {
-			throw new IllegalArgumentException("Not a valid SOS segment!");
-		}
-		
-		this.segment = segment;
-		this.reader = reader;
-		read();
-	}
-	
-	public void read() throws IOException {
-		//
-		byte[] data = segment.getData();		
-		int count = 0;
-		
-		byte numOfComponents = data[count++];
-		Component[] components = reader.getComponents();		
-		
-		for(int i = 0; i < numOfComponents; i++) {
-			byte id = data[count++];
-			byte tbl_no = data[count++];			
-		
-			for(Component component : components) {
-				if(component.getId() == id) {					
-					component.setACTableNumber((byte)(tbl_no&0x0f));
-					component.setDCTableNumber((byte)((tbl_no>>4)&0x0f));
-					break;
-				}
-			}
-		}
-		
-		//Start of spectral or predictor selection
-		Ss = data[count++];
-	    //End of spectral selection
-		Se = data[count++];
-		//Ah: Successive approximation bit position high
-		//Al: Successive approximation bit position low or point transform
-		Ah_Al = data[count++];
-	    Ah = (Ah_Al>>4)&0x0f;
-		Al = Ah_Al&0x0f;
-	}
-	
-	public void setSOFReader(SOFReader reader) {
-		this.reader = reader;
-	}
+    //
+    private Segment segment;
+    private SOFReader reader;
+    
+    int Ss, Se, Ah_Al, Ah, Al;
+    
+    public SOSReader(Segment segment) throws IOException {
+        //
+        if(segment.getMarker() != Marker.SOS) {
+            throw new IllegalArgumentException("Not a valid SOS segment!");
+        }
+        
+        this.segment = segment;
+        read();
+    }
+    
+    public SOSReader(Segment segment, SOFReader reader) throws IOException {
+        //
+        if(segment.getMarker() != Marker.SOS) {
+            throw new IllegalArgumentException("Not a valid SOS segment!");
+        }
+        
+        this.segment = segment;
+        this.reader = reader;
+        read();
+    }
+    
+    public void read() throws IOException {
+        //
+        byte[] data = segment.getData();        
+        int count = 0;
+        
+        byte numOfComponents = data[count++];
+        Component[] components = reader.getComponents();        
+        
+        for(int i = 0; i < numOfComponents; i++) {
+            byte id = data[count++];
+            byte tbl_no = data[count++];            
+        
+            for(Component component : components) {
+                if(component.getId() == id) {                    
+                    component.setACTableNumber((byte)(tbl_no&0x0f));
+                    component.setDCTableNumber((byte)((tbl_no>>4)&0x0f));
+                    break;
+                }
+            }
+        }
+        
+        //Start of spectral or predictor selection
+        Ss = data[count++];
+        //End of spectral selection
+        Se = data[count++];
+        //Ah: Successive approximation bit position high
+        //Al: Successive approximation bit position low or point transform
+        Ah_Al = data[count++];
+        Ah = (Ah_Al>>4)&0x0f;
+        Al = Ah_Al&0x0f;
+    }
+    
+    public void setSOFReader(SOFReader reader) {
+        this.reader = reader;
+    }
 }

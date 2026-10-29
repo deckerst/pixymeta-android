@@ -40,218 +40,218 @@ import pixy.meta.util.ArrayUtils;
  * @version 1.0 06/10/2013
  */
 public class IPTCDataSet implements Comparable<IPTCDataSet> {
-	// Fields
-	private final int recordNumber; // Corresponds to IPTCRecord enumeration recordNumber
-	private final int tag; // Corresponds to IPTC tag enumeration tag field
-	private final int size;
-	private final byte[] data;
-	private final int offset;
-	private IPTCTag tagEnum;
-	
-	// A unique name used as HashMap key
-	private final String name;
-	
-	private static byte[] getBytes(String str) {
+    // Fields
+    private final int recordNumber; // Corresponds to IPTCRecord enumeration recordNumber
+    private final int tag; // Corresponds to IPTC tag enumeration tag field
+    private final int size;
+    private final byte[] data;
+    private final int offset;
+    private IPTCTag tagEnum;
+    
+    // A unique name used as HashMap key
+    private final String name;
+    
+    private static byte[] getBytes(String str) {
         return str.getBytes(StandardCharsets.UTF_8);
     }
-	
-	public IPTCDataSet(int tag, byte[] data) {
-		this(IPTCRecord.APPLICATION, tag, data);
-	}
-	
-	public IPTCDataSet(int recordNumber, int tag, int size, byte[] data, int offset) {
-		this.recordNumber = recordNumber;
-		this.tag = tag;
-		this.size = size;
-		this.data = data;
-		this.offset = offset;		
-		this.name = getTagName();
-	}
-	
-	public IPTCDataSet(int tag, String value) {
-		this(tag, IPTCDataSet.getBytes(value));
-	}
-	
-	public IPTCDataSet(IPTCApplicationTag appTag, byte[] data) {
-		this(appTag.getTag(), data);
-	}
-	
-	public IPTCDataSet(IPTCApplicationTag appTag, String value) {
-		this(appTag.getTag(), value);
-	}
-	
-	public IPTCDataSet(IPTCRecord record, int tag, byte[] data) {
-		this(record.getRecordNumber(), tag, data.length, data, 0);
-	}
-	
-	public IPTCDataSet(IPTCRecord record, int tag, String value) {
-		this(record, tag, IPTCDataSet.getBytes(value));
-	}
-	
-	public boolean allowMultiple() {
-		return tagEnum.allowMultiple();
-	}
-	
-	@Override
-	public int compareTo(IPTCDataSet other) {
-		final int BEFORE = -1;
-	    final int EQUAL = 0;
-	    final int AFTER = 1;
-	    
-	    if(this == other) return EQUAL;
-	    
-	    if (this.getRecordNumber() < other.getRecordNumber()) return BEFORE;
-	    if (this.getRecordNumber() > other.getRecordNumber()) return AFTER;
-	    if(this.getRecordNumber() == other.getRecordNumber()) {
-			return Integer.compare(this.getTag(), other.getTag());
-		}
-	
-		return EQUAL;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		IPTCDataSet other = (IPTCDataSet) obj;
-		byte[] thisData = ArrayUtils.subArray(data, offset, size);
-		byte[] thatData = ArrayUtils.subArray(other.data, other.offset, other.size);
-		if (!Arrays.equals(thisData, thatData))
-			return false;
-		if (recordNumber != other.recordNumber) {
-			return false;
-		}
+    
+    public IPTCDataSet(int tag, byte[] data) {
+        this(IPTCRecord.APPLICATION, tag, data);
+    }
+    
+    public IPTCDataSet(int recordNumber, int tag, int size, byte[] data, int offset) {
+        this.recordNumber = recordNumber;
+        this.tag = tag;
+        this.size = size;
+        this.data = data;
+        this.offset = offset;        
+        this.name = getTagName();
+    }
+    
+    public IPTCDataSet(int tag, String value) {
+        this(tag, IPTCDataSet.getBytes(value));
+    }
+    
+    public IPTCDataSet(IPTCApplicationTag appTag, byte[] data) {
+        this(appTag.getTag(), data);
+    }
+    
+    public IPTCDataSet(IPTCApplicationTag appTag, String value) {
+        this(appTag.getTag(), value);
+    }
+    
+    public IPTCDataSet(IPTCRecord record, int tag, byte[] data) {
+        this(record.getRecordNumber(), tag, data.length, data, 0);
+    }
+    
+    public IPTCDataSet(IPTCRecord record, int tag, String value) {
+        this(record, tag, IPTCDataSet.getBytes(value));
+    }
+    
+    public boolean allowMultiple() {
+        return tagEnum.allowMultiple();
+    }
+    
+    @Override
+    public int compareTo(IPTCDataSet other) {
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+        
+        if(this == other) return EQUAL;
+        
+        if (this.getRecordNumber() < other.getRecordNumber()) return BEFORE;
+        if (this.getRecordNumber() > other.getRecordNumber()) return AFTER;
+        if(this.getRecordNumber() == other.getRecordNumber()) {
+            return Integer.compare(this.getTag(), other.getTag());
+        }
+    
+        return EQUAL;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        IPTCDataSet other = (IPTCDataSet) obj;
+        byte[] thisData = ArrayUtils.subArray(data, offset, size);
+        byte[] thatData = ArrayUtils.subArray(other.data, other.offset, other.size);
+        if (!Arrays.equals(thisData, thatData))
+            return false;
+        if (recordNumber != other.recordNumber) {
+            return false;
+        }
         return tag == other.tag;
     }
-	
-	public byte[] getData() {
-		return ArrayUtils.subArray(data, offset, size);
-	}
-	
-	public String getDataAsString() {
-		return tagEnum.getDataAsString(getData());
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getRecordType() {
-		//
-		switch (recordNumber) {
-			case 1: //Envelope Record
-				return "Envelope Record";
-			case 2: //Application Record
-				return "Application Record";
-			case 3: //NewsPhoto Record
-				return "NewsPhoto Record";
-			case 7: //PreObjectData Record
-				return "PreObjectData Record";
-			case 8: //ObjectData Record
-				return "ObjectData Record";
-			case 9: //PostObjectData Record
-				return "PostObjectData Record";
-			case 240: //FotoStation Record
-				return "FotoStation Record";
-			default:
-				return "Unknown Record";
-		}
-	}
-	
-	public int getRecordNumber() {
-		return recordNumber;
-	}
-	
-	public int getSize() {
-		return size;
-	}
-	
-	public int getTag() {
-		return tag;
-	}
-	
-	public IPTCTag getTagEnum() {
-		return tagEnum;
-	}
-	
-	private String getTagName() {
-		switch(IPTCRecord.fromRecordNumber(recordNumber)) {
-			case APPLICATION:
-				tagEnum = IPTCApplicationTag.fromTag(tag);
-				break;
-			case ENVELOP:
-				tagEnum = IPTCEnvelopeTag.fromTag(tag);
-				break;
-			case FOTOSTATION:
-				tagEnum = IPTCFotoStationTag.fromTag(tag);
-				break;
-			case NEWSPHOTO:
-				tagEnum = IPTCNewsPhotoTag.fromTag(tag);
-				break;
-			case OBJECTDATA:
-				tagEnum = IPTCObjectDataTag.fromTag(tag);
-				break;
-			case POST_OBJECTDATA:
-				tagEnum = IPTCPostObjectDataTag.fromTag(tag);
-				break;
-			case PRE_OBJECTDATA:
-				tagEnum = IPTCPreObjectDataTag.fromTag(tag);
-				break;
-			case UNKNOWN:
-				switch(IPTCRecord.fromRecordNumber(recordNumber)) {
-					case APPLICATION:
-						tagEnum = IPTCApplicationTag.UNKNOWN;
-						break;
-					case ENVELOP:
-						tagEnum = IPTCEnvelopeTag.UNKNOWN;
-						break;
-					case NEWSPHOTO:
-						tagEnum = IPTCNewsPhotoTag.UNKNOWN;
-						break;
-					case PRE_OBJECTDATA:
-						tagEnum = IPTCPreObjectDataTag.UNKNOWN;
-						break;
-					case OBJECTDATA:
-						tagEnum = IPTCObjectDataTag.UNKNOWN;
-						break;
-					case POST_OBJECTDATA:
-						tagEnum = IPTCPostObjectDataTag.UNKNOWN;
-						break;
-					case FOTOSTATION:
-						tagEnum = IPTCFotoStationTag.UNKNOWN;
-						break;
-					case UNKNOWN:
-						throw new RuntimeException("Unknown IPTC record"); 
-				}
-		}
-		
-		return tagEnum.getName();
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(ArrayUtils.subArray(data, offset, size));
-		result = prime * result + recordNumber;
-		result = prime * result + tag;
-		return result;
-	}
-	
-	/**
-	 * Write the current IPTCDataSet to the OutputStream
-	 * 
-	 * @param out OutputStream to write the IPTCDataSet
+    
+    public byte[] getData() {
+        return ArrayUtils.subArray(data, offset, size);
+    }
+    
+    public String getDataAsString() {
+        return tagEnum.getDataAsString(getData());
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getRecordType() {
+        //
+        switch (recordNumber) {
+            case 1: //Envelope Record
+                return "Envelope Record";
+            case 2: //Application Record
+                return "Application Record";
+            case 3: //NewsPhoto Record
+                return "NewsPhoto Record";
+            case 7: //PreObjectData Record
+                return "PreObjectData Record";
+            case 8: //ObjectData Record
+                return "ObjectData Record";
+            case 9: //PostObjectData Record
+                return "PostObjectData Record";
+            case 240: //FotoStation Record
+                return "FotoStation Record";
+            default:
+                return "Unknown Record";
+        }
+    }
+    
+    public int getRecordNumber() {
+        return recordNumber;
+    }
+    
+    public int getSize() {
+        return size;
+    }
+    
+    public int getTag() {
+        return tag;
+    }
+    
+    public IPTCTag getTagEnum() {
+        return tagEnum;
+    }
+    
+    private String getTagName() {
+        switch(IPTCRecord.fromRecordNumber(recordNumber)) {
+            case APPLICATION:
+                tagEnum = IPTCApplicationTag.fromTag(tag);
+                break;
+            case ENVELOP:
+                tagEnum = IPTCEnvelopeTag.fromTag(tag);
+                break;
+            case FOTOSTATION:
+                tagEnum = IPTCFotoStationTag.fromTag(tag);
+                break;
+            case NEWSPHOTO:
+                tagEnum = IPTCNewsPhotoTag.fromTag(tag);
+                break;
+            case OBJECTDATA:
+                tagEnum = IPTCObjectDataTag.fromTag(tag);
+                break;
+            case POST_OBJECTDATA:
+                tagEnum = IPTCPostObjectDataTag.fromTag(tag);
+                break;
+            case PRE_OBJECTDATA:
+                tagEnum = IPTCPreObjectDataTag.fromTag(tag);
+                break;
+            case UNKNOWN:
+                switch(IPTCRecord.fromRecordNumber(recordNumber)) {
+                    case APPLICATION:
+                        tagEnum = IPTCApplicationTag.UNKNOWN;
+                        break;
+                    case ENVELOP:
+                        tagEnum = IPTCEnvelopeTag.UNKNOWN;
+                        break;
+                    case NEWSPHOTO:
+                        tagEnum = IPTCNewsPhotoTag.UNKNOWN;
+                        break;
+                    case PRE_OBJECTDATA:
+                        tagEnum = IPTCPreObjectDataTag.UNKNOWN;
+                        break;
+                    case OBJECTDATA:
+                        tagEnum = IPTCObjectDataTag.UNKNOWN;
+                        break;
+                    case POST_OBJECTDATA:
+                        tagEnum = IPTCPostObjectDataTag.UNKNOWN;
+                        break;
+                    case FOTOSTATION:
+                        tagEnum = IPTCFotoStationTag.UNKNOWN;
+                        break;
+                    case UNKNOWN:
+                        throw new RuntimeException("Unknown IPTC record"); 
+                }
+        }
+        
+        return tagEnum.getName();
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(ArrayUtils.subArray(data, offset, size));
+        result = prime * result + recordNumber;
+        result = prime * result + tag;
+        return result;
+    }
+    
+    /**
+     * Write the current IPTCDataSet to the OutputStream
+     * 
+     * @param out OutputStream to write the IPTCDataSet
      */
-	public void write(OutputStream out) throws IOException {
-		out.write(0x1c); // tag marker
-		out.write(recordNumber);
-		out.write(getTag());
-		IOUtils.writeShortMM(out, size);
-		out.write(data, offset, size);
-	}
+    public void write(OutputStream out) throws IOException {
+        out.write(0x1c); // tag marker
+        out.write(recordNumber);
+        out.write(getTag());
+        IOUtils.writeShortMM(out, size);
+        out.write(data, offset, size);
+    }
 }

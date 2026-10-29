@@ -24,25 +24,25 @@ import pixy.meta.util.Builder;
  * @version 1.0 10/16/2013
  */
 public class SRGBBuilder extends ChunkBuilder implements Builder<Chunk> {
-	
-	private byte renderingIntent;
+    
+    private byte renderingIntent;
 
-	public SRGBBuilder renderingIntent(byte renderingIntent) {
-		if (renderingIntent < 0 || renderingIntent > 3) 
-			throw new IllegalArgumentException("Invalid rendering intent: " + renderingIntent);
-		this.renderingIntent = renderingIntent;
-		return this;
-	}
-	
-	public SRGBBuilder() {
-		super(ChunkType.SRGB);		
-	}	
+    public SRGBBuilder renderingIntent(byte renderingIntent) {
+        if (renderingIntent < 0 || renderingIntent > 3) 
+            throw new IllegalArgumentException("Invalid rendering intent: " + renderingIntent);
+        this.renderingIntent = renderingIntent;
+        return this;
+    }
+    
+    public SRGBBuilder() {
+        super(ChunkType.SRGB);        
+    }    
 
-	@Override
-	protected byte[] buildData() {
-		// 1 bytes
-		byte[] data = {renderingIntent};
-		
-		return data;
-	}
+    @Override
+    protected byte[] buildData() {
+        // 1 bytes
+        byte[] data = {renderingIntent};
+        
+        return data;
+    }
 }

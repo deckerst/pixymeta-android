@@ -27,48 +27,48 @@ import pixy.meta.util.Reader;
  */
 public class PLTEReader implements Reader {
 
-	private byte[] redMap;
-	private byte[] greenMap;
-	private byte[] blueMap;
-	private Chunk chunk;
-	
-	public PLTEReader(Chunk chunk) {
-		if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-		
-		if (chunk.getChunkType() != ChunkType.PLTE) {
-			throw new IllegalArgumentException("Not a valid PLTE chunk.");
-		}
-		
-		this.chunk = chunk;
-		
-		try {
-			read();
-		} catch (IOException e) {
-			throw new RuntimeException("PLTEReader: error reading chunk");
-		}
-	}
-	
-	public byte[] getRedMap() { return redMap; }
-	public byte[] getGreenMap() { return greenMap; }
-	public byte[] getBlueMap() { return blueMap; }
-	
-	public void read() throws IOException {	
-		
-		byte[] colorMap = chunk.getData();
-		int mapLen = colorMap.length;
-		
-		if ((mapLen % 3) != 0) {
-			throw new IllegalArgumentException("Invalid colorMap length: " + mapLen);
-		}
-		
-		redMap = new byte[mapLen/3];
-		greenMap = new byte[mapLen/3];
-		blueMap = new byte[mapLen/3];
-		
-		for (int i = mapLen - 1, j = redMap.length - 1; j >= 0; j--) {
-			blueMap[j]  = colorMap[i--];
-			greenMap[j] = colorMap[i--];
-			redMap[j] 	= colorMap[i--];			
-		}		
-	}
+    private byte[] redMap;
+    private byte[] greenMap;
+    private byte[] blueMap;
+    private Chunk chunk;
+    
+    public PLTEReader(Chunk chunk) {
+        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
+        
+        if (chunk.getChunkType() != ChunkType.PLTE) {
+            throw new IllegalArgumentException("Not a valid PLTE chunk.");
+        }
+        
+        this.chunk = chunk;
+        
+        try {
+            read();
+        } catch (IOException e) {
+            throw new RuntimeException("PLTEReader: error reading chunk");
+        }
+    }
+    
+    public byte[] getRedMap() { return redMap; }
+    public byte[] getGreenMap() { return greenMap; }
+    public byte[] getBlueMap() { return blueMap; }
+    
+    public void read() throws IOException {    
+        
+        byte[] colorMap = chunk.getData();
+        int mapLen = colorMap.length;
+        
+        if ((mapLen % 3) != 0) {
+            throw new IllegalArgumentException("Invalid colorMap length: " + mapLen);
+        }
+        
+        redMap = new byte[mapLen/3];
+        greenMap = new byte[mapLen/3];
+        blueMap = new byte[mapLen/3];
+        
+        for (int i = mapLen - 1, j = redMap.length - 1; j >= 0; j--) {
+            blueMap[j]  = colorMap[i--];
+            greenMap[j] = colorMap[i--];
+            redMap[j]     = colorMap[i--];            
+        }        
+    }
 }

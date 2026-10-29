@@ -24,18 +24,18 @@ import pixy.meta.util.Builder;
  * @version 1.0 10/11/2013
  */
 public abstract class SegmentBuilder implements Builder<Segment> {
-	//
-	private final Marker marker;
-	
-	public SegmentBuilder(Marker marker) {
-		this.marker = marker;
-	}
-		
-	public final Segment build() {
-		byte[] data = buildData();
-		
-		return new Segment(marker, data.length + 2, data);
-	}
-	
-	protected abstract byte[] buildData();
+    //
+    private final Marker marker;
+    
+    public SegmentBuilder(Marker marker) {
+        this.marker = marker;
+    }
+        
+    public final Segment build() {
+        byte[] data = buildData();
+        
+        return new Segment(marker, data.length + 2, data);
+    }
+    
+    protected abstract byte[] buildData();
 }

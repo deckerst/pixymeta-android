@@ -29,8 +29,8 @@ import java.nio.charset.StandardCharsets;
  */
 public final class Base64
 {
-	public static byte[] decodeToByteArray(String s) {
-	    if(s.isEmpty()) {
+    public static byte[] decodeToByteArray(String s) {
+        if(s.isEmpty()) {
             return null;
         }
         byte[] buf = s.getBytes(StandardCharsets.ISO_8859_1) ;
@@ -68,6 +68,6 @@ public final class Base64
                 index = 0;
             }
         }
-		return debuf;
+        return debuf;
     }
 }

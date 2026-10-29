@@ -31,61 +31,61 @@ import pixy.meta.log.LoggerFactory;
 import pixy.meta.io.ReadStrategy;
 
 public class UserMask extends DDBEntry {
-	private int colorSpaceId;
-	private int[] colors = new int[4];
-	private int opacity;
-	private int flag;
-	
-	// Obtain a logger instance
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserMask.class);
-	
-	public UserMask(int size, byte[] data, ReadStrategy readStrategy) {
-		super(DataBlockType.LMsk, size, data, readStrategy);
-		read();
-	}
-	
-	public int[] getColors() {
-		return colors.clone();
-	}
-	
-	public int getOpacity() {
-		return opacity;
-	}
-	
-	public int getFlag() {
-		return flag;
-	}
-	
-	public int getColorSpace() {
-		return colorSpaceId;
-	}
-	
-	public ColorSpaceID getColorSpaceID() {
-		return ColorSpaceID.fromInt(colorSpaceId);
-	}
-	
-	public void print() {
-		super.print();
-		LOGGER.info("Color space: {}", getColorSpaceID());
-		LOGGER.info("Color values: {}", Arrays.toString(colors));
-		LOGGER.info("Opacity: {}", opacity);
-		LOGGER.info("Flag: {}", flag);
-	}
-	
-	private void read() {
-		int i = 0;
-		colorSpaceId = readStrategy.readShort(data, i);
-		i += 2;
-		colors[0] = readStrategy.readUnsignedShort(data, i);
-		i += 2;
-		colors[1] = readStrategy.readUnsignedShort(data, i);
-		i += 2;
-		colors[2] = readStrategy.readUnsignedShort(data, i);
-		i += 2;
-		colors[3] = readStrategy.readUnsignedShort(data, i);
-		i += 2;
-		opacity = readStrategy.readShort(data, i);
-		i += 2;
-		flag = data[i]&0xff; // 128
-	}
+    private int colorSpaceId;
+    private int[] colors = new int[4];
+    private int opacity;
+    private int flag;
+    
+    // Obtain a logger instance
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserMask.class);
+    
+    public UserMask(int size, byte[] data, ReadStrategy readStrategy) {
+        super(DataBlockType.LMsk, size, data, readStrategy);
+        read();
+    }
+    
+    public int[] getColors() {
+        return colors.clone();
+    }
+    
+    public int getOpacity() {
+        return opacity;
+    }
+    
+    public int getFlag() {
+        return flag;
+    }
+    
+    public int getColorSpace() {
+        return colorSpaceId;
+    }
+    
+    public ColorSpaceID getColorSpaceID() {
+        return ColorSpaceID.fromInt(colorSpaceId);
+    }
+    
+    public void print() {
+        super.print();
+        LOGGER.info("Color space: {}", getColorSpaceID());
+        LOGGER.info("Color values: {}", Arrays.toString(colors));
+        LOGGER.info("Opacity: {}", opacity);
+        LOGGER.info("Flag: {}", flag);
+    }
+    
+    private void read() {
+        int i = 0;
+        colorSpaceId = readStrategy.readShort(data, i);
+        i += 2;
+        colors[0] = readStrategy.readUnsignedShort(data, i);
+        i += 2;
+        colors[1] = readStrategy.readUnsignedShort(data, i);
+        i += 2;
+        colors[2] = readStrategy.readUnsignedShort(data, i);
+        i += 2;
+        colors[3] = readStrategy.readUnsignedShort(data, i);
+        i += 2;
+        opacity = readStrategy.readShort(data, i);
+        i += 2;
+        flag = data[i]&0xff; // 128
+    }
 }

@@ -38,37 +38,37 @@ import pixy.meta.meta.Thumbnail;
  * @version 1.0 01/10/2015   
  */
 public class IRBThumbnail extends Thumbnail {
-	
-	public IRBThumbnail() { ; }
-	
-	public IRBThumbnail(Bitmap thumbnail) {
-		super(thumbnail);
-	}
-	
-	public IRBThumbnail(int width, int height, int dataType, byte[] compressedThumbnail) {
-		super(width, height, dataType, compressedThumbnail);
-	}
-	
-	public IRBThumbnail(IRBThumbnail other) { // Copy constructor
-		this.dataType = other.dataType;
-		this.height = other.height;
-		this.width = other.width;
-		this.thumbnail = other.thumbnail;
-		this.compressedThumbnail = other.compressedThumbnail;
-	}
+    
+    public IRBThumbnail() { ; }
+    
+    public IRBThumbnail(Bitmap thumbnail) {
+        super(thumbnail);
+    }
+    
+    public IRBThumbnail(int width, int height, int dataType, byte[] compressedThumbnail) {
+        super(width, height, dataType, compressedThumbnail);
+    }
+    
+    public IRBThumbnail(IRBThumbnail other) { // Copy constructor
+        this.dataType = other.dataType;
+        this.height = other.height;
+        this.width = other.width;
+        this.thumbnail = other.thumbnail;
+        this.compressedThumbnail = other.compressedThumbnail;
+    }
 
-	@Override
-	public void write(OutputStream os) throws IOException {
-		if(getDataType() == Thumbnail.DATA_TYPE_KJpegRGB) { // Compressed old-style JPEG format
-			os.write(getCompressedImage());
-		} else if(getDataType() == Thumbnail.DATA_TYPE_KRawRGB) {
-			Bitmap thumbnail = getRawImage();
-			if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
-			try {
-				thumbnail.compress(Bitmap.CompressFormat.JPEG, writeQuality, os);
-			} catch (Exception e) {
-				throw new RuntimeException("Unable to compress thumbnail as JPEG");
-			}			
-		}
-	}
+    @Override
+    public void write(OutputStream os) throws IOException {
+        if(getDataType() == Thumbnail.DATA_TYPE_KJpegRGB) { // Compressed old-style JPEG format
+            os.write(getCompressedImage());
+        } else if(getDataType() == Thumbnail.DATA_TYPE_KRawRGB) {
+            Bitmap thumbnail = getRawImage();
+            if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
+            try {
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, writeQuality, os);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to compress thumbnail as JPEG");
+            }            
+        }
+    }
  }

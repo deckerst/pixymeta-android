@@ -28,62 +28,62 @@ import pixy.meta.string.StringUtils;
  * @version 1.0 03/13/2015
  */
 public enum IPTCPostObjectDataTag implements IPTCTag {
-	 CONFIRMED_OBJECT_SIZE(10, "ConfirmedObjectSize"),
-		 	 	 
-	 UNKNOWN(999, "Unknown");
-	 
-	 IPTCPostObjectDataTag(int tag, String name) {
-		 this.tag = tag;
-		 this.name = name;
-	 }
-	 
-	 public boolean allowMultiple() {
-		 return false;
-	 }
-	 
-	 // Default implementation. Could be replaced by individual ENUM
-	 public String getDataAsString(byte[] data) {
+     CONFIRMED_OBJECT_SIZE(10, "ConfirmedObjectSize"),
+                   
+     UNKNOWN(999, "Unknown");
+     
+     IPTCPostObjectDataTag(int tag, String name) {
+         this.tag = tag;
+         this.name = name;
+     }
+     
+     public boolean allowMultiple() {
+         return false;
+     }
+     
+     // Default implementation. Could be replaced by individual ENUM
+     public String getDataAsString(byte[] data) {
          String strVal = new String(data, StandardCharsets.UTF_8).trim();
          if(!strVal.isEmpty()) {
              return strVal;
          }
          // Hex representation of the data
-		 return StringUtils.byteArrayToHexString(data, 0, MAX_STRING_REPR_LEN);
-	 }
-	 
-	 public String getName() {
-		return name; 
-	 }
-	 
-	 public int getRecordNumber() {
-	 	return IPTCRecord.POST_OBJECTDATA.getRecordNumber();
-	 }
-	 
-	 public int getTag() {
-		 return tag;
-	 }
-	 
-	 public static IPTCPostObjectDataTag fromTag(int value) {
-		 IPTCPostObjectDataTag record = recordMap.get(value);
-	   	if (record == null) {
-			return UNKNOWN;
-		}
-      	return record;
-	 }
+         return StringUtils.byteArrayToHexString(data, 0, MAX_STRING_REPR_LEN);
+     }
+     
+     public String getName() {
+        return name; 
+     }
+     
+     public int getRecordNumber() {
+         return IPTCRecord.POST_OBJECTDATA.getRecordNumber();
+     }
+     
+     public int getTag() {
+         return tag;
+     }
+     
+     public static IPTCPostObjectDataTag fromTag(int value) {
+         IPTCPostObjectDataTag record = recordMap.get(value);
+           if (record == null) {
+            return UNKNOWN;
+        }
+          return record;
+     }
   
-	 @Override public String toString() {
-	   return name;
-	 }
+     @Override public String toString() {
+       return name;
+     }
   
-	 private static final Map<Integer, IPTCPostObjectDataTag> recordMap = new HashMap<>();
+     private static final Map<Integer, IPTCPostObjectDataTag> recordMap = new HashMap<>();
    
-	 static
-	 {
-		 for(IPTCPostObjectDataTag record : values()) {
-			 recordMap.put(record.getTag(), record);
-		 }
-	 }	    
+     static
+     {
+         for(IPTCPostObjectDataTag record : values()) {
+             recordMap.put(record.getTag(), record);
+         }
+     }        
  
-	 private final int tag;
-	 private final String name;
+     private final int tag;
+     private final String name;
 }

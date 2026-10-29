@@ -31,10 +31,10 @@
  * WY    07Apr2015  Revised insertExif()
  * WY    01Apr2015  Extract IPTC as stand-alone meta data from IRB if any
  * WY    18Mar2015  Revised readAPP13(), insertIPTC() and insertIRB()
- * 				    to work with multiple APP13 segments
+ *                     to work with multiple APP13 segments
  * WY    18Mar2015  Removed a few unused readAPPn methods
  * WY    16Mar2015  Revised insertExif() to put EXIF in the position
- * 					conforming to EXIF specification or the same place
+ *                     conforming to EXIF specification or the same place
  *                  the original image EXIF exists
  * WY    13Mar2015  initial creation
  */
@@ -204,7 +204,7 @@ public class JPGMeta {
         short marker;
         Marker emarker;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
             throw new IOException("Invalid JPEG image, expected SOI marker not found!");
 
@@ -358,7 +358,7 @@ public class JPGMeta {
                     // Retrieve XMP GUID if available
                     xmpGUID = XMLUtils.getAttribute(xmp.getXmpDocument(), "rdf:Description", "xmpNote:HasExtendedXMP");
                 } else if (data.length >= XMP_EXT_ID.length() && new String(data, 0, XMP_EXT_ID.length()).equals(XMP_EXT_ID)) {
-                    // We found ExtendedXMP, add the data to ExtendedXMP memory buffer				
+                    // We found ExtendedXMP, add the data to ExtendedXMP memory buffer                
                     int i = XMP_EXT_ID.length();
                     // 128-bit MD5 digest of the full ExtendedXMP serialization
                     byte[] guid = ArrayUtils.subArray(data, i, 32);
@@ -399,7 +399,7 @@ public class JPGMeta {
             }
         }
 
-        // Now it's time to join multiple segments ICC_PROFILE and/or XMP		
+        // Now it's time to join multiple segments ICC_PROFILE and/or XMP        
         if (iccProfileStream != null) { // We have ICCProfile data
             ICCProfile icc_profile = new ICCProfile(iccProfileStream.toByteArray());
             metadataMap.put(MetadataType.ICC_PROFILE, icc_profile);
@@ -605,7 +605,7 @@ public class JPGMeta {
         short marker;
         Marker emarker;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
             throw new IOException("Invalid JPEG image, expected SOI marker not found!");
 
@@ -839,7 +839,7 @@ public class JPGMeta {
         int app0Index = -1;
         int app1Index = -1;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
             throw new IOException("Invalid JPEG image, expected SOI marker not found!");
 
@@ -943,7 +943,7 @@ public class JPGMeta {
         // Used to read multiple segment Adobe APP13
         ByteArrayOutputStream eightBIMStream = null;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
             is.close();
             os.close();
@@ -1054,7 +1054,7 @@ public class JPGMeta {
         // Used to read multiple segment Adobe APP13
         ByteArrayOutputStream eightBIMStream = null;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
             is.close();
             os.close();
@@ -1159,7 +1159,7 @@ public class JPGMeta {
         int app0Index = -1;
         int exifIndex = -1;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI) {
             throw new IOException("Invalid JPEG image, expected SOI marker not found!");
         }
@@ -1186,7 +1186,7 @@ public class JPGMeta {
                 // Copy the leftover stuff
                 IOUtils.writeShortMM(os, marker);
                 copyToEnd(is, os); // Copy the rest of the data
-                finished = true; // No more marker to read, we are done.				
+                finished = true; // No more marker to read, we are done.                
             } else { // Read markers
                 emarker = Marker.fromShort(marker);
 
@@ -1436,7 +1436,7 @@ public class JPGMeta {
         short marker;
         Marker emarker;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
             throw new IllegalArgumentException("Invalid JPEG image, expected SOI marker not found!");
 
@@ -1551,7 +1551,7 @@ public class JPGMeta {
                     // Retrieve and remove XMP GUID if available
                     xmpGUID = XMLUtils.getAttribute(xmp.getXmpDocument(), "rdf:Description", "xmpNote:HasExtendedXMP");
                 } else if (new String(data, 0, XMP_EXT_ID.length()).equals(XMP_EXT_ID)) {
-                    // We found ExtendedXMP, add the data to ExtendedXMP memory buffer				
+                    // We found ExtendedXMP, add the data to ExtendedXMP memory buffer                
                     int i = XMP_EXT_ID.length();
                     // 128-bit MD5 digest of the full ExtendedXMP serialization
                     byte[] guid = ArrayUtils.subArray(data, i, 32);
@@ -1592,7 +1592,7 @@ public class JPGMeta {
             }
         }
 
-        // Now it's time to join multiple segments ICC_PROFILE and/or XMP		
+        // Now it's time to join multiple segments ICC_PROFILE and/or XMP        
         if (iccProfileStream != null) { // We have ICCProfile data
             ICCProfile icc_profile = new ICCProfile(iccProfileStream.toByteArray());
             metadataMap.put(MetadataType.ICC_PROFILE, icc_profile);
@@ -1721,7 +1721,7 @@ public class JPGMeta {
         short marker;
         Marker emarker;
 
-        // The very first marker should be the start_of_image marker!	
+        // The very first marker should be the start_of_image marker!    
         if (Marker.fromShort(IOUtils.readShortMM(is)) != Marker.SOI)
             throw new IOException("Invalid JPEG image, expected SOI marker not found!");
 

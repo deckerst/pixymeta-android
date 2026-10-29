@@ -21,30 +21,30 @@ import pixy.meta.io.RandomAccessOutputStream;
 
 public abstract class AbstractRationalField extends TiffField<int[]> {
 
-	public AbstractRationalField(short tag, FieldType fieldType, int[] data) {
-		super(tag, fieldType, data.length>>1);
-		this.data = data;
-	}
-	
-	public int[] getData() {
-		return data.clone();
-	}
-	
-	public int[] getDataAsLong() {
-		return getData();
-	}
+    public AbstractRationalField(short tag, FieldType fieldType, int[] data) {
+        super(tag, fieldType, data.length>>1);
+        this.data = data;
+    }
+    
+    public int[] getData() {
+        return data.clone();
+    }
+    
+    public int[] getDataAsLong() {
+        return getData();
+    }
 
-	protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
-		//
-		dataOffset = toOffset;
-		os.writeInt(toOffset);
-		os.seek(toOffset);
-		
-		for (int value : data)
-			os.writeInt(value);
-		
-		toOffset += (data.length << 2);
-		
-		return toOffset;
-	}
+    protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
+        //
+        dataOffset = toOffset;
+        os.writeInt(toOffset);
+        os.seek(toOffset);
+        
+        for (int value : data)
+            os.writeInt(value);
+        
+        toOffset += (data.length << 2);
+        
+        return toOffset;
+    }
 }

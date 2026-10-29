@@ -296,7 +296,7 @@ public enum TiffTag implements Tag {
         }
     },
 
-    PAGE_NAME("	PageName", (short) 0x011D, Attribute.EXTENDED),
+    PAGE_NAME("    PageName", (short) 0x011D, Attribute.EXTENDED),
     X_POSITION("XPosition", (short) 0x011E, Attribute.EXTENDED),
     Y_POSITION("YPosition", (short) 0x011F, Attribute.EXTENDED),
 

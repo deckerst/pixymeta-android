@@ -42,86 +42,86 @@ import pixy.meta.meta.iptc.IPTCTag;
 import pixy.meta.string.StringUtils;
 
 public class IPTC_NAA extends _8BIM {
-	//
-	private IPTC iptc;
-		
-	public IPTC_NAA() {
-		this("IPTC_NAA");
-	}
-	
-	public IPTC_NAA(String name) {
-		super(ImageResourceID.IPTC_NAA, name, null);
-		iptc = new IPTC();
-	}
+    //
+    private IPTC iptc;
+        
+    public IPTC_NAA() {
+        this("IPTC_NAA");
+    }
+    
+    public IPTC_NAA(String name) {
+        super(ImageResourceID.IPTC_NAA, name, null);
+        iptc = new IPTC();
+    }
 
-	public IPTC_NAA(String name, byte[] data) {
-		super(ImageResourceID.IPTC_NAA, name, data);
-		iptc = new IPTC(data);
-	}
-	
-	public void addDataSet(IPTCDataSet dataSet) {
-		iptc.addDataSet(dataSet);
-	}
-	
-	public void addDataSets(Collection<? extends IPTCDataSet> dataSets) {
-		iptc.addDataSets(dataSets);
-	}
-	
-	/**
-	 * Get all the IPTCDataSet as a map for this IPTC data
-	 * 
-	 * @return a map with the key for the IPTCDataSet name and a list of IPTCDataSet as the value
-	 */
-	public Map<IPTCTag, List<IPTCDataSet>> getDataSets() {
-		return iptc.getDataSets();			
-	}
-	
-	/**
-	 * Get a list of IPTCDataSet associated with a key
-	 * 
-	 * @param key name of the data set
-	 * @return a list of IPTCDataSet associated with the key
-	 */
-	public List<IPTCDataSet> getDataSet(IPTCTag key) {
-		return iptc.getDataSet(key);
-	}
-	
-	protected MetadataEntry getMetadataEntry() {
-		//
-		ImageResourceID eId  = ImageResourceID.fromShort(getID());
-		MetadataEntry entry = new MetadataEntry(eId.name(), eId.getDescription(), true);
-		
-		Map<IPTCTag, List<IPTCDataSet>> datasetMap = this.getDataSets();
-		
-		if(datasetMap != null) {
-			// Print multiple entry IPTCDataSet
-			Set<Map.Entry<IPTCTag, List<IPTCDataSet>>> entries = datasetMap.entrySet();
-			
-			for(Entry<IPTCTag, List<IPTCDataSet>> entryMap : entries) {
-				StringBuilder strBuilder = new StringBuilder();
-				//
-				for(IPTCDataSet item : entryMap.getValue())
-					strBuilder.append(item.getDataAsString()).append(";");
-				
-				String key = entryMap.getKey().getName();				
-				String value = StringUtils.replaceLast(strBuilder.toString(), ";", "");
-				
-				entry.addEntry(new MetadataEntry(key, value));
-		    }
-			
-			return entry;
-			
-		} else 
-			return super.getMetadataEntry();
-	}
-	
-	public void write(OutputStream os) throws IOException {
-		if(data == null) {			
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			iptc.write(bout);
-			data = bout.toByteArray();
-			size = data.length;
-		}
-		super.write(os);
-	}
+    public IPTC_NAA(String name, byte[] data) {
+        super(ImageResourceID.IPTC_NAA, name, data);
+        iptc = new IPTC(data);
+    }
+    
+    public void addDataSet(IPTCDataSet dataSet) {
+        iptc.addDataSet(dataSet);
+    }
+    
+    public void addDataSets(Collection<? extends IPTCDataSet> dataSets) {
+        iptc.addDataSets(dataSets);
+    }
+    
+    /**
+     * Get all the IPTCDataSet as a map for this IPTC data
+     * 
+     * @return a map with the key for the IPTCDataSet name and a list of IPTCDataSet as the value
+     */
+    public Map<IPTCTag, List<IPTCDataSet>> getDataSets() {
+        return iptc.getDataSets();            
+    }
+    
+    /**
+     * Get a list of IPTCDataSet associated with a key
+     * 
+     * @param key name of the data set
+     * @return a list of IPTCDataSet associated with the key
+     */
+    public List<IPTCDataSet> getDataSet(IPTCTag key) {
+        return iptc.getDataSet(key);
+    }
+    
+    protected MetadataEntry getMetadataEntry() {
+        //
+        ImageResourceID eId  = ImageResourceID.fromShort(getID());
+        MetadataEntry entry = new MetadataEntry(eId.name(), eId.getDescription(), true);
+        
+        Map<IPTCTag, List<IPTCDataSet>> datasetMap = this.getDataSets();
+        
+        if(datasetMap != null) {
+            // Print multiple entry IPTCDataSet
+            Set<Map.Entry<IPTCTag, List<IPTCDataSet>>> entries = datasetMap.entrySet();
+            
+            for(Entry<IPTCTag, List<IPTCDataSet>> entryMap : entries) {
+                StringBuilder strBuilder = new StringBuilder();
+                //
+                for(IPTCDataSet item : entryMap.getValue())
+                    strBuilder.append(item.getDataAsString()).append(";");
+                
+                String key = entryMap.getKey().getName();                
+                String value = StringUtils.replaceLast(strBuilder.toString(), ";", "");
+                
+                entry.addEntry(new MetadataEntry(key, value));
+            }
+            
+            return entry;
+            
+        } else 
+            return super.getMetadataEntry();
+    }
+    
+    public void write(OutputStream os) throws IOException {
+        if(data == null) {            
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            iptc.write(bout);
+            data = bout.toByteArray();
+            size = data.length;
+        }
+        super.write(os);
+    }
 }

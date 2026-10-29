@@ -21,34 +21,34 @@ import pixy.meta.io.RandomAccessOutputStream;
 
 public abstract class AbstractLongField extends TiffField<int[]> {
 
-	public AbstractLongField(short tag, FieldType fieldType, int[] data) {
-		super(tag, fieldType, data.length);	
-		this.data = data;
-	}
-	
-	public int[] getData() {
-		return data.clone();
-	}
-	
-	public int[] getDataAsLong() {
-		return getData();
-	}
-	
-	protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
-		
-		if (data.length == 1) {
-			dataOffset = (int)os.getStreamPointer();
-			os.writeInt(data[0]);
-		} else {
-			dataOffset = toOffset;
-			os.writeInt(toOffset);
-			os.seek(toOffset);
-			
-			for (int value : data)
-				os.writeInt(value);
-			
-			toOffset += (data.length << 2);
-		}
-		return toOffset;
-	}
+    public AbstractLongField(short tag, FieldType fieldType, int[] data) {
+        super(tag, fieldType, data.length);    
+        this.data = data;
+    }
+    
+    public int[] getData() {
+        return data.clone();
+    }
+    
+    public int[] getDataAsLong() {
+        return getData();
+    }
+    
+    protected int writeData(RandomAccessOutputStream os, int toOffset) throws IOException {
+        
+        if (data.length == 1) {
+            dataOffset = (int)os.getStreamPointer();
+            os.writeInt(data[0]);
+        } else {
+            dataOffset = toOffset;
+            os.writeInt(toOffset);
+            os.seek(toOffset);
+            
+            for (int value : data)
+                os.writeInt(value);
+            
+            toOffset += (data.length << 2);
+        }
+        return toOffset;
+    }
 }

@@ -23,13 +23,13 @@ import java.io.OutputStream;
  * @version 1.0 01/29/2013
  */
 public interface WriteStrategy {
-	void writeInt(byte[] buf, int start_idx, int value) throws IOException;
+    void writeInt(byte[] buf, int start_idx, int value) throws IOException;
 
-	void writeInt(OutputStream os, int value) throws IOException;
+    void writeInt(OutputStream os, int value) throws IOException;
 
-	void writeLong(byte[] buf, int start_idx, long value) throws IOException;
+    void writeLong(byte[] buf, int start_idx, long value) throws IOException;
 
-	void writeShort(byte[] buf, int start_idx, int value) throws IOException;
+    void writeShort(byte[] buf, int start_idx, int value) throws IOException;
 
-	void writeShort(OutputStream os, int value) throws IOException;
+    void writeShort(OutputStream os, int value) throws IOException;
 }

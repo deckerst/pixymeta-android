@@ -36,43 +36,43 @@ import pixy.meta.util.Reader;
  */
 public class IDATReader implements Reader {
 
-	private byte[] rawData;
-	private ByteArrayOutputStream byteOutput = null;
-	
-	public IDATReader() {
-		this(8192); // 8K buffer
-	}
-	
-	public IDATReader(int bufLen) {
-		byteOutput = new ByteArrayOutputStream(bufLen);
-	}
-	
-	public IDATReader addChunk(Chunk chunk) {
-		if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
+    private byte[] rawData;
+    private ByteArrayOutputStream byteOutput = null;
+    
+    public IDATReader() {
+        this(8192); // 8K buffer
+    }
+    
+    public IDATReader(int bufLen) {
+        byteOutput = new ByteArrayOutputStream(bufLen);
+    }
+    
+    public IDATReader addChunk(Chunk chunk) {
+        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
 
-		if (chunk.getChunkType() != ChunkType.IDAT) {
-			throw new IllegalArgumentException("Not a valid IDAT chunk.");
-		}		
-		
-		try {
-			byteOutput.write(chunk.getData());
-		} catch (IOException e) {
-			throw new RuntimeException("IDATReader: error adding new chunk");
-		}
-		
-		return this;
-	}
-	
-	public byte[] getData() throws IOException {
-		if(rawData == null)
-			read();
-		return rawData;
-	}
+        if (chunk.getChunkType() != ChunkType.IDAT) {
+            throw new IllegalArgumentException("Not a valid IDAT chunk.");
+        }        
+        
+        try {
+            byteOutput.write(chunk.getData());
+        } catch (IOException e) {
+            throw new RuntimeException("IDATReader: error adding new chunk");
+        }
+        
+        return this;
+    }
+    
+    public byte[] getData() throws IOException {
+        if(rawData == null)
+            read();
+        return rawData;
+    }
 
-	public void read() throws IOException {		
-		// Inflate compressed data
-		BufferedInputStream bin = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(byteOutput.toByteArray())));
-		this.rawData = IOUtils.inputStreamToByteArray(bin);
-		bin.close();
-	}
+    public void read() throws IOException {        
+        // Inflate compressed data
+        BufferedInputStream bin = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(byteOutput.toByteArray())));
+        this.rawData = IOUtils.inputStreamToByteArray(bin);
+        bin.close();
+    }
 }

@@ -32,7 +32,7 @@ import java.io.RandomAccessFile;
  */ 
 public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
 
-	/** The cache File. */
+    /** The cache File. */
     private final File cacheFile;
 
     /** The cache as a RandomAcessFile. */
@@ -131,15 +131,15 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
      *                          <code>0</code> or if an I/O error occurs.
      */
     public void seek(long pos) throws IOException {
-    	ensureOpen();
+        ensureOpen();
         if (pos < 0) {
-        	throw new IOException("Negtive seek position.");
+            throw new IOException("Negtive seek position.");
         }
         pointer = pos;
     }
 
     public int read() throws IOException {
-    	ensureOpen();
+        ensureOpen();
         long next = pointer + 1;
         long pos = readUntil(next);
         if (pos >= next) {
@@ -150,7 +150,7 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
-    	ensureOpen();
+        ensureOpen();
         if (b == null) {
             throw new NullPointerException();
         }
@@ -170,7 +170,7 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
             cache.readFully(b, off, len);
             pointer += len;
             return len;
-        }	        
+        }            
         return -1;
     }
 
@@ -181,7 +181,7 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
      * @throws IOException if an I/O error occurs.
      */
     public void close() throws IOException {
-		if(closed) {
+        if(closed) {
             return;
         }
         cache.close();
@@ -192,7 +192,7 @@ public class FileCacheRandomAccessInputStream extends RandomAccessInputStream {
     }
     
     public void shallowClose() throws IOException {
-    	if(closed) {
+        if(closed) {
             return;
         }
         cache.close();

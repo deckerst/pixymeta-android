@@ -37,57 +37,57 @@ import pixy.meta.meta.MetadataEntry;
 import pixy.meta.meta.MetadataType;
 
 public class Comments extends Metadata {
-	private Queue<byte[]> queue;
-	private List<String> comments;
-	
-	public Comments() {
-		super(MetadataType.COMMENT);
-		queue = new LinkedList<byte[]>();
-		comments = new ArrayList<String>();
-	}
-	
-	public Comments(List<String> comments) {
-		super(MetadataType.COMMENT);
-		queue = new LinkedList<byte[]>();
-		if(comments == null) throw new IllegalArgumentException("Input is null");
-		this.comments = comments;
-	}
+    private Queue<byte[]> queue;
+    private List<String> comments;
+    
+    public Comments() {
+        super(MetadataType.COMMENT);
+        queue = new LinkedList<byte[]>();
+        comments = new ArrayList<String>();
+    }
+    
+    public Comments(List<String> comments) {
+        super(MetadataType.COMMENT);
+        queue = new LinkedList<byte[]>();
+        if(comments == null) throw new IllegalArgumentException("Input is null");
+        this.comments = comments;
+    }
 
-	public List<String> getComments() {
-		ensureDataRead();
-		return Collections.unmodifiableList(comments);
-	}
-	
-	public void addComment(byte[] comment) {
-		if(comment == null) throw new IllegalArgumentException("Input is null");
-		queue.offer(comment);
-	}
-	
-	public void addComment(String comment) {
-		if(comment == null) throw new IllegalArgumentException("Input is null");
-		comments.add(comment);
-	}
-	
-	public Iterator<MetadataEntry> iterator() {
-		ensureDataRead();
-		List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
-			
-		for (String comment : comments)
-		    entries.add(new MetadataEntry(comment, "")); // For comments, we set the value to empty string
-		
-		return Collections.unmodifiableCollection(entries).iterator();
-	}
-	
-	public void read() throws IOException {
-		if(queue.size() > 0) {
-			for(byte[] comment : queue) {
-				try {
-					comments.add(new String(comment, "UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					throw new UnsupportedEncodingException("UTF-8");
-				}
-			}
-			queue.clear();
-		}
-	}
+    public List<String> getComments() {
+        ensureDataRead();
+        return Collections.unmodifiableList(comments);
+    }
+    
+    public void addComment(byte[] comment) {
+        if(comment == null) throw new IllegalArgumentException("Input is null");
+        queue.offer(comment);
+    }
+    
+    public void addComment(String comment) {
+        if(comment == null) throw new IllegalArgumentException("Input is null");
+        comments.add(comment);
+    }
+    
+    public Iterator<MetadataEntry> iterator() {
+        ensureDataRead();
+        List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+            
+        for (String comment : comments)
+            entries.add(new MetadataEntry(comment, "")); // For comments, we set the value to empty string
+        
+        return Collections.unmodifiableCollection(entries).iterator();
+    }
+    
+    public void read() throws IOException {
+        if(queue.size() > 0) {
+            for(byte[] comment : queue) {
+                try {
+                    comments.add(new String(comment, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new UnsupportedEncodingException("UTF-8");
+                }
+            }
+            queue.clear();
+        }
+    }
 }

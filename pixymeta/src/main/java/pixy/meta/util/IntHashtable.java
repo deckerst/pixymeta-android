@@ -34,13 +34,13 @@ import java.util.Arrays;
  public class IntHashtable<E>
  {
 
-	    private static final int DEFAULT_TABLE_SIZE = 257;
+        private static final int DEFAULT_TABLE_SIZE = 257;
 
         /** The array of HashEntry. */
         private HashEntry<E> [ ] array;   // The array of HashEntry
         private int currentSize;       // The number of occupied cells
 
-		/**
+        /**
          * Construct the hash table.
          */
         public IntHashtable( )
@@ -53,7 +53,7 @@ import java.util.Arrays;
          * @param size the approximate initial size.
          */
         @SuppressWarnings("unchecked")
-		public IntHashtable( int size )
+        public IntHashtable( int size )
         {
             array = new HashEntry [size];
             makeEmpty( );
@@ -82,7 +82,7 @@ import java.util.Arrays;
          * Expand the hash table.
          */
         @SuppressWarnings("unchecked")
-		private void rehash( )
+        private void rehash( )
         {
             HashEntry<E> [ ] oldArray = array;
 
@@ -107,8 +107,8 @@ import java.util.Arrays;
         {
             int collisionNum = 0;
 
-			// And with the largest positive integer
-			int currentPos = (key & 0x7FFFFFFF) % array.length;
+            // And with the largest positive integer
+            int currentPos = (key & 0x7FFFFFFF) % array.length;
 
             while( array[ currentPos ] != null &&
                     array[ currentPos ].key != key )
@@ -129,19 +129,19 @@ import java.util.Arrays;
             int currentPos = locate(key);
             if(isActive(currentPos)) {
                 array[currentPos].isActive = false;
-				currentSize--;
-			}
+                currentSize--;
+            }
         }
 
-		/**
+        /**
          * Search for an item in the hash table.
          * @param key the item to search for.
          * @return true if a matching item found.
          */
         public boolean contains(int key)
-	    {
-	        return isActive( locate( key ) );
-		}
+        {
+            return isActive( locate( key ) );
+        }
 
         /**
          * Find an item in the hash table.
@@ -151,7 +151,7 @@ import java.util.Arrays;
         public E get( int key )
         {
             int currentPos = locate( key );
-	        return isActive( currentPos ) ? array[ currentPos ].value : null;
+            return isActive( currentPos ) ? array[ currentPos ].value : null;
         }
 
         /**
@@ -212,11 +212,11 @@ import java.util.Arrays;
         private static class HashEntry<V>
         {
            int key;         // the key
-	       V value;       // the value
+           V value;       // the value
            boolean  isActive;  // false if deleted
 
-  	       @SuppressWarnings("unused")
-  	       HashEntry( int k, V val )
+             @SuppressWarnings("unused")
+             HashEntry( int k, V val )
            {
                this( k, val, true );
            }
@@ -224,7 +224,7 @@ import java.util.Arrays;
            HashEntry( int k, V val, boolean i )
            {
                key = k;
-		       value = val;
+               value = val;
                isActive  = i;
            }
         }

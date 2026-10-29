@@ -23,15 +23,15 @@ import java.io.InputStream;
  * @version 1.0 12/27/2012
  */
 public interface ReadStrategy {
-	int readInt(byte[] buf, int start_idx);
+    int readInt(byte[] buf, int start_idx);
 
-	int readInt(InputStream is) throws IOException;
+    int readInt(InputStream is) throws IOException;
 
-	long readLong(byte[] buf, int start_idx);
+    long readLong(byte[] buf, int start_idx);
 
-	short readShort(byte[] buf, int start_idx);
+    short readShort(byte[] buf, int start_idx);
 
-	short readShort(InputStream is) throws IOException;
+    short readShort(InputStream is) throws IOException;
 
-	int readUnsignedShort(byte[] buf, int start_idx);
+    int readUnsignedShort(byte[] buf, int start_idx);
 }

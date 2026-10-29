@@ -25,33 +25,33 @@ import java.util.HashMap;
  * @version 1.0 10/09/2012
  */
 public enum ImageType {
-	
-	GIF("Gif") {
-	},
-	
+    
+    GIF("Gif") {
+    },
+    
     PNG("Png") {
-	},
-	
+    },
+    
     JPG("Jpeg") {
-	},
-	
-	JPG2000("Jpeg2000") {
-	},
-	
+    },
+    
+    JPG2000("Jpeg2000") {
+    },
+    
     BMP("Bitmap") {
-	},
-	
+    },
+    
     TGA("Targa") {
-	},
-	
-	TIFF("Tiff") {
-	},
-	
+    },
+    
+    TIFF("Tiff") {
+    },
+    
     PCX("Pcx") {
-	},
-	
-	UNKNOWN("Unknown") {
-	};
+    },
+    
+    UNKNOWN("Unknown") {
+    };
     
     private static final Map<String, ImageType> stringMap = new HashMap<String, ImageType>();
    
@@ -73,7 +73,7 @@ public enum ImageType {
       this.name = name;
     }
 
-	@Override
+    @Override
     public String toString()
     {
       return name;

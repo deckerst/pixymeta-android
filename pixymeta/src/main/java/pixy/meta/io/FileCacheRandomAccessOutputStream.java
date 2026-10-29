@@ -31,13 +31,13 @@ import java.io.RandomAccessFile;
 
 public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream {
 
-	/** The cache File. */
+    /** The cache File. */
     private final File cacheFile;
 
     /** The cache as a RandomAcessFile. */
     private final RandomAccessFile cache;
 
-	/** Number of bytes in the cache. */
+    /** Number of bytes in the cache. */
     private long length = 0L;
 
     /** Next byte to be read. */
@@ -46,22 +46,22 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
     private long flushPos = 0L;
     
     public FileCacheRandomAccessOutputStream(OutputStream dist) throws IOException {
-    	super(dist);
+        super(dist);
         this.cacheFile = File.createTempFile("cafe-FCRAOS-", ".tmp");
         cacheFile.deleteOnExit();
         this.cache = new RandomAccessFile(cacheFile, "rw");
     }
 
-	/**
+    /**
      * Closes this stream and releases any system resources
      * associated with the stream.
      *
      * @throws IOException if an I/O error occurs.
      */
     public void close() throws IOException {
-    	if(closed) {
-			return;
-		}
+        if(closed) {
+            return;
+        }
         super.close();
         cache.close();
         cacheFile.delete();
@@ -70,77 +70,77 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         closed = true;
      }
 
-	@Override
-	public long getFlushPos() {
-		return flushPos;
-	}
+    @Override
+    public long getFlushPos() {
+        return flushPos;
+    }
 
-	@Override
-	public long getLength() {
-		return length;
-	}
+    @Override
+    public long getLength() {
+        return length;
+    }
 
-	@Override
-	public long getStreamPointer() {
-		return pointer;
-	}
-	
-	@Override
-	public void reset() { }
+    @Override
+    public long getStreamPointer() {
+        return pointer;
+    }
+    
+    @Override
+    public void reset() { }
 
-	@Override
-	 public void seek(long pos) throws IOException {
-		ensureOpen();
+    @Override
+     public void seek(long pos) throws IOException {
+        ensureOpen();
         if (pos < 0) {
-        	throw new IOException("Negtive seek position.");
+            throw new IOException("Negtive seek position.");
         }
         pointer = pos;
     }
 
-	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
-		ensureOpen();
-		if (b == null) {
-			throw new NullPointerException("b == null!");
-		}
-	       
-		if ((off < 0) || (len < 0) || (pointer < 0) ||
-				(off + len > b.length) || (off + len < 0)) {
-			throw new IndexOutOfBoundsException();
-		}
-		
-		long lastPos = pointer + len - 1;
-		
-		if (lastPos >= length) {
-			length = lastPos + 1;
-		}
-		
-		cache.seek(pointer);
-		cache.write(b, off, len);
-		pointer += len;
-	}
-	
-	@Override
-	public void write(int value) throws IOException {
-		ensureOpen();
-		if (pointer < 0)
-	    	throw new IndexOutOfBoundsException("pointer < 0");
-		if (pointer >= length) {
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        ensureOpen();
+        if (b == null) {
+            throw new NullPointerException("b == null!");
+        }
+           
+        if ((off < 0) || (len < 0) || (pointer < 0) ||
+                (off + len > b.length) || (off + len < 0)) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        long lastPos = pointer + len - 1;
+        
+        if (lastPos >= length) {
+            length = lastPos + 1;
+        }
+        
+        cache.seek(pointer);
+        cache.write(b, off, len);
+        pointer += len;
+    }
+    
+    @Override
+    public void write(int value) throws IOException {
+        ensureOpen();
+        if (pointer < 0)
+            throw new IndexOutOfBoundsException("pointer < 0");
+        if (pointer >= length) {
            length = pointer + 1;
         }
-		cache.seek(pointer);
+        cache.seek(pointer);
         cache.write(value);
-    	pointer++;
+        pointer++;
     }
 
-	@Override
-	public void writeToStream(long len) throws IOException {
-		ensureOpen();
-		if (len == 0) {
+    @Override
+    public void writeToStream(long len) throws IOException {
+        ensureOpen();
+        if (len == 0) {
             return;
         }
-		
-		if (pointer + len > length) {
+        
+        if (pointer + len > length) {
             throw new IndexOutOfBoundsException("Argument out of cache");
         }
         
@@ -151,23 +151,23 @@ public class FileCacheRandomAccessOutputStream extends RandomAccessOutputStream 
         cache.seek(pointer);
 
         while (len > 0) {
-			byte[] buf = new byte[4096];
-			int nbytes = cache.read(buf);
-			dist.write(buf, 0, nbytes);
-			len -= nbytes;
-			flushPos += nbytes;
+            byte[] buf = new byte[4096];
+            int nbytes = cache.read(buf);
+            dist.write(buf, 0, nbytes);
+            len -= nbytes;
+            flushPos += nbytes;
         }
     }
 
-	@Override
-	public void shallowClose() throws IOException {
-	   	if(closed) {
-			return;
-		}
+    @Override
+    public void shallowClose() throws IOException {
+           if(closed) {
+            return;
+        }
         super.close();
         cache.close();
         cacheFile.delete();
         dist = null;
         closed = true;
-	}
+    }
 }

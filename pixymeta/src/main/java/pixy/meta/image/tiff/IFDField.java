@@ -25,11 +25,11 @@ import pixy.meta.string.StringUtils;
  */
 public final class IFDField extends AbstractLongField {
 
-	public IFDField(short tag, int[] data) {
-		super(tag, FieldType.IFD, data);
-	}
-	
-	public String getDataAsString() {
-		return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
-	}
+    public IFDField(short tag, int[] data) {
+        super(tag, FieldType.IFD, data);
+    }
+    
+    public String getDataAsString() {
+        return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
+    }
 }

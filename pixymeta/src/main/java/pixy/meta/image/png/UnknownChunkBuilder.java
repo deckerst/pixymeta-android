@@ -25,24 +25,24 @@ import pixy.meta.util.Builder;
  */
 public class UnknownChunkBuilder implements Builder<Chunk> {
 
-	private int chunkType;
-	private byte[] data;
-	
-	public UnknownChunkBuilder type(int type) {
-		this.chunkType = type;
-		return this;
-	}
-	
-	public UnknownChunkBuilder data(byte[] data) {
-		this.data = data;
-		return this;
-	}
-	
-	public UnknownChunkBuilder() {}
+    private int chunkType;
+    private byte[] data;
+    
+    public UnknownChunkBuilder type(int type) {
+        this.chunkType = type;
+        return this;
+    }
+    
+    public UnknownChunkBuilder data(byte[] data) {
+        this.data = data;
+        return this;
+    }
+    
+    public UnknownChunkBuilder() {}
 
-	public Chunk build() {
-		long crc = Chunk.calculateCRC(chunkType, data);
-	    
-	    return new UnknownChunk(data.length, chunkType, data, crc);	
-	}
+    public Chunk build() {
+        long crc = Chunk.calculateCRC(chunkType, data);
+        
+        return new UnknownChunk(data.length, chunkType, data, crc);    
+    }
 }

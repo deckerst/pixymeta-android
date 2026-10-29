@@ -25,11 +25,11 @@ import pixy.meta.string.StringUtils;
  */
 public final class LongField extends AbstractLongField {
 
-	public LongField(short tag, int[] data) {
-		super(tag, FieldType.LONG, data);
-	}
-	
-	public String getDataAsString() {
-		return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
-	}
+    public LongField(short tag, int[] data) {
+        super(tag, FieldType.LONG, data);
+    }
+    
+    public String getDataAsString() {
+        return StringUtils.longArrayToString(data, 0, MAX_STRING_REPR_LEN, true);
+    }
 }

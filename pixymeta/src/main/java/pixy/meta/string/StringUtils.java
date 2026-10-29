@@ -25,7 +25,7 @@
  * WY    23Jan2015  Moved XML related methods to XMLUtils
  * WY    10Jan2015  Added showXML() and printNode() to show XML document
  * WY    28Dec2014  Added isInCharset() to test if a String can be encoded with
- * 					certain character set.
+ *                     certain character set.
  */
 
 package pixy.meta.string;

@@ -33,23 +33,23 @@ import pixy.meta.meta.exif.Exif;
 
 public class TiffExif extends Exif {
 
-	public TiffExif() {
-		;
-	}
-	
-	public TiffExif(IFD imageIFD) {
-		super(imageIFD);		
-	}
-	
-	/** 
-	 * Write the EXIF data to the OutputStream
-	 * 
-	 * @param os OutputStream
-	 * @throws Exception 
-	 */
-	@Override
-	public void write(OutputStream os) throws IOException {
-		ensureDataRead();
-		; // We won't write anything here
-	}
+    public TiffExif() {
+        ;
+    }
+    
+    public TiffExif(IFD imageIFD) {
+        super(imageIFD);        
+    }
+    
+    /** 
+     * Write the EXIF data to the OutputStream
+     * 
+     * @param os OutputStream
+     * @throws Exception 
+     */
+    @Override
+    public void write(OutputStream os) throws IOException {
+        ensureDataRead();
+        ; // We won't write anything here
+    }
 }

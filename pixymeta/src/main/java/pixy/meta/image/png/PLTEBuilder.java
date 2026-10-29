@@ -25,41 +25,41 @@ import pixy.meta.util.Builder;
  */
 public class PLTEBuilder extends ChunkBuilder implements Builder<Chunk> {
 
-	private byte[] redMap;
-	private byte[] greenMap;
-	private byte[] blueMap;
-	
-	public PLTEBuilder() {
-		super(ChunkType.PLTE);		
-	}
+    private byte[] redMap;
+    private byte[] greenMap;
+    private byte[] blueMap;
+    
+    public PLTEBuilder() {
+        super(ChunkType.PLTE);        
+    }
 
-	public PLTEBuilder redMap(byte[] redMap) {
-		this.redMap = redMap;		
-		return this;
-	}
-	
-	public PLTEBuilder greenMap(byte[] greenMap) {
-		this.greenMap = greenMap;
-		return this;
-	}
-	
-	public PLTEBuilder blueMap(byte[] blueMap) {
-		this.blueMap = blueMap;
-		return this;
-	}
-	
-	@Override
-	protected byte[] buildData() {
-		// Converts to PNG RGB PLET format
-		int mapLen = redMap.length;
-		byte[] colorMap = new byte[3*mapLen];
-		
-		for (int i = mapLen - 1, j = colorMap.length - 1; i >= 0; i--) {			
-			colorMap[j--] = blueMap[i];
-			colorMap[j--] = greenMap[i];
-			colorMap[j--] = redMap[i];
-		}
+    public PLTEBuilder redMap(byte[] redMap) {
+        this.redMap = redMap;        
+        return this;
+    }
+    
+    public PLTEBuilder greenMap(byte[] greenMap) {
+        this.greenMap = greenMap;
+        return this;
+    }
+    
+    public PLTEBuilder blueMap(byte[] blueMap) {
+        this.blueMap = blueMap;
+        return this;
+    }
+    
+    @Override
+    protected byte[] buildData() {
+        // Converts to PNG RGB PLET format
+        int mapLen = redMap.length;
+        byte[] colorMap = new byte[3*mapLen];
+        
+        for (int i = mapLen - 1, j = colorMap.length - 1; i >= 0; i--) {            
+            colorMap[j--] = blueMap[i];
+            colorMap[j--] = greenMap[i];
+            colorMap[j--] = redMap[i];
+        }
 
-		return colorMap;
-	}
+        return colorMap;
+    }
 }

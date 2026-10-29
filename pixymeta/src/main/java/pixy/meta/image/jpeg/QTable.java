@@ -16,32 +16,32 @@
 package pixy.meta.image.jpeg;
 
 public class QTable implements Comparable<QTable> {
-	//
-	private int precision;
-	private int id;
-	private int[] data;
-	
-	public QTable(int precision, int id, int[] data) {
-		if(precision != 0 && precision != 1) 
-			throw new IllegalArgumentException("Invalid precision value: " + precision);
-		this.precision = precision;
-		this.id = id;
-		this.data = data;
-	}
-	
-	public int getPrecision() {
-		return precision; 
-	}
-	
-	public int getID() {
-		return id;
-	}
-	
-	public int[] getData() {
-		return data.clone();
-	}
+    //
+    private int precision;
+    private int id;
+    private int[] data;
+    
+    public QTable(int precision, int id, int[] data) {
+        if(precision != 0 && precision != 1) 
+            throw new IllegalArgumentException("Invalid precision value: " + precision);
+        this.precision = precision;
+        this.id = id;
+        this.data = data;
+    }
+    
+    public int getPrecision() {
+        return precision; 
+    }
+    
+    public int getID() {
+        return id;
+    }
+    
+    public int[] getData() {
+        return data.clone();
+    }
 
-	public int compareTo(QTable that) {
-		return this.id - that.id;
-	}
+    public int compareTo(QTable that) {
+        return this.id - that.id;
+    }
 }

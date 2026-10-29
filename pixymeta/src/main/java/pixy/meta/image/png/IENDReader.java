@@ -30,30 +30,30 @@ import pixy.meta.util.Reader;
  */
 public class IENDReader implements Reader {
 
-	private Chunk chunk;
-	
-	// Obtain a logger instance
-	private static final Logger LOGGER = LoggerFactory.getLogger(IENDReader.class);
-	
-	public IENDReader(Chunk chunk) {
-		if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
-		
-		if (chunk.getChunkType() != ChunkType.IEND) {
-			throw new IllegalArgumentException("Not a valid IEND chunk.");
-		}
-		
-		this.chunk = chunk;
-		
-		try {
-			read();
-		} catch (IOException e) {
-			throw new RuntimeException("IENDReader: error reading chunk");
-		}
-	}
+    private Chunk chunk;
+    
+    // Obtain a logger instance
+    private static final Logger LOGGER = LoggerFactory.getLogger(IENDReader.class);
+    
+    public IENDReader(Chunk chunk) {
+        if(chunk == null) throw new IllegalArgumentException("Input chunk is null");
+        
+        if (chunk.getChunkType() != ChunkType.IEND) {
+            throw new IllegalArgumentException("Not a valid IEND chunk.");
+        }
+        
+        this.chunk = chunk;
+        
+        try {
+            read();
+        } catch (IOException e) {
+            throw new RuntimeException("IENDReader: error reading chunk");
+        }
+    }
 
-	public void read() throws IOException {
-		if(chunk.getData().length != 0) {
-			LOGGER.warn("Warning: IEND data field is not empty!");
-		}
-	}
+    public void read() throws IOException {
+        if(chunk.getData().length != 0) {
+            LOGGER.warn("Warning: IEND data field is not empty!");
+        }
+    }
 }

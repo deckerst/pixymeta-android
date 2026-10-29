@@ -32,30 +32,30 @@ import pixy.meta.meta.Thumbnail;
 
 public class JFIFThumbnail extends Thumbnail {
 
-	public JFIFThumbnail(Bitmap thumbnail) {
-		super(thumbnail);
-	}
-	
-	public JFIFThumbnail(JFIFThumbnail other) { // Copy constructor
-		this.dataType = other.dataType;
-		this.height = other.height;
-		this.width = other.width;
-		this.thumbnail = other.thumbnail;
-		this.compressedThumbnail = other.compressedThumbnail;
-	}
+    public JFIFThumbnail(Bitmap thumbnail) {
+        super(thumbnail);
+    }
+    
+    public JFIFThumbnail(JFIFThumbnail other) { // Copy constructor
+        this.dataType = other.dataType;
+        this.height = other.height;
+        this.width = other.width;
+        this.thumbnail = other.thumbnail;
+        this.compressedThumbnail = other.compressedThumbnail;
+    }
 
-	@Override
-	public void write(OutputStream os) throws IOException {
-		Bitmap thumbnail = getRawImage();
-		if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
-		int thumbnailWidth = thumbnail.getWidth();
-		int thumbnailHeight = thumbnail.getHeight();
-		int[] pixels = new int[thumbnailWidth*thumbnailHeight];
-		thumbnail.getPixels(pixels, 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
-		for(int pixel : pixels) {
-			os.write(pixel >> 16); // Red
-			os.write(pixel >> 8); // Green
-			os.write(pixel); // Blue
-		}
-	}
+    @Override
+    public void write(OutputStream os) throws IOException {
+        Bitmap thumbnail = getRawImage();
+        if(thumbnail == null) throw new IllegalArgumentException("Expected raw data thumbnail does not exist!");
+        int thumbnailWidth = thumbnail.getWidth();
+        int thumbnailHeight = thumbnail.getHeight();
+        int[] pixels = new int[thumbnailWidth*thumbnailHeight];
+        thumbnail.getPixels(pixels, 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
+        for(int pixel : pixels) {
+            os.write(pixel >> 16); // Red
+            os.write(pixel >> 8); // Green
+            os.write(pixel); // Blue
+        }
+    }
 }

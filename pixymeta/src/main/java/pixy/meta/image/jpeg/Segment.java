@@ -36,38 +36,38 @@ import pixy.meta.io.IOUtils;
  */
 public class Segment {
 
-	private Marker marker;
-	private int length;
-	private byte[] data;
-	
-	public Segment(Marker marker, int length, byte[] data) {
-		this.marker = marker;
-		this.length = length;
-		this.data = data;
-	}
-	
-	public Marker getMarker() {
-		return marker;
-	}
-	
-	public int getLength() {
-		return length;
-	}
-	
-	public byte[] getData() {
-		return data;
-	}
-	
-	public void write(OutputStream os) throws IOException {
-		IOUtils.writeShortMM(os, marker.getValue());
-		// If this is not a stand-alone segment, write the content as well
-		if(length > 0) {
-			IOUtils.writeShortMM(os, length);
-			IOUtils.write(os, data);
-		}
-	}
-	
-	@Override public String toString() {
-		return this.marker.toString();
-	}
+    private Marker marker;
+    private int length;
+    private byte[] data;
+    
+    public Segment(Marker marker, int length, byte[] data) {
+        this.marker = marker;
+        this.length = length;
+        this.data = data;
+    }
+    
+    public Marker getMarker() {
+        return marker;
+    }
+    
+    public int getLength() {
+        return length;
+    }
+    
+    public byte[] getData() {
+        return data;
+    }
+    
+    public void write(OutputStream os) throws IOException {
+        IOUtils.writeShortMM(os, marker.getValue());
+        // If this is not a stand-alone segment, write the content as well
+        if(length > 0) {
+            IOUtils.writeShortMM(os, length);
+            IOUtils.write(os, data);
+        }
+    }
+    
+    @Override public String toString() {
+        return this.marker.toString();
+    }
 }

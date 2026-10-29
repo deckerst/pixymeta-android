@@ -25,11 +25,11 @@ import pixy.meta.string.StringUtils;
  */
 public final class SRationalField extends AbstractRationalField {
 
-	public SRationalField(short tag, int[] data) {
-		super(tag, FieldType.SRATIONAL, data);
-	}
-	
-	public String getDataAsString() {
-		return StringUtils.rationalArrayToString(data, false);
-	}
+    public SRationalField(short tag, int[] data) {
+        super(tag, FieldType.SRATIONAL, data);
+    }
+    
+    public String getDataAsString() {
+        return StringUtils.rationalArrayToString(data, false);
+    }
 }

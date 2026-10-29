@@ -25,12 +25,12 @@ import pixy.meta.util.Builder;
  */
 public class IENDBuilder extends ChunkBuilder implements Builder<Chunk> {
 
-	public IENDBuilder() {
-		super(ChunkType.IEND);	
-	}
+    public IENDBuilder() {
+        super(ChunkType.IEND);    
+    }
 
-	@Override
-	protected byte[] buildData() {
-		return new byte[0];
-	}
+    @Override
+    protected byte[] buildData() {
+        return new byte[0];
+    }
 }

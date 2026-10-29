@@ -24,20 +24,20 @@ import java.io.PrintStream;
  * @version 1.0 09/19/2012
  */
 public class LangUtils {
-	private LangUtils(){} // Prevents instantiation
+    private LangUtils(){} // Prevents instantiation
 
-	public static void log(String message, PrintStream out) {
-		StackTraceElement se = Thread.currentThread().getStackTrace()[2];
-		out.println("; " + message + " - [" + se.getClassName() + "." + se.getMethodName() +"(): line " + se.getLineNumber() + "]");
-	}
+    public static void log(String message, PrintStream out) {
+        StackTraceElement se = Thread.currentThread().getStackTrace()[2];
+        out.println("; " + message + " - [" + se.getClassName() + "." + se.getMethodName() +"(): line " + se.getLineNumber() + "]");
+    }
 
-	/**
-	 * Converts long value to int hash code.
-	 *
-	 * @param value long value
-	 * @return int hash code for the long
-	 */
-	public static int longToIntHashCode(long value) {
-		return Long.valueOf(value).hashCode();
-	}
+    /**
+     * Converts long value to int hash code.
+     *
+     * @param value long value
+     * @return int hash code for the long
+     */
+    public static int longToIntHashCode(long value) {
+        return Long.valueOf(value).hashCode();
+    }
 }

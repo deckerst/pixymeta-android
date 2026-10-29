@@ -51,114 +51,114 @@ import java.nio.ShortBuffer;
  */
 public class ArrayUtils
 {
-	public static byte[] concat(byte[] first, byte[]... rest) {
-  	 	if(first == null) {
-			throw new IllegalArgumentException("Firt element is null");
-		}
-  	 	if(rest.length == 0) {
-			return first;
-		}
+    public static byte[] concat(byte[] first, byte[]... rest) {
+           if(first == null) {
+            throw new IllegalArgumentException("Firt element is null");
+        }
+           if(rest.length == 0) {
+            return first;
+        }
 
-		// Now the real stuff
-  	  	int totalLength = first.length;
+        // Now the real stuff
+            int totalLength = first.length;
 
-		for (byte[] array : rest) {
-			totalLength += array.length;
-	 	}
+        for (byte[] array : rest) {
+            totalLength += array.length;
+         }
 
-		byte[] result = new byte[totalLength];
+        byte[] result = new byte[totalLength];
 
-		int offset = first.length;
+        int offset = first.length;
 
-		System.arraycopy(first, 0, result, 0, offset);
+        System.arraycopy(first, 0, result, 0, offset);
 
-		for (byte[] array : rest) {
-			System.arraycopy(array, 0, result, offset, array.length);
-			offset += array.length;
-		}
+        for (byte[] array : rest) {
+            System.arraycopy(array, 0, result, offset, array.length);
+            offset += array.length;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
     public static byte[] subArray(byte[] src, int offset, int len) {
-		if(offset == 0 && len == src.length) return src;
-		if((offset < 0 || offset >= src.length) || (offset + len > src.length))
-			throw new IllegalArgumentException("Copy range out of array bounds");
-		byte[] dest = new byte[len];
-		System.arraycopy(src, offset, dest, 0, len);
+        if(offset == 0 && len == src.length) return src;
+        if((offset < 0 || offset >= src.length) || (offset + len > src.length))
+            throw new IllegalArgumentException("Copy range out of array bounds");
+        byte[] dest = new byte[len];
+        System.arraycopy(src, offset, dest, 0, len);
 
-		return dest;
-	}
+        return dest;
+    }
 
     public static byte[] toByteArray(int value) {
-		return new byte[] {
-	        (byte)value,
-	        (byte)(value >>> 8),
-	        (byte)(value >>> 16),
-	        (byte)(value >>> 24)
-	        };
-	}
+        return new byte[] {
+            (byte)value,
+            (byte)(value >>> 8),
+            (byte)(value >>> 16),
+            (byte)(value >>> 24)
+            };
+    }
 
     public static byte[] toByteArray(int[] data, boolean bigEndian) {
 
-		ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 4);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 4);
 
-		if (bigEndian) {
-			byteBuffer.order(ByteOrder.BIG_ENDIAN);
-		} else {
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		}
+        if (bigEndian) {
+            byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        } else {
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
 
-		IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
         intBuffer.put(data);
 
         return byteBuffer.array();
-	}
+    }
 
-  	public static byte[] toByteArray(long[] data, boolean bigEndian) {
+      public static byte[] toByteArray(long[] data, boolean bigEndian) {
 
-		ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 8);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 8);
 
-		if (bigEndian) {
-			byteBuffer.order(ByteOrder.BIG_ENDIAN);
-		} else {
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		}
+        if (bigEndian) {
+            byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        } else {
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
 
-		LongBuffer longBuffer = byteBuffer.asLongBuffer();
+        LongBuffer longBuffer = byteBuffer.asLongBuffer();
         longBuffer.put(data);
 
         return byteBuffer.array();
-	}
+    }
 
-	public static byte[] toByteArray(short value) {
-		 return new byte[] {
-				 (byte)value, (byte)(value >>> 8)};
-	}
+    public static byte[] toByteArray(short value) {
+         return new byte[] {
+                 (byte)value, (byte)(value >>> 8)};
+    }
 
-	public static byte[] toByteArray(short[] data, boolean bigEndian) {
+    public static byte[] toByteArray(short[] data, boolean bigEndian) {
 
-		ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 2);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(data.length * 2);
 
-		if (bigEndian) {
-			byteBuffer.order(ByteOrder.BIG_ENDIAN);
-		} else {
-			byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		}
+        if (bigEndian) {
+            byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        } else {
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
 
-		ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
+        ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
         shortBuffer.put(data);
 
         return byteBuffer.array();
-	}
+    }
 
     public static byte[] toByteArrayMM(int value) {
-    	return new byte[] {
-	        (byte)(value >>> 24),
-	        (byte)(value >>> 16),
-	        (byte)(value >>> 8),
-	        (byte)value};
-	}
+        return new byte[] {
+            (byte)(value >>> 24),
+            (byte)(value >>> 16),
+            (byte)(value >>> 8),
+            (byte)value};
+    }
 
-   	private ArrayUtils(){} // Prevents instantiation
+       private ArrayUtils(){} // Prevents instantiation
 }

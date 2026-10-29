@@ -27,24 +27,24 @@ import pixy.meta.util.Reader;
  */
 public class COMReader implements Reader {
 
-	private Segment segment;
-	private String comment;
-	
-	public COMReader(Segment segment) throws IOException {
-		//
-		if(segment.getMarker() != Marker.COM) {
-			throw new IllegalArgumentException("Not a valid COM segment!");
-		}
-		
-		this.segment = segment;
-		read();
-	}
-	
-	public String getComment() {
-		return this.comment;
-	}
-	
-	public void read() throws IOException {
-		this.comment = new String(segment.getData()).trim();
-	}
+    private Segment segment;
+    private String comment;
+    
+    public COMReader(Segment segment) throws IOException {
+        //
+        if(segment.getMarker() != Marker.COM) {
+            throw new IllegalArgumentException("Not a valid COM segment!");
+        }
+        
+        this.segment = segment;
+        read();
+    }
+    
+    public String getComment() {
+        return this.comment;
+    }
+    
+    public void read() throws IOException {
+        this.comment = new String(segment.getData()).trim();
+    }
 }
