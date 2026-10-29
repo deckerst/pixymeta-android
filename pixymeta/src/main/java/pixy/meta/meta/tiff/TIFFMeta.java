@@ -1122,100 +1122,98 @@ public class TIFFMeta {
         }
         IFD tiffIFD = new IFD();
         rin.seek(offset);
-        int no_of_fields = rin.readShort();
+        int fieldCount = rin.readShort();
         offset += 2;
 
-        for (int i = 0; i < no_of_fields; i++) {
+        for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
             rin.seek(offset);
             short tag = rin.readShort();
-            Tag ftag = TiffTag.UNKNOWN;
+            Tag fieldTag = TiffTag.UNKNOWN;
             try {
-                ftag = (Tag) method.invoke(null, tag);
+                fieldTag = (Tag) method.invoke(null, tag);
             } catch (IllegalAccessException | InvocationTargetException |
                      IllegalArgumentException e) {
                 LOGGER.error("failed to invoke method `fromShort`", e);
             }
             offset += 2;
+
             rin.seek(offset);
             short type = rin.readShort();
-            FieldType ftype = FieldType.fromShort(type);
+            FieldType fieldType = FieldType.fromShort(type);
             offset += 2;
+
             rin.seek(offset);
-            int field_length = rin.readInt();
+            int fieldLength = rin.readInt();
+            offset += 4;
 
             // TLAD insert start
-            if (field_length > FIELD_LENGTH_DANGER_THRESHOLD) {
-                throw new RuntimeException("dangerous field length=" + field_length);
+            if (fieldLength > FIELD_LENGTH_DANGER_THRESHOLD) {
+                throw new RuntimeException("dangerous field length=" + fieldLength);
             }
             // TLAD insert end
 
-            offset += 4;
-            ////// Try to read actual data.
-            switch (ftype) {
+            rin.seek(offset);
+            switch (fieldType) {
                 case BYTE:
                 case SBYTE:
                 case UNDEFINED: {
-                    byte[] data = new byte[field_length];
-                    rin.seek(offset);
-                    if (field_length <= 4) {
-                        rin.readFully(data, 0, field_length);
-                    } else {
+                    byte[] data = new byte[fieldLength];
+                    if (fieldLength > 4) {
                         rin.seek(rin.readInt());
-                        rin.readFully(data, 0, field_length);
                     }
+                    rin.readFully(data, 0, fieldLength);
+                    offset += 4;
+
                     TiffField<byte[]> byteField;
-                    if (ftype == FieldType.BYTE) {
+                    if (fieldType == FieldType.BYTE) {
                         byteField = new ByteField(tag, data);
-                    } else if (ftype == FieldType.SBYTE) {
+                    } else if (fieldType == FieldType.SBYTE) {
                         byteField = new SByteField(tag, data);
                     } else {
-                        if (ftag == ExifTag.MAKER_NOTE)
+                        if (fieldTag == ExifTag.MAKER_NOTE)
                             byteField = new MakerNoteField(tiffIFD, data);
                         else
                             byteField = new UndefinedField(tag, data);
                     }
                     tiffIFD.addField(byteField);
-                    offset += 4;
                     break;
                 }
                 case ASCII: {
-                    byte[] data = new byte[field_length];
-                    rin.seek(offset);
-                    if (field_length > 4) {
+                    byte[] data = new byte[fieldLength];
+                    if (fieldLength > 4) {
                         rin.seek(rin.readInt());
                     }
-                    rin.readFully(data, 0, field_length);
-                    TiffField<String> ascIIField = new ASCIIField(tag, new String(data, StandardCharsets.UTF_8));
-                    tiffIFD.addField(ascIIField);
+                    rin.readFully(data, 0, fieldLength);
                     offset += 4;
+
+                    TiffField<String> asciiField = new ASCIIField(tag, new String(data, StandardCharsets.UTF_8));
+                    tiffIFD.addField(asciiField);
                     break;
                 }
                 case SHORT:
                 case SSHORT: {
-                    short[] sdata = new short[field_length];
-                    if (field_length == 1) {
-                        rin.seek(offset);
+                    short[] sdata = new short[fieldLength];
+                    if (fieldLength == 1) {
                         sdata[0] = rin.readShort();
                         offset += 4;
-                    } else if (field_length == 2) {
-                        rin.seek(offset);
+                    } else if (fieldLength == 2) {
                         sdata[0] = rin.readShort();
                         offset += 2;
                         rin.seek(offset);
                         sdata[1] = rin.readShort();
                         offset += 2;
                     } else {
-                        rin.seek(offset);
                         int toOffset = rin.readInt();
                         offset += 4;
-                        for (int j = 0; j < field_length; j++) {
+                        for (int j = 0; j < fieldLength; j++) {
                             rin.seek(toOffset);
                             sdata[j] = rin.readShort();
                             toOffset += 2;
                         }
                     }
+
                     TiffField<short[]> shortField;
-                    if (ftype == FieldType.SSHORT) {
+                    if (fieldType == FieldType.SSHORT) {
                         shortField = new SShortField(tag, sdata);
                     } else {
                         shortField = new ShortField(tag, sdata);
@@ -1225,22 +1223,22 @@ public class TIFFMeta {
                 }
                 case LONG:
                 case SLONG: {
-                    int[] ldata = new int[field_length];
-                    rin.seek(offset);
-                    if (field_length == 1) {
+                    int[] ldata = new int[fieldLength];
+                    if (fieldLength == 1) {
                         ldata[0] = rin.readInt();
                         offset += 4;
                     } else {
                         int toOffset = rin.readInt();
                         offset += 4;
-                        for (int j = 0; j < field_length; j++) {
+                        for (int j = 0; j < fieldLength; j++) {
                             rin.seek(toOffset);
                             ldata[j] = rin.readInt();
                             toOffset += 4;
                         }
                     }
+
                     TiffField<int[]> longField;
-                    if (ftype == FieldType.SLONG) {
+                    if (fieldType == FieldType.SLONG) {
                         longField = new SLongField(tag, ldata);
                     } else {
                         longField = new LongField(tag, ldata);
@@ -1248,79 +1246,78 @@ public class TIFFMeta {
                     tiffIFD.addField(longField);
 
                     // If something bad happens, we skip the sub IFD
-                    int nextIndex = ldata[0];
-                    boolean hasOffset = nextIndex != 0;
-                    if (ftag == TiffTag.EXIF_SUB_IFD && hasOffset) {
+                    int subIfdOffset = ldata[0];
+                    boolean hasOffset = subIfdOffset != 0;
+                    if (fieldTag == TiffTag.EXIF_SUB_IFD && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, ExifTag.class, rin, null, nextIndex);
+                            readIFD(tiffIFD, fieldTag, ExifTag.class, rin, null, subIfdOffset);
                         } catch (Exception e) {
-                            tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
+                            tiffIFD.removeField(fieldTag);
+                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
                         }
-                    } else if (ftag == TiffTag.GPS_SUB_IFD && hasOffset) {
+                    } else if (fieldTag == TiffTag.GPS_SUB_IFD && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, GPSTag.class, rin, null, nextIndex);
+                            readIFD(tiffIFD, fieldTag, GPSTag.class, rin, null, subIfdOffset);
                         } catch (Exception e) {
-                            tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
+                            tiffIFD.removeField(fieldTag);
+                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
                         }
-                    } else if (ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && hasOffset) {
+                    } else if (fieldTag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && hasOffset) {
                         try {
-                            readIFD(tiffIFD, ftag, InteropTag.class, rin, null, nextIndex);
+                            readIFD(tiffIFD, fieldTag, InteropTag.class, rin, null, subIfdOffset);
                         } catch (Exception e) {
-                            tiffIFD.removeField(ftag);
-                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at nextIndex=" + nextIndex, e);
+                            tiffIFD.removeField(fieldTag);
+                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
                         }
-                    } else if (ftag == TiffTag.SUB_IFDS) {
+                    } else if (fieldTag == TiffTag.SUB_IFDS) {
                         for (int index = 0; index < ldata.length; index++) {
                             try {
-                                readIFD(tiffIFD, ftag, TiffTag.class, rin, null, index);
+                                readIFD(tiffIFD, fieldTag, TiffTag.class, rin, null, subIfdOffset);
                             } catch (Exception e) {
-                                tiffIFD.removeField(ftag);
-                                LOGGER.error("failed to read IFD from ftag=" + ftag + " at index=" + index, e);
+                                tiffIFD.removeField(fieldTag);
+                                LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
                             }
                         }
                     }
                     break;
                 }
                 case FLOAT: {
-                    float[] fdata = new float[field_length];
-                    rin.seek(offset);
-                    if (field_length == 1) {
+                    float[] fdata = new float[fieldLength];
+                    if (fieldLength == 1) {
                         fdata[0] = rin.readFloat();
                         offset += 4;
                     } else {
                         int toOffset = rin.readInt();
                         offset += 4;
-                        for (int j = 0; j < field_length; j++) {
+                        for (int j = 0; j < fieldLength; j++) {
                             rin.seek(toOffset);
                             fdata[j] = rin.readFloat();
                             toOffset += 4;
                         }
                     }
+
                     TiffField<float[]> floatField = new FloatField(tag, fdata);
                     tiffIFD.addField(floatField);
                     break;
                 }
                 case DOUBLE: {
-                    double[] ddata = new double[field_length];
-                    rin.seek(offset);
+                    double[] ddata = new double[fieldLength];
                     int toOffset = rin.readInt();
                     offset += 4;
-                    for (int j = 0; j < field_length; j++) {
+                    for (int j = 0; j < fieldLength; j++) {
                         rin.seek(toOffset);
                         ddata[j] = rin.readDouble();
                         toOffset += 8;
                     }
+
                     TiffField<double[]> doubleField = new DoubleField(tag, ddata);
                     tiffIFD.addField(doubleField);
                     break;
                 }
                 case RATIONAL:
                 case SRATIONAL: {
-                    int len = 2 * field_length;
+                    int len = 2 * fieldLength;
                     int[] ldata = new int[len];
-                    rin.seek(offset);
                     int toOffset = rin.readInt();
                     offset += 4;
                     for (int j = 0; j < len; j += 2) {
@@ -1331,8 +1328,9 @@ public class TIFFMeta {
                         ldata[j + 1] = rin.readInt();
                         toOffset += 4;
                     }
+
                     TiffField<int[]> rationalField;
-                    if (ftype == FieldType.SRATIONAL) {
+                    if (fieldType == FieldType.SRATIONAL) {
                         rationalField = new SRationalField(tag, ldata);
                     } else {
                         rationalField = new RationalField(tag, ldata);
@@ -1341,26 +1339,25 @@ public class TIFFMeta {
                     break;
                 }
                 case IFD: {
-                    int[] ldata = new int[field_length];
-                    rin.seek(offset);
-                    if (field_length == 1) {
+                    int[] ldata = new int[fieldLength];
+                    if (fieldLength == 1) {
                         ldata[0] = rin.readInt();
                         offset += 4;
                     } else {
                         int toOffset = rin.readInt();
                         offset += 4;
-                        for (int j = 0; j < field_length; j++) {
+                        for (int j = 0; j < fieldLength; j++) {
                             rin.seek(toOffset);
                             ldata[j] = rin.readInt();
                             toOffset += 4;
                         }
                     }
+
                     TiffField<int[]> ifdField = new IFDField(tag, ldata);
                     tiffIFD.addField(ifdField);
                     for (int ifd = 0; ifd < ldata.length; ifd++) {
                         readIFD(tiffIFD, TiffTag.SUB_IFDS, TiffTag.class, rin, null, ldata[0]);
                     }
-
                     break;
                 }
                 default: {
