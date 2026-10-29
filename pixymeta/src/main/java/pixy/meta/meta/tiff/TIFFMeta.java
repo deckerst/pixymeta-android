@@ -1247,34 +1247,37 @@ public class TIFFMeta {
                     }
                     tiffIFD.addField(longField);
 
-                    if ((ftag == TiffTag.EXIF_SUB_IFD) && (ldata[0] != 0)) {
-                        try { // If something bad happens, we skip the sub IFD
-                            readIFD(tiffIFD, TiffTag.EXIF_SUB_IFD, ExifTag.class, rin, null, ldata[0]);
-                        } catch (Exception e) {
-                            tiffIFD.removeField(TiffTag.EXIF_SUB_IFD);
-                            LOGGER.error("failed to read IFD from `EXIF_SUB_IFD`", e);
-                        }
-                    } else if ((ftag == TiffTag.GPS_SUB_IFD) && (ldata[0] != 0)) {
+                    // If something bad happens, we skip the sub IFD
+                    int firstSubIfdOffset = ldata[0];
+                    boolean offsetIsValid = firstSubIfdOffset != 0;
+                    if (ftag == TiffTag.EXIF_SUB_IFD && offsetIsValid) {
                         try {
-                            readIFD(tiffIFD, TiffTag.GPS_SUB_IFD, GPSTag.class, rin, null, ldata[0]);
+                            readIFD(tiffIFD, ftag, ExifTag.class, rin, null, firstSubIfdOffset);
                         } catch (Exception e) {
-                            tiffIFD.removeField(TiffTag.GPS_SUB_IFD);
-                            LOGGER.error("failed to read IFD from `GPS_SUB_IFD`", e);
+                            tiffIFD.removeField(ftag);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
                         }
-                    } else if ((ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET) && (ldata[0] != 0)) {
+                    } else if (ftag == TiffTag.GPS_SUB_IFD && offsetIsValid) {
                         try {
-                            readIFD(tiffIFD, ExifTag.EXIF_INTEROPERABILITY_OFFSET, InteropTag.class, rin, null, ldata[0]);
+                            readIFD(tiffIFD, ftag, GPSTag.class, rin, null, firstSubIfdOffset);
                         } catch (Exception e) {
-                            tiffIFD.removeField(ExifTag.EXIF_INTEROPERABILITY_OFFSET);
-                            LOGGER.error("failed to read IFD from `EXIF_INTEROPERABILITY_OFFSET`", e);
+                            tiffIFD.removeField(ftag);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
+                        }
+                    } else if (ftag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && offsetIsValid) {
+                        try {
+                            readIFD(tiffIFD, ftag, InteropTag.class, rin, null, firstSubIfdOffset);
+                        } catch (Exception e) {
+                            tiffIFD.removeField(ftag);
+                            LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + firstSubIfdOffset, e);
                         }
                     } else if (ftag == TiffTag.SUB_IFDS) {
-                        for (int ifd = 0; ifd < ldata.length; ifd++) {
+                        for (int subIfdOffset = 0; subIfdOffset < ldata.length; subIfdOffset++) {
                             try {
-                                readIFD(tiffIFD, TiffTag.SUB_IFDS, TiffTag.class, rin, null, ldata[0]);
+                                readIFD(tiffIFD, ftag, TiffTag.class, rin, null, subIfdOffset);
                             } catch (Exception e) {
-                                tiffIFD.removeField(TiffTag.SUB_IFDS);
-                                LOGGER.error("failed to read IFD from `SUB_IFDS` at ifd=" + ifd, e);
+                                tiffIFD.removeField(ftag);
+                                LOGGER.error("failed to read IFD from ftag=" + ftag + " at subIfdOffset=" + subIfdOffset, e);
                             }
                         }
                     }
