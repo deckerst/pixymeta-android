@@ -1245,39 +1245,24 @@ public class TIFFMeta {
                     }
                     tiffIFD.addField(longField);
 
-                    // If something bad happens, we skip the sub IFD
-                    int subIfdOffset = ldata[0];
-                    boolean hasOffset = subIfdOffset != 0;
-                    if (fieldTag == TiffTag.EXIF_SUB_IFD && hasOffset) {
-                        try {
-                            readIFD(tiffIFD, fieldTag, ExifTag.class, rin, null, subIfdOffset);
-                        } catch (Exception e) {
-                            tiffIFD.removeField(fieldTag);
-                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
-                        }
-                    } else if (fieldTag == TiffTag.GPS_SUB_IFD && hasOffset) {
-                        try {
-                            readIFD(tiffIFD, fieldTag, GPSTag.class, rin, null, subIfdOffset);
-                        } catch (Exception e) {
-                            tiffIFD.removeField(fieldTag);
-                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
-                        }
-                    } else if (fieldTag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && hasOffset) {
-                        try {
-                            readIFD(tiffIFD, fieldTag, InteropTag.class, rin, null, subIfdOffset);
-                        } catch (Exception e) {
-                            tiffIFD.removeField(fieldTag);
-                            LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
-                        }
-                    } else if (fieldTag == TiffTag.SUB_IFDS) {
-                        for (int index = 0; index < ldata.length; index++) {
-                            try {
+                    int firstSubIfdOffset = ldata[0];
+                    boolean hasOffset = firstSubIfdOffset != 0;
+                    try {
+                        if (fieldTag == TiffTag.EXIF_SUB_IFD && hasOffset) {
+                            readIFD(tiffIFD, fieldTag, ExifTag.class, rin, null, firstSubIfdOffset);
+                        } else if (fieldTag == TiffTag.GPS_SUB_IFD && hasOffset) {
+                            readIFD(tiffIFD, fieldTag, GPSTag.class, rin, null, firstSubIfdOffset);
+                        } else if (fieldTag == ExifTag.EXIF_INTEROPERABILITY_OFFSET && hasOffset) {
+                            readIFD(tiffIFD, fieldTag, InteropTag.class, rin, null, firstSubIfdOffset);
+                        } else if (fieldTag == TiffTag.SUB_IFDS) {
+                            for (int subIfdOffset : ldata) {
                                 readIFD(tiffIFD, fieldTag, TiffTag.class, rin, null, subIfdOffset);
-                            } catch (Exception e) {
-                                tiffIFD.removeField(fieldTag);
-                                LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " at subIfdOffset=" + subIfdOffset, e);
                             }
                         }
+                    } catch (Exception e) {
+                        // skipping invalid data could corrupt the file when reused for writing, so we abort instead
+                        LOGGER.error("failed to read IFD from fieldTag=" + fieldTag + " with data=" + Arrays.toString(ldata) + ", field=" + longField, e);
+                        throw e;
                     }
                     break;
                 }
